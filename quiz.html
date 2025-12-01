@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -23,7 +23,7 @@
       <div class="page-title-block">
         <h1 class="page-title">MCQ Quiz - Semester 1</h1>
         <p class="page-subtitle">
-          Choose a subject and test your accuracy with MCQs.
+          Choose a subject, then a chapter, and test your accuracy with MCQs.
         </p>
       </div>
     </section>
@@ -37,6 +37,11 @@
       <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
       <button class="btn subject-btn" data-subject="UHV">UHV</button>
       <button class="btn subject-btn" data-subject="COI">COI</button>
+    </section>
+
+    <!-- CHAPTER BUTTONS (filled when subject clicked) -->
+    <section id="chapter-buttons" class="subjects-buttons semester-buttons hidden">
+      <!-- JS will insert chapter buttons here -->
     </section>
 
     <!-- QUIZ AREA -->
@@ -53,107 +58,204 @@
     <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
   </footer>
 
-  <!-- MCQ Quiz Logic (no Supabase, pure JS) -->
+  <!-- MCQ Quiz Logic (chapter-wise) -->
   <script>
-    // ========= QUESTION BANK =========
-    // Manually add MCQs for each subject here.
+    // ========= QUESTION BANK (chapter-wise) =========
+    // Structure:
+    // QUESTION_BANK[subject].chapters[chapterName] = [ {question, options[], correctIndex}, ... ]
+
     const QUESTION_BANK = {
-      PSP: [
-        {
-          question: "Which of the following is a valid C identifier?",
-          options: ["1variable", "_count", "float", "switch"],
-          correctIndex: 1
-        },
-        {
-          question: "Which header file is needed for printf and scanf?",
-          options: ["<math.h>", "<stdio.h>", "<stdlib.h>", "<string.h>"],
-          correctIndex: 1
-        }
-      ],
-      Physics: [
-        {
-          question: "The SI unit of Force is:",
-          options: ["Joule", "Newton", "Pascal", "Watt"],
-          correctIndex: 1
-        }
-      ],
-      Calculus: [
-        {
-          question: "The derivative of x² is:",
-          options: ["2x", "x", "x³", "2"],
-          correctIndex: 0
-        }
-      ],
-      "Basic Electronics": [
-        {
-          question: "Which component stores electric charge?",
-          options: ["Inductor", "Capacitor", "Resistor", "Diode"],
-          correctIndex: 1
-        }
-      ],
-      ADLD: [
-        {
-          question: "Which logic gate has output 1 only when all inputs are 1?",
-          options: ["OR", "NOR", "AND", "XOR"],
-          correctIndex: 2
-        }
-      ],
-      UHV: [
-        {
-          question: "UHV in engineering/academics stands for:",
-          options: [
-            "Universal Human Values",
-            "Ultra High Voltage",
-            "Unified Human Vision",
-            "Ultimate Human Virtues"
+      PSP: {
+        chapters: {
+          "Chapter 1": [
+            {
+              question: "Which of the following is a valid C identifier?",
+              options: ["1variable", "_count", "float", "switch"],
+              correctIndex: 1
+            },
+            {
+              question: "Which header file is needed for printf and scanf?",
+              options: ["<math.h>", "<stdio.h>", "<stdlib.h>", "<string.h>"],
+              correctIndex: 1
+            }
           ],
-          correctIndex: 0
-        },
-        {
-          question: "Which of the following is a core focus of Universal Human Values?",
-          options: [
-            "Maximizing profit at any cost",
-            "Living in harmony with self, others, and nature",
-            "Competing to be better than everyone else",
-            "Avoiding responsibility"
-          ],
-          correctIndex: 1
-        },
-        {
-          question: "According to UHV, happiness is primarily a state of:",
-          options: [
-            "The physical body",
-            "The possessions one owns",
-            "The human mind / consciousness",
-            "The social media presence"
-          ],
-          correctIndex: 2
+          "Chapter 2": [
+            {
+              question: "Which operator is used to access the address of a variable in C?",
+              options: ["*", "&", "->", "%"],
+              correctIndex: 1
+            }
+          ]
         }
-      ],
-      COI: [
-        {
-          question: "COI in many curriculums stands for:",
-          options: [
-            "Computer Organization and Interface",
-            "Compiler Optimization and Implementation",
-            "Computer Organization and Architecture",
-            "Cognition of Intelligence"
-          ],
-          correctIndex: 2
+      },
+
+      Physics: {
+        chapters: {
+          "Chapter 1": [
+            {
+              question: "The SI unit of Force is:",
+              options: ["Joule", "Newton", "Pascal", "Watt"],
+              correctIndex: 1
+            }
+          ]
         }
-      ]
+      },
+
+      Calculus: {
+        chapters: {
+          "Chapter 1": [
+            {
+              question: "The derivative of x² is:",
+              options: ["2x", "x", "x³", "2"],
+              correctIndex: 0
+            }
+          ]
+        }
+      },
+
+      "Basic Electronics": {
+        chapters: {
+          "Chapter 1": [
+            {
+              question: "Which component stores electric charge?",
+              options: ["Inductor", "Capacitor", "Resistor", "Diode"],
+              correctIndex: 1
+            }
+          ]
+        }
+      },
+
+      ADLD: {
+        chapters: {
+          "Chapter 1": [
+            {
+              question: "Which logic gate has output 1 only when all inputs are 1?",
+              options: ["OR", "NOR", "AND", "XOR"],
+              correctIndex: 2
+            }
+          ]
+        }
+      },
+
+      UHV: {
+        chapters: {
+          "Module 1": [
+            {
+              question: "UHV in engineering/academics stands for:",
+              options: [
+                "Universal Human Values",
+                "Ultra High Voltage",
+                "Unified Human Vision",
+                "Ultimate Human Virtues"
+              ],
+              correctIndex: 0
+            },
+            {
+              question: "Which of the following is a core focus of Universal Human Values?",
+              options: [
+                "Maximizing profit at any cost",
+                "Living in harmony with self, others, and nature",
+                "Competing to be better than everyone else",
+                "Avoiding responsibility"
+              ],
+              correctIndex: 1
+            }
+          ],
+          "Module 2": [
+            {
+              question: "According to UHV, happiness is primarily a state of:",
+              options: [
+                "The physical body",
+                "The possessions one owns",
+                "The human mind / consciousness",
+                "The social media presence"
+              ],
+              correctIndex: 2
+            }
+          ]
+        }
+      },
+
+      COI: {
+        chapters: {
+          "Chapter 1": [
+            {
+              question: "COI in many curriculums stands for:",
+              options: [
+                "Computer Organization and Interface",
+                "Compiler Optimization and Implementation",
+                "Computer Organization and Architecture",
+                "Cognition of Intelligence"
+              ],
+              correctIndex: 2
+            }
+          ]
+        }
+      }
     };
 
     const subjectButtons = document.querySelectorAll('.subject-btn');
+    const chapterButtonsContainer = document.getElementById('chapter-buttons');
     const quizContainer = document.getElementById('quiz-container');
     const quizMessage = document.getElementById('quiz-message');
 
-    function renderQuiz(subject) {
-      const questions = QUESTION_BANK[subject];
+    let currentSubject = null;
 
+    function renderChapterButtons(subject) {
+      const subjectData = QUESTION_BANK[subject];
+      if (!subjectData || !subjectData.chapters) {
+        chapterButtonsContainer.innerHTML = '';
+        chapterButtonsContainer.classList.add('hidden');
+        quizContainer.innerHTML = '';
+        quizMessage.textContent = `No chapters defined yet for ${subject}.`;
+        quizMessage.classList.remove('hidden');
+        return;
+      }
+
+      const chapterNames = Object.keys(subjectData.chapters);
+      if (chapterNames.length === 0) {
+        chapterButtonsContainer.innerHTML = '';
+        chapterButtonsContainer.classList.add('hidden');
+        quizContainer.innerHTML = '';
+        quizMessage.textContent = `No chapters defined yet for ${subject}.`;
+        quizMessage.classList.remove('hidden');
+        return;
+      }
+
+      const html = chapterNames.map(chapterName => `
+        <button class="btn chapter-btn" data-chapter="${chapterName}">
+          ${chapterName}
+        </button>
+      `).join('');
+
+      chapterButtonsContainer.innerHTML = html;
+      chapterButtonsContainer.classList.remove('hidden');
+
+      const chapterBtns = chapterButtonsContainer.querySelectorAll('.chapter-btn');
+      chapterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const chapterName = btn.dataset.chapter;
+
+          chapterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          renderQuiz(currentSubject, chapterName);
+        });
+      });
+
+      quizContainer.innerHTML = '';
+      quizMessage.textContent = `Select a chapter for ${subject} to start the quiz.`;
+      quizMessage.classList.remove('hidden');
+    }
+
+    function renderQuiz(subject, chapterName) {
+      const subjectData = QUESTION_BANK[subject];
+      if (!subjectData || !subjectData.chapters) return;
+
+      const questions = subjectData.chapters[chapterName];
       if (!questions || questions.length === 0) {
         quizContainer.innerHTML = '';
-        quizMessage.textContent = `No quiz questions added yet for ${subject}.`;
+        quizMessage.textContent = `No quiz questions added yet for ${subject} - ${chapterName}.`;
         quizMessage.classList.remove('hidden');
         return;
       }
@@ -186,7 +288,7 @@
 
       card.innerHTML = `
         <div class="card-header-row">
-          <h2 class="card-title">${subject} Quiz</h2>
+          <h2 class="card-title">${subject} - ${chapterName} Quiz</h2>
           <span class="branch-code">MCQs</span>
         </div>
         <p class="card-desc">
@@ -234,11 +336,12 @@
     subjectButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         const subject = btn.dataset.subject;
+        currentSubject = subject;
 
         subjectButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        renderQuiz(subject);
+        renderChapterButtons(subject);
       });
     });
   </script>
