@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Physics Cycle - Semester 1 Subjects</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">Physics Cycle</div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="branches.html" class="nav-link active">Subjects</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <div class="page-title-block">
+        <h1 class="page-title">Semester 1 Subjects</h1>
+        <p class="page-subtitle">
+          Click a subject to view its notes. Notes are stored in Supabase Storage.
+        </p>
+      </div>
+    </section>
+
+    <!-- SUBJECT BUTTONS -->
+    <section class="subjects-buttons semester-buttons">
+      <button class="btn subject-btn" data-subject="PSP">PSP</button>
+      <button class="btn subject-btn" data-subject="Physics">Physics</button>
+      <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
+      <button class="btn subject-btn" data-subject="Basic Electronics">Basic Electronics</button>
+      <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
+      <button class="btn subject-btn" data-subject="UHV">UHV</button>
+      <button class="btn subject-btn" data-subject="COI">COI</button>
+    </section>
+
+    <!-- NOTES FOR SELECTED SUBJECT -->
+    <section id="subject-notes" class="cards-grid">
+      <!-- JS will insert one card here for the selected subject -->
+    </section>
+
+    <p id="no-data-message" class="message message-warning">
+      Select a subject above to see its notes.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
+  </footer>
+
+  <!-- Supabase listing logic for one subject at a time -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const subjectButtons = document.querySelectorAll('.subject-btn');
+    const notesContainer = document.getElementById('subject-notes');
+    const noDataMessage = document.getElementById('no-data-message');
+
+    async function loadSubjectResources(subject) {
+      notesContainer.innerHTML = 'Loading notes...';
+      noDataMessage.classList.add('hidden');
+
+      const folder = `semester1/${subject}`;
+
+      const { data, error } = await supabase
+        .storage
+        .from('notes')
+        .list(folder, {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'name', order: 'asc' }
+        });
+
+      if (error) {
+        console.error('Error listing for', subject, error);
+        notesContainer.innerHTML = 'Failed to load notes.';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        notesContainer.innerHTML = '';
+        noDataMessage.textContent = `No notes uploaded yet for ${subject}.`;
+        noDataMessage.classList.remove('hidden');
+        return;
+      }
+
+      const linksHtml = data.map(file => {
+        const fullPath = `${folder}/${file.name}`;
+        const { data: publicData } = supabase
+          .storage
+          .from('notes')
+          .getPublicUrl(fullPath);
+
+        const url = publicData.publicUrl;
+        const displayName = file.name; // EXACT file name appears
+
+        return `
+          <li>
+            <a class="subject-pill" href="${url}" target="_blank">
+              ${displayName}
+            </a>
+          </li>
+        `;
+      }).join('');
+
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-header-row">
+          <h2 class="card-title">${subject}</h2>
+          <span class="branch-code">Sem 1</span>
+        </div>
+        <p class="card-desc">Uploaded notes for ${subject}.</p>
+        <div>
+          <div class="subjects-label">Resources</div>
+          <ul class="subjects-list">
+            ${linksHtml}
+          </ul>
+        </div>
+      `;
+
+      notesContainer.innerHTML = '';
+      notesContainer.appendChild(card);
+    }
+
+    subjectButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const subject = btn.dataset.subject;
+
+        subjectButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        loadSubjectResources(subject);
+      });
+    });
+
+    // On load: no subject selected; message prompts user to click one
+  </script>
+</body>
+</html>
