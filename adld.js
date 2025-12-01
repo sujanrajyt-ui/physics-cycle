@@ -1,6 +1,5 @@
-// Full ADLD quiz data: Units 1–5
-
-const quizData = {
+// ADLD MCQ data: Units 1–5
+Object.assign(quizData, {
   ADLD: {
     "Unit 1": [
       {
@@ -997,4 +996,4 @@ const quizData = {
       }
     ]
   }
-};
+});
