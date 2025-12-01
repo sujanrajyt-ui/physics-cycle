@@ -57,7 +57,8 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
     const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+    const SUPABASE_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -70,6 +71,7 @@
       noDataMessage.classList.add('hidden');
 
       const folder = `semester1/${subject}`;
+      console.log('Listing folder:', folder);
 
       const { data, error } = await supabase
         .storage
@@ -101,7 +103,8 @@
           .getPublicUrl(fullPath);
 
         const url = publicData.publicUrl;
-        const displayName = file.name; // EXACT file name appears
+        // Hide leading digits + _ or - (e.g. "01_", "02-")
+        const displayName = file.name.replace(/^\d+[_-]*/, '');
 
         return `
           <li>
@@ -142,8 +145,6 @@
         loadSubjectResources(subject);
       });
     });
-
-    // On load: no subject selected; message prompts user to click one
   </script>
 </body>
 </html>
