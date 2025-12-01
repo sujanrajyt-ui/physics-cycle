@@ -96,7 +96,8 @@
       <div class="logo">Physics Cycle - Admin</div>
       <nav class="nav-links">
         <a href="index.html" class="nav-link">Home</a>
-        <a href="branches.html" class="nav-link">Subjects</a>
+        <a href="branches.html" class="nav-link">Notes</a>
+        <a href="quiz.html" class="nav-link">Quiz</a>
       </nav>
     </div>
   </header>
@@ -107,7 +108,7 @@
       <section class="admin-section">
         <h1>Upload Subject PDF</h1>
         <p style="font-size:0.9rem;color:#6b7280;margin-bottom:1rem;">
-          Choose a subject and upload a PDF. The file name will appear exactly as you name it.
+          Choose a subject and upload a PDF. The file name will control the order (e.g. 01_, 02_) but prefixes are hidden from students.
         </p>
 
         <form id="uploadForm">
@@ -178,7 +179,8 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
     const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+    const SUPABASE_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -212,13 +214,13 @@
       statusEl.style.color = "#374151";
 
       try {
-        // Store exactly as file.name so displayName = file.name
+        // Store exactly as file.name so order = name
         const path = `semester1/${subject}/${file.name}`;
 
         const { error } = await supabase
           .storage
           .from('notes')
-          .upload(path, file, { upsert: true }); // upsert to overwrite if same name
+          .upload(path, file, { upsert: true }); // overwrite if same name
 
         if (error) {
           console.error(error);
@@ -265,7 +267,6 @@
         return;
       }
 
-      // Build list
       filesList.innerHTML = '';
       data.forEach(file => {
         const row = document.createElement('div');
@@ -300,7 +301,6 @@
             return;
           }
 
-          // Remove row from UI
           row.remove();
           if (!filesList.querySelector('.file-row')) {
             filesList.innerHTML = `<span style="font-size:0.85rem;color:#9ca3af;">No files left for ${subj}.</span>`;
@@ -313,7 +313,6 @@
       });
     }
 
-    // Button to load files for selected subject
     loadFilesBtn.addEventListener('click', () => {
       const subj = manageSubjectSelect.value;
       loadFilesForSubject(subj);
