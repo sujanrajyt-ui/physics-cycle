@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Physics Cycle - MCQ Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">Physics Cycle</div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="branches.html" class="nav-link">Notes</a>
+        <a href="quiz.html" class="nav-link active">Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <div class="page-title-block">
+        <h1 class="page-title">MCQ Quiz - Semester 1</h1>
+        <p class="page-subtitle">
+          Choose a subject and test your accuracy with MCQs.
+        </p>
+      </div>
+    </section>
+
+    <!-- SUBJECT BUTTONS -->
+    <section class="subjects-buttons semester-buttons">
+      <button class="btn subject-btn" data-subject="PSP">PSP</button>
+      <button class="btn subject-btn" data-subject="Physics">Physics</button>
+      <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
+      <button class="btn subject-btn" data-subject="Basic Electronics">Basic Electronics</button>
+      <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
+      <button class="btn subject-btn" data-subject="UHV">UHV</button>
+      <button class="btn subject-btn" data-subject="COI">COI</button>
+    </section>
+
+    <!-- QUIZ AREA -->
+    <section id="quiz-container" class="cards-grid">
+      <!-- JS will insert the quiz card here -->
+    </section>
+
+    <p id="quiz-message" class="message message-warning">
+      Select a subject above to start a quiz.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
+  </footer>
+
+  <!-- MCQ Quiz Logic (no Supabase, pure JS) -->
+  <script>
+    // ========= QUESTION BANK =========
+    // Add MCQs for each subject here manually (they do NOT come from PDFs).
+    const QUESTION_BANK = {
+      PSP: [
+        {
+          question: "Which of the following is a valid C identifier?",
+          options: ["1variable", "_count", "float", "switch"],
+          correctIndex: 1
+        },
+        {
+          question: "Which header file is needed for printf and scanf?",
+          options: ["<math.h>", "<stdio.h>", "<stdlib.h>", "<string.h>"],
+          correctIndex: 1
+        }
+      ],
+      Physics: [
+        {
+          question: "The SI unit of Force is:",
+          options: ["Joule", "Newton", "Pascal", "Watt"],
+          correctIndex: 1
+        }
+      ],
+      Calculus: [
+        {
+          question: "The derivative of x² is:",
+          options: ["2x", "x", "x³", "2"],
+          correctIndex: 0
+        }
+      ],
+      "Basic Electronics": [
+        {
+          question: "Which component stores electric charge?",
+          options: ["Inductor", "Capacitor", "Resistor", "Diode"],
+          correctIndex: 1
+        }
+      ],
+      ADLD: [
+        {
+          question: "Which logic gate has output 1 only when all inputs are 1?",
+          options: ["OR", "NOR", "AND", "XOR"],
+          correctIndex: 2
+        }
+      ],
+
+      // ===== UHV MCQs (you can add more here) =====
+      UHV: [
+        {
+          question: "UHV in engineering/academics stands for:",
+          options: [
+            "Universal Human Values",
+            "Ultra High Voltage",
+            "Unified Human Vision",
+            "Ultimate Human Virtues"
+          ],
+          correctIndex: 0
+        },
+        {
+          question: "Which of the following is a core focus of Universal Human Values?",
+          options: [
+            "Maximizing profit at any cost",
+            "Living in harmony with self, others, and nature",
+            "Competing to be better than everyone else",
+            "Avoiding responsibility"
+          ],
+          correctIndex: 1
+        },
+        {
+          question: "According to UHV, happiness is primarily a state of:",
+          options: [
+            "The physical body",
+            "The possessions one owns",
+            "The human mind / consciousness",
+            "The social media presence"
+          ],
+          correctIndex: 2
+        }
+      ],
+
+      COI: [
+        {
+          question: "COI in many curriculums stands for:",
+          options: [
+            "Computer Organization and Interface",
+            "Compiler Optimization and Implementation",
+            "Computer Organization and Architecture",
+            "Cognition of Intelligence"
+          ],
+          correctIndex: 2
+        }
+      ]
+    };
+
+    const subjectButtons = document.querySelectorAll('.subject-btn');
+    const quizContainer = document.getElementById('quiz-container');
+    const quizMessage = document.getElementById('quiz-message');
+
+    function renderQuiz(subject) {
+      const questions = QUESTION_BANK[subject];
+
+      if (!questions || questions.length === 0) {
+        quizContainer.innerHTML = '';
+        quizMessage.textContent = `No quiz questions added yet for ${subject}.`;
+        quizMessage.classList.remove('hidden');
+        return;
+      }
+
+      quizMessage.classList.add('hidden');
+
+      // Build quiz card HTML
+      const card = document.createElement('article');
+      card.className = 'card';
+
+      let questionsHtml = questions.map((q, index) => {
+        const optionsHtml = q.options.map((opt, optIndex) => `
+          <label style="display:block;margin-bottom:0.25rem;">
+            <input
+              type="radio"
+              name="q${index}"
+              value="${optIndex}"
+              style="margin-right:0.35rem;"
+            />
+            ${opt}
+          </label>
+        `).join('');
+
+        return `
+          <div style="margin-bottom:0.85rem;">
+            <p style="font-weight:500;margin-bottom:0.35rem;">Q${index + 1}. ${q.question}</p>
+            ${optionsHtml}
+          </div>
+        `;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="card-header-row">
+          <h2 class="card-title">${subject} Quiz</h2>
+          <span class="branch-code">MCQs</span>
+        </div>
+        <p class="card-desc">
+          Attempt all questions and click "Submit Quiz" to see your score and accuracy.
+        </p>
+        <form id="quiz-form" style="margin-top:0.75rem;">
+          ${questionsHtml}
+          <button type="submit" class="btn" style="margin-top:0.5rem;">Submit Quiz</button>
+        </form>
+        <p id="quiz-result" style="margin-top:0.75rem;font-weight:500;"></p>
+      `;
+
+      quizContainer.innerHTML = '';
+      quizContainer.appendChild(card);
+
+      const quizForm = document.getElementById('quiz-form');
+      const quizResult = document.getElementById('quiz-result');
+
+      quizForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        let correct = 0;
+        let attempted = 0;
+
+        questions.forEach((q, index) => {
+          const selected = quizForm.querySelector(`input[name="q${index}"]:checked`);
+          if (selected) {
+            attempted++;
+            const chosenIndex = parseInt(selected.value, 10);
+            if (chosenIndex === q.correctIndex) {
+              correct++;
+            }
+          }
+        });
+
+        const total = questions.length;
+        const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+        quizResult.textContent =
+          `You got ${correct} out of ${total} correct. ` +
+          `Accuracy: ${accuracy}% (attempted ${attempted}/${total}).`;
+      });
+    }
+
+    // Handle subject button clicks
+    subjectButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const subject = btn.dataset.subject;
+
+        // Set active state
+        subjectButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        renderQuiz(subject);
+      });
+    });
+  </script>
+</body>
+</html>
