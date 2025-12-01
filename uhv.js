@@ -1,0 +1,2379 @@
+Object.assign(quizData, {
+  "UHV": {
+    "Unit 1: Human Values (MCQs)": [
+      {
+        text: "What is invariant and universal among all human beings?",
+        options: [
+          "Natural Acceptance",
+          "Understanding",
+          "Expectations",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Value education helps to",
+        options: [
+          "Remove our confusions",
+          "Bring harmony in all levels of human living",
+          "Removes our contradictions",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Holistic development of human beings",
+        options: [
+          "Living only with Physical facility",
+          "Living with Relationships",
+          "Living for all the three – right understanding, relationship and physical facility (Human Consciousness)",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Experiential validation of proposal means",
+        options: [
+          "Living according to our desires",
+          "Living according to proposal after verifying it by natural acceptance",
+          "Living according to our expectations",
+          "Living according to our thoughts"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Ensuring justice in relationship on the basis of values leads to ______ in the society.",
+        options: [
+          "Trust",
+          "Fearlessness",
+          "Respect",
+          "None of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Which of the following is more pronounced in animal consciousness?",
+        options: [
+          "Right understanding",
+          "Physical facility",
+          "Relationship",
+          "None of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Identify the correct order.",
+        options: [
+          "Physical facility, right understanding, relationship",
+          "Physical facility, relationship, right understanding",
+          "Relationship, right understanding, physical facility",
+          "Right understanding, relationship, physical facility"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Self‑exploration means",
+        options: [
+          "Dialogue between what you are and what you want to be",
+          "It is the process of self‑evaluation through self‑investigation",
+          "It is the process of knowing the human conduct",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Which of the following fact is not true about profession, if ethics is followed in professional life?",
+        options: [
+          "Able to earn a livelihood of the family",
+          "Evaluated by the wealth it generates",
+          "Requires certain skills",
+          "Profession is also a service"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Need for value education:",
+        options: [
+          "Correct identification of our aspirations",
+          "To fulfill our aspirations in continuity",
+          "Evaluation of our beliefs",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Universal human aspirations means:",
+        options: [
+          "Happiness and Prosperity",
+          "Continuity of Happiness and Prosperity",
+          "Happiness",
+          "Prosperity"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "What is happiness?",
+        options: [
+          "A harmony state in which you want to be",
+          "A state getting through sensations",
+          "A state of preconditioning",
+          "All of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "The basic guideline for value education:",
+        options: [
+          "Cannot be defined for the present system",
+          "Cannot be universal",
+          "Universal, Natural, Rational and Verifiable",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Which one of the following is NOT the part of basic guidelines prepared for Value Education?",
+        options: [
+          "Universal",
+          "Rational",
+          "Leading to disharmony",
+          "Verifiable"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Which of the following is the attitude of ethical human conduct?",
+        options: [
+          "Values",
+          "Wealth",
+          "Storage",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Imagination includes",
+        options: [
+          "Desires and Thoughts",
+          "Thoughts and Expectations",
+          "Desire and Expectations",
+          "Desires, Thoughts and Expectations (DTE)"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Which of the options given below is one of the dimensions of human endeavour?",
+        options: [
+          "Education",
+          "Corruption",
+          "Competition",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "The basic desire of the human being is always",
+        options: [
+          "Happy",
+          "Prosperous",
+          "Happy and Prosperous",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Human life is lived at four levels: Individual, Family, ________, and Nature.",
+        options: [
+          "Community",
+          "Imaging",
+          "Society",
+          "Analyzing"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "The definitiveness of human conduct in terms of values, policies and character is termed as ________.",
+        options: [
+          "Responsibilities",
+          "Values",
+          "Profession",
+          "None of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Developing the ethical competence in the profession is the only effective way to ensure ________.",
+        options: [
+          "Responsibilities",
+          "Ethics",
+          "Professionalism",
+          "Success"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "________ are considered the moral standards by which people judge the behaviour.",
+        options: [
+          "Responsibilities",
+          "Ethics",
+          "Professionalism",
+          "Success"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "________ is the implication of right understanding in profession.",
+        options: [
+          "Responsibilities",
+          "Ethics",
+          "Professionalism",
+          "Success"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Holistic production systems are",
+        options: [
+          "Eco‑friendly",
+          "People friendly",
+          "Both Eco‑friendly and People friendly",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Lot of physical facilities can provide us",
+        options: [
+          "Happiness",
+          "Prosperity",
+          "Both Prosperity and Happiness",
+          "None of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "The basic capacity of analyzing is known as",
+        options: [
+          "Desire",
+          "Expectation",
+          "Thought",
+          "Behaviour"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "The process of education and right living leads to ________.",
+        options: [
+          "Labour",
+          "Right understanding",
+          "Existence",
+          "Co‑existence"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "The definiteness of behaviour and work of human being is termed as",
+        options: [
+          "Human Behaviour",
+          "Human Character",
+          "Human Constitution",
+          "Human Efforts"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Understanding of human values leads to the practice of",
+        options: [
+          "Responsibility",
+          "Professional Behaviour",
+          "Ethics",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "The second dimension of human being is",
+        options: [
+          "Thought",
+          "Work",
+          "Behaviour",
+          "Realization"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "When we set our goals in right direction with the help of right understanding, it is called as ________.",
+        options: [
+          "Skill Domain",
+          "Development",
+          "Value Domain",
+          "Prosperity"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Our participation in different levels in the larger order is known as ________.",
+        options: [
+          "Behaviour",
+          "Efforts",
+          "Values",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Attention and Appreciation from others",
+        options: [
+          "Can’t be continuous",
+          "Can’t ensure continuous happiness",
+          "Create dependency on others",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "The programme for health and samyam leads to feeling of ________ in family.",
+        options: [
+          "Prosperity",
+          "Happiness",
+          "Both Happiness and Prosperity",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Production and work for physical facilities leads to ________ in family and ________ with nature.",
+        options: [
+          "Prosperity, Existence",
+          "Happiness, Existence",
+          "Prosperity, Co‑existence",
+          "Happiness, Co‑existence"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Education has two domains – Value Domain and Skill Domain. Which of the following is true?",
+        options: [
+          "Value domain is part of skill domain",
+          "Value domain is in conflict with skill domain",
+          "Value domain deals with understanding, skill domain deals with learning",
+          "Value domain deals with learning, skill domain deals with understanding"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Value Education leads human being to",
+        options: [
+          "Conflicts",
+          "Confusion",
+          "Harmony",
+          "All of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "It is the second level of living",
+        options: [
+          "Individual",
+          "Society",
+          "Nature",
+          "Family"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "One of the undesirable common habits with us is that we have a tendency to suspect others ________.",
+        options: [
+          "Intention",
+          "Competence",
+          "Both intention and competence",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Which of the following is not a dimension of human being?",
+        options: [
+          "Society",
+          "Thought",
+          "Behaviour",
+          "Realization"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "In the process of self‑exploration we will not verify on the basis of ________.",
+        options: [
+          "Others’ perception",
+          "Scriptures",
+          "Reading from instruments",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "It is the fourth level of living",
+        options: [
+          "Society",
+          "Nature",
+          "Individual",
+          "Family"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "The result of self‑exploration is ________.",
+        options: [
+          "Realization",
+          "Right understanding",
+          "Both Realization and Right understanding",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "The process of verification of any proposal can be useful when verified",
+        options: [
+          "At one’s own right",
+          "On the basis of reading from instruments",
+          "On the basis of readings from books",
+          "On the basis of others’ perception and understanding"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Self‑exploration is the dialogue between ‘what you are’ and ________.",
+        options: [
+          "‘what you want to be’",
+          "‘what others want you to be’",
+          "‘what society wants you to be’",
+          "All of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Continuous happiness and prosperity are the ________.",
+        options: [
+          "Impractical thought",
+          "Impossible desires",
+          "Basic human aspirations",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "To be wealthy is ________ condition in the modern world to be happy.",
+        options: [
+          "The most important",
+          "The true",
+          "Not essential",
+          "Fake"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Being happy ________ good‑luck and lot of external circumstances.",
+        options: [
+          "Means",
+          "Depends on",
+          "Does not depend on",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Which one of the following is true?",
+        options: [
+          "A human being needs both, relationship as well as physical facilities. One cannot replace the other.",
+          "If a human being has abundant physical facilities, prosperity is ensured.",
+          "If a human being has abundant physical facilities, happiness is ensured.",
+          "If a human being is happy in continuity, physical facilities are not needed."
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Living with Physical Comforts only means ________.",
+        options: [
+          "Animal Consciousness",
+          "God Consciousness",
+          "Human Consciousness",
+          "Real Consciousness"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "The feeling of producing/having more than required physical facility is",
+        options: [
+          "Prosperity",
+          "Happiness",
+          "Success",
+          "Satisfaction"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "To verify the proposal or assumption through self‑exploration leads to",
+        options: [
+          "Assuming",
+          "Knowing",
+          "Realizing",
+          "Preconditioning"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Which are the four levels of living?",
+        options: [
+          "Individual, family, society, nature",
+          "Thought, behaviour, work, realization",
+          "Material, pranic, animal, human",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "If something is ________ to us, without any force or compulsion, then it is often correct, and does not change with people and time.",
+        options: [
+          "Not acceptable",
+          "Less acceptable",
+          "Completely acceptable",
+          "Naturally acceptable"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "The value of any unit in this existence is in its ________ in the larger order of which it is a part.",
+        options: [
+          "Participation",
+          "Existence",
+          "Performance",
+          "Appearance"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "The four dimensions of human being are thought, ________, work and realization.",
+        options: [
+          "Action",
+          "Speaking",
+          "Behaviour",
+          "Performance"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "On continued basis we should examine our ________.",
+        options: [
+          "Thought system",
+          "Performance system",
+          "Belief system",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Two basic things in the content of self‑exploration are to know my basic desires in life and the second is to know how to ________.",
+        options: [
+          "Perform these",
+          "Remove these",
+          "Fulfill these",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Expression of thought is in the form of ________.",
+        options: [
+          "Behaviour",
+          "Work",
+          "Realization",
+          "Behaviour and Work"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Universal, rational, and verifiable are the ________ of value education.",
+        options: [
+          "Needs",
+          "Outcomes",
+          "Basic guidelines",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "The value of entity is decided on the basis of ________.",
+        options: [
+          "Participation in the larger order",
+          "MRP",
+          "Cost",
+          "Physical properties"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Value education helps us to correctly identify our ________.",
+        options: [
+          "Goals",
+          "Aspirations",
+          "Desires",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "The purpose of the value education is to ________.",
+        options: [
+          "Foster universal values",
+          "Make the syllabus easy for the students to learn",
+          "Develop values in individuals",
+          "Both foster universal values and develop values in individuals"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "A harmonious world is created by values at 4 levels. These are ________.",
+        options: [
+          "Home, Family, Society, Nation",
+          "Individual, Family, Society, Existence",
+          "School, Home, Office, Temple",
+          "None of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "The content of self‑exploration is to understand the desire and ________ of human being.",
+        options: [
+          "Potential",
+          "Programme",
+          "Purpose",
+          "None of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Human‑Rest of the nature interaction is called as ________.",
+        options: [
+          "Behaviour",
+          "Production",
+          "Work",
+          "Realization"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Clarity and Identification of comprehensive human goals in the light of right understanding is called ________.",
+        options: [
+          "Science",
+          "Work",
+          "Wisdom",
+          "Behaviour"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Comprehensive human goals are fulfilled with the help of ________.",
+        options: [
+          "Wisdom",
+          "Science",
+          "Precondition and sensation",
+          "All of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "To ensure justice from family to world family is called ________.",
+        options: [
+          "Production",
+          "Science",
+          "Wisdom",
+          "Undivided human society"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Ensuring mutual fulfilment and mutual prosperity from family to world family is ________.",
+        options: [
+          "Science",
+          "Wisdom",
+          "Undivided human society",
+          "Universal human order"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Which among the following is not a comprehensive human goal?",
+        options: [
+          "Right understanding in every individual",
+          "Mastery and complete control over nature",
+          "Fearlessness in society",
+          "Harmony in nature"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Ensuring the concept of undivided society and universal human order from generation to generation is called ________.",
+        options: [
+          "Wisdom",
+          "Undivided human society",
+          "Universal human order",
+          "Human Tradition"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Transformation through Human Education includes",
+        options: [
+          "Personal Transformation",
+          "Societal Transformation",
+          "Both Personal as well as Societal Transformation",
+          "Materialistic Transformation"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "In society, obsession for consumption, profit and sensory pleasure is more due to",
+        options: [
+          "Knowledge",
+          "Assumption",
+          "Recognition",
+          "Fulfilment"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Sound, Touch, Taste, Smell, and Form are ________.",
+        options: [
+          "Traps",
+          "Innate faculty",
+          "Sensations",
+          "Preconditioning"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Definite completion point of feelings is ________.",
+        options: [
+          "Outside",
+          "Within",
+          "Nowhere",
+          "Others"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "An individual aspiring for the universal human order will be ________.",
+        options: [
+          "More responsible socially and ecologically",
+          "More rich",
+          "More powerful",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "“All are our own, all are interconnected and interdependent” means ________.",
+        options: [
+          "Oneness",
+          "Worship",
+          "Ease",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "________ and ________ are the basis of undivided society.",
+        options: [
+          "Love and Oneness",
+          "Care and Guidance",
+          "Affection and Respect",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "In Teacher–Student relationship, the teacher should have the feeling of ________ for the students.",
+        options: [
+          "Love",
+          "Guidance",
+          "Care",
+          "Gratitude"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "In Teacher–Student relationship, the students should have the feeling of ________ for the Teachers.",
+        options: [
+          "Love",
+          "Guidance",
+          "Care",
+          "Gratitude"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "For relationship among siblings, there is a need for the feelings of ________.",
+        options: [
+          "Love and Trust",
+          "Care and Affection",
+          "Respect",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "What are the feelings that remain as base of all relationships?",
+        options: [
+          "Reverence, Glory, Gratitude",
+          "Trust, Respect, Affection",
+          "Care, Guidance, Affection",
+          "Trust, Reverence, Glory"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Moral value is combination of ________.",
+        options: [
+          "Right Speech, Right Action",
+          "Right Vision, Right Resolve",
+          "Right Livelihood, Right Effort",
+          "Right Awareness, Right Concentration"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Meditation includes ________.",
+        options: [
+          "Right Speech, Right Action",
+          "Right Vision, Right Resolve",
+          "Right Livelihood, Right Effort",
+          "Right Awareness, Right Concentration"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Belief‑centric wisdom is ________.",
+        options: [
+          "Knowledge based on listening",
+          "Knowledge based on self‑realization of existential reality",
+          "Reasoning‑based knowledge",
+          "None of these"
+        ],
+        correctIndex: 0
+      },
+      {
+        text: "Logic‑centric wisdom is ________.",
+        options: [
+          "Knowledge based on listening",
+          "Knowledge based on self‑realization of existential reality",
+          "Reasoning‑based knowledge",
+          "None of these"
+        ],
+        correctIndex: 2
+      },
+      {
+        text: "Realization‑centric wisdom is ________.",
+        options: [
+          "Knowledge based on listening",
+          "Knowledge based on self‑realization of existential reality",
+          "Reasoning‑based knowledge",
+          "None of these"
+        ],
+        correctIndex: 1
+      },
+      {
+        text: "Non‑violence means not hurting anyone by ________.",
+        options: [
+          "Body",
+          "Mind",
+          "Speech and words",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "Liberation means ________.",
+        options: [
+          "To see the existence clearly",
+          "To see the reality as it is",
+          "To be rid of all types of misunderstanding, confusions",
+          "All of these"
+        ],
+        correctIndex: 3
+      },
+      {
+        text: "It is natural for ________ to slowly deteriorate.",
+        options: [
+          "Physical things/Physical facilities",
+          "Happiness",
+          "Feelings",
+          "Relationship"
+        ],
+        correctIndex: 0
+      }
+    ]
+  }
+});
+// Add UHV Unit 2 – Harmony in the Self and Body
+if (!quizData["UHV"]) {
+  quizData["UHV"] = {};
+}
+
+Object.assign(quizData["UHV"], {
+  "Unit 2: Harmony in the Self and Body": [
+    {
+      text: "Employing the body physically for the production and maintenance of physical facilities is called as",
+      options: ["Asan", "Pranayam", "Labour", "None of these"],
+      correctIndex: 2
+    },
+    {
+      text: "Trust, Respect, Happiness, etc., are the needs of",
+      options: [
+        "The Body",
+        "The Self (I)",
+        "The Self and the Body",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "The activities of the body (in response) are",
+      options: [
+        "Assuming and Knowing",
+        "Assuming and Fulfilling",
+        "Recognising and Fulfilling",
+        "Knowing and Fulfilling"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "‘Seer’ means the one that",
+      options: [
+        "Does something",
+        "Understands",
+        "Experience",
+        "All of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Who is responsible for happiness and unhappiness?",
+      options: [
+        "Body",
+        "Self",
+        "Outside situations",
+        "Society"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Human body is an instrument to facilitate",
+      options: [
+        "Sensations",
+        "Preconditioning",
+        "Right Understanding",
+        "Assumptions"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "When we assume something on the basis of prevailing notion, then it is called as",
+      options: [
+        "Preconditioning",
+        "Sensation",
+        "Right Understanding",
+        "Natural Acceptance"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Behaviour on the basis of right understanding and realization is called",
+      options: [
+        "Confused behaviour",
+        "Wrong behaviour",
+        "Self organized behaviour",
+        "All of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "The activity of selecting/tasting is",
+      options: [
+        "Continuous",
+        "Variable",
+        "Uncertain",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "The power/force for the activity of analyzing is",
+      options: [
+        "Desire",
+        "Expectations",
+        "Realization",
+        "Thoughts"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "When there is harmony among the parts of the body, then it is called a status of",
+      options: [
+        "Sanyam",
+        "Swasthya",
+        "Both Sanyam and Swasthya",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Harmony should be maintained between",
+      options: [
+        "Body and Life",
+        "Self and Society",
+        "Society and Environment",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "The statement “all parts of the body performing their expected functions” is related with",
+      options: [
+        "Proper upkeep",
+        "Self regulation",
+        "Sanyam",
+        "Swasthya"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "________ is central to the human existence",
+      options: [
+        "Body",
+        "Self",
+        "Physical facilities",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Realization is the activity of",
+      options: [
+        "Self",
+        "Body",
+        "Both Self and Body",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "“Seeing the Self by the Self” means",
+      options: [
+        "The conscious observation of the consciousness",
+        "The conscious observation of the material",
+        "The conscious observation of the co‑existence",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Activities of the body are",
+      options: [
+        "Temporary in Time",
+        "Continuous in Time",
+        "Discrete in nature",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "________ is central to existence",
+      options: [
+        "Body",
+        "Physical facility",
+        "Co‑existence",
+        "Self"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Which of the following does not lead right understanding in the Self (I)?",
+      options: [
+        "A process of do’s don’ts, in which we assume what is being said without verification",
+        "A process of self‑verification on your own right",
+        "Verification of the proposals on the basis of natural acceptance",
+        "Verification through experiential validation"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which one of the following is correct?",
+      options: [
+        "Self = Body",
+        "Self and Body are in co‑existence",
+        "Needs of the Self and Body are same",
+        "All are correct"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Need of the Self is",
+      options: [
+        "Temporary",
+        "Quantitative",
+        "Qualitative",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "The ‘I’ is",
+      options: [
+        "The doer",
+        "The enjoyer",
+        "The Seer",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "The responses of the Self are:",
+      options: [
+        "Knowing and Fulfilling",
+        "Knowing, Assuming, Recognising, and Fulfilling",
+        "Knowing and Recognising",
+        "Knowing, Recognising and Fulfilling"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "The needs of the Self are fulfilled by",
+      options: [
+        "Right Understanding and Right Feeling",
+        "Right Feeling",
+        "Right Understanding",
+        "Cannot be decided"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which is material unit?",
+      options: [
+        "Body",
+        "Physical facility",
+        "Physiochemical things",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which among the following is not an activity of the body?",
+      options: [
+        "Assuming",
+        "Recognizing",
+        "Fulfilling",
+        "All of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Self organization means",
+      options: [
+        "Innateness",
+        "Co‑existence",
+        "Natural characteristics",
+        "Form"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "The Body is a ________ unit; while the Self is a ________ unit.",
+      options: [
+        "Consciousness and Qualitative",
+        "Material, Consciousness",
+        "Consciousness, Material",
+        "Quantitative, Material"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Which among the following is a variable unit?",
+      options: [
+        "Form",
+        "Co‑existence",
+        "Innateness",
+        "All of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "________ is done with the help of proper food, water and air.",
+      options: [
+        "Protection of the body",
+        "Right utilization of the body",
+        "Nourishment of the body",
+        "Exploitation of the body"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "What is not the indicator of good health of the Self and Body?",
+      options: [
+        "Feeling of self‑regulation of the body",
+        "Feeling of happiness and prosperity",
+        "Feeling of jealousy, anger and competition for others",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "When we try to achieve happiness and prosperity by maximizing accumulation and consumption of physical facilities as our primary and only focus of life, we become",
+      options: [
+        "Anti‑social",
+        "Anti‑ecological",
+        "Threat to human survival",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "On having realization and understanding, we get",
+      options: [
+        "Assurance",
+        "Satisfaction",
+        "Universality",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Physical facilities are required in ________ quantity.",
+      options: [
+        "Uncertain",
+        "Limited",
+        "Unlimited",
+        "Insignificant"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Doer means the one who ________.",
+      options: [
+        "Understands",
+        "Does something",
+        "Experience",
+        "All of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "The basic unit of learning human interaction is ________.",
+      options: [
+        "Society",
+        "School",
+        "Family",
+        "Nature"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "In Value Education ‘Sanyam’ means ________.",
+      options: [
+        "Self exploration",
+        "Self evaluation",
+        "Self regulation",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "‘Sanyam’ is feeling of responsibility for ________ of the body.",
+      options: [
+        "Nurturing and protection",
+        "Protection and right utilization",
+        "Nurturing and right utilization",
+        "Nurturing, Protection and Right Utilization"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "The pleasure obtained from sensations is ________.",
+      options: [
+        "Temporary and source of long lasting happiness",
+        "Continuous and source of long lasting happiness",
+        "Short lived and continuous",
+        "Short lived and temporary"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "We should make choices with external world based on our ________.",
+      options: [
+        "Natural acceptance",
+        "Preconditioning",
+        "Sensations",
+        "All of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "The Self reads the ________ and gives the ________ to the body.",
+      options: [
+        "Instructions, Information",
+        "Instructions, Sensation",
+        "Sensation, Instruction",
+        "Sensation, Information"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "What leads to Resolution?",
+      options: [
+        "Assuming",
+        "Knowing",
+        "Recognising",
+        "Fulfilling"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Which of the following is temporary in existence?",
+      options: [
+        "Space",
+        "Consciousness",
+        "Material unit",
+        "Co‑existence"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Which of the following is ‘ever’ in existence?",
+      options: [
+        "Space",
+        "Consciousness",
+        "Material unit",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which of the following is continuous in existence?",
+      options: [
+        "Space",
+        "Consciousness",
+        "Material unit",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Which among the following is not a characteristic of ‘consciousness’?",
+      options: [
+        "Cyclic development",
+        "Temporary",
+        "Continuous",
+        "Recognising"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "________ wants to live with continuous happiness.",
+      options: [
+        "Body",
+        "Self",
+        "Plant and animals",
+        "Material unit"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "________ is just used as an instrument of ________.",
+      options: [
+        "Body, Self",
+        "Self, Body",
+        "Physical facility, Self",
+        "Imagination, Preconditioning"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Find the wrong statement from the following.",
+      options: [
+        "Self is seer/viewer",
+        "Self is doer (decision maker)",
+        "Self is enjoyer (the one who experiences)",
+        "Self is an instrument of the body"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Find the wrong statement.",
+      options: [
+        "‘Seer’ means one that sees/understands",
+        "All the 5 senses are just the instruments enable the Self to see something from outside",
+        "All in the process of seeing, the Self is used as an instrument",
+        "You can also see within, without using the sensations in the body"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Which of the following is a wrong statement?",
+      options: [
+        "Self is the one who decides – what to do and what not to do",
+        "The body is used to express the decision of the Self, if required",
+        "Self may or may not use the body to execute its decisions",
+        "What I think is the decision of my body"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which of the following is not a correct statement as far as the relationship of the Body and Self is concerned?",
+      options: [
+        "It is my Self that experiences happiness and unhappiness",
+        "It is my body that enjoys the taste of food",
+        "It is my Self that feels enthused and depressed",
+        "It is my Self that feels angry and delighted"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Which among the following statement is correct about the physical facility?",
+      options: [
+        "Physical facilities are required to fulfill the responsibility of the Self toward body",
+        "Physical facilities are required to keep the body in good health by nurturing, protection and right utilization of the body",
+        "The required physical facilities could be recognised along with the required quantity for the nurturing, protection and utilization of the body",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "What does right utilization of body mean?",
+      options: [
+        "Use the body as an instrument of communication (behaviour)",
+        "Use the body as an instrument of labour/work, to obtain necessary physical facility for the body",
+        "As an instrument for the continuity of human tradition",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Right utilization ensured of",
+      options: [
+        "Physical facilities",
+        "Body",
+        "Self",
+        "All of these"
+      ],
+      correctIndex: 3
+    }
+  ]
+});
+// Add UHV Unit 3 – Harmony in Nature and Existence
+if (!quizData["UHV"]) {
+  quizData["UHV"] = {};
+}
+
+Object.assign(quizData["UHV"], {
+  "Unit 3: Harmony in Nature and Existence": [
+    {
+      text: "Transformation of the ________ in nature is more cyclical.",
+      options: [
+        "Material things",
+        "Plants",
+        "Animals",
+        "All of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Composition and de‑composition is the only activity of which order?",
+      options: [
+        "Animal",
+        "Plant (Pranic/Bio)",
+        "Human",
+        "Physical"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "In existence ‘units’ are",
+      options: [
+        "Unlimited in size and also active",
+        "Unlimited in size, but inactive",
+        "Limited in size and also active",
+        "Limited in size and inactive"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Space is/are",
+      options: [
+        "Unlimited",
+        "All pervading",
+        "No activity",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which order is most fulfilling by the other?",
+      options: [
+        "Human",
+        "Physical",
+        "Animal",
+        "Plant (Bio/Pranic)"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Natural acceptance:",
+      options: [
+        "Does not change with time",
+        "Does not depend on the place",
+        "Does not depend on our past conditioning and our beliefs",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Animal order is ________ based inheritance.",
+      options: [
+        "Constitution",
+        "Seed",
+        "Education – Sanskar",
+        "Breed"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Order of appearance of four orders:",
+      options: [
+        "Plant, Physical, Animal, Human",
+        "Human, Animal, Plant, Physical",
+        "Human, Physical, Plant, Animal",
+        "Physical, Plant, Animal, Human"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Right understanding and relationship leads to",
+      options: [
+        "Individual Happiness",
+        "Mutual Prosperity",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "________ is the human value which is all encompassing.",
+      options: [
+        "Trust",
+        "Affection",
+        "Love",
+        "Respect"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Respect means",
+      options: [
+        "Right Evaluation",
+        "Right Utilization",
+        "Right judgement",
+        "All of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "One of the following is a complete value by itself.",
+      options: [
+        "Trust",
+        "Honesty",
+        "Love",
+        "Gratitude"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Trust implies",
+      options: [
+        "To have the clarity that the other wants to make me happy and prosperous",
+        "To be assured of the intention founded on understanding (not based on events)",
+        "To see that all human beings have the same natural acceptance (intention) as me",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Trust = to have the clarity that the other wants to make me ________.",
+      options: [
+        "Happy",
+        "Prosperous",
+        "Happy and Prosperous",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Each ‘unit’ is ________.",
+      options: [
+        "Self‑organized in space",
+        "Energised and active in space",
+        "Recognising and fulfilling its relationship with other units in space",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "There is ________ among all units in space.",
+      options: [
+        "Existence",
+        "Co‑existence",
+        "Harmony",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "There is a relationship of ________ in nature.",
+      options: [
+        "Mutual Happiness",
+        "Mutual Prosperity",
+        "Mutual Understanding",
+        "Mutual Fulfilment"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "To establish Universal Human Order, the starting point has to be ________.",
+      options: [
+        "Individual",
+        "Family",
+        "Society",
+        "Nature"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which of the following is not involved in the holistic criteria for evaluation of technology?",
+      options: [
+        "Catering to appropriate need",
+        "To generate huge profit",
+        "To make technology eco‑friendly",
+        "To make technology user‑friendly"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Which of the following is the entry point in the implementation of humanistic tradition?",
+      options: [
+        "Universal Human Order",
+        "Humanistic Education",
+        "Humanistic Constitution",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Right understanding in every individual is part of the comprehensive human goal. Prosperity in every family is also part of the comprehensive human goal.",
+      options: [
+        "Statement (a) is true; statement (b) is false",
+        "Both the statements are true",
+        "Statement (a) is false; statement (b) is true",
+        "Both the statements are false"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Feeling for those who have made efforts for my excellence is",
+      options: [
+        "Glory",
+        "Gratitude",
+        "Worship",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "________ is feeling of responsibility and commitment for ensuring right understanding and right feeling in the self of my relative.",
+      options: [
+        "Guidance",
+        "Respect",
+        "Care",
+        "Affection"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "________ is called foundation of value.",
+      options: [
+        "Love",
+        "Respect",
+        "Trust",
+        "Affection"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "I naturally feel related to others, when I have the feelings of ________ in myself for others.",
+      options: [
+        "Trust and Respect",
+        "Pride and Ego",
+        "Reverence and Glory",
+        "Love and Affection"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Harmonious human‑human relationship resulting in mutual happiness is the achievement of",
+      options: [
+        "Love",
+        "Respect",
+        "Trust",
+        "Justice"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "If I say, ‘I am good for nothing’, it is a kind of",
+      options: [
+        "Right evaluation",
+        "Under evaluation",
+        "Over evaluation",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Everything that we see in the nature and existence is the natural expression and unfolding of this",
+      options: [
+        "Body",
+        "Physical facility",
+        "Self",
+        "Co‑existence"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "________ is central in relationship.",
+      options: [
+        "Feelings",
+        "Trust",
+        "Respect",
+        "Affection"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "The need of human being, i.e., of continuous happiness and prosperity can be fulfilled by",
+      options: [
+        "Having a lot of physical facilities",
+        "Sensation based living",
+        "Understanding co‑existence",
+        "Having feeling and thought of co‑existence"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "How are the feeling and thought of co‑existence expressed naturally?",
+      options: [
+        "In the form of mutually fulfilling behaviour with human being",
+        "In the form of mutually enriching work with rest of the nature",
+        "In the form of participation in the larger order leading to undivided society and universal human order",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which among the following is not a ‘guideline’ for human values / value education subject?",
+      options: [
+        "Universal",
+        "A process of self‑investigation and self‑exploration",
+        "Systematic and rational study of human beings vis‑a‑vis the rest of the existence",
+        "Giving sermons and a set of do’s and don’ts related to human values"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which one of the following is not a comprehensive human goal?",
+      options: [
+        "Right understanding in every individual",
+        "Mastery over nature",
+        "Feeling of prosperity in every family",
+        "Fearlessness in society"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "The statement “all units in nature can be classified into 4 orders. These units and the 4 orders have definite innateness or self organization” deals with",
+      options: [
+        "Understanding",
+        "Realization of co‑existence",
+        "Contemplation",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "The statement, “every unit has a definite participation in existence and a definite role to play in this existence” deals with",
+      options: [
+        "Contemplation",
+        "Understanding",
+        "Realization of co‑existence",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "The basic unit of learning human interaction is ________.",
+      options: [
+        "Society",
+        "School",
+        "Family",
+        "Nature"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "On what basis we can decide our feelings and thoughts?",
+      options: [
+        "Right understanding/Natural acceptance",
+        "Assumptions (preconditioning)",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Which among the following feelings is not naturally acceptable to me?",
+      options: [
+        "The feeling of relationships",
+        "The feeling of harmony",
+        "The feeling of struggle",
+        "The feeling of co‑existence"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "To which category a prosperous person belong?",
+      options: [
+        "SVDD",
+        "SSDD",
+        "SSSS",
+        "None of the above"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Authentication is the dynamic activity of",
+      options: [
+        "Realization",
+        "Contemplation",
+        "Understanding",
+        "Comparing"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "All the instructions from the Self to the Body are from the activity of",
+      options: [
+        "Selection",
+        "Contemplation",
+        "Realization",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "What is the dynamic activity of ‘understanding’?",
+      options: [
+        "Authentication",
+        "Determination",
+        "Imaging",
+        "Analyzing"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Unanimity means",
+      options: [
+        "Able to work together",
+        "To live with feeling of co‑existence, relationship with every unit of co‑existence",
+        "Absence of ego",
+        "Self motivated for fulfilling of the responsibility"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Utility value of a unit means, it helps in",
+      options: [
+        "Nurturing and protecting the body",
+        "In enhancing the capacity of the body for use in societal development",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Artistic value of a unit means, it helps in",
+      options: [
+        "Protecting the physical facility",
+        "People friendly – Facilitating behaviour",
+        "Ease in Use – Facilitating work",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "There are ________ elements of justice.",
+      options: [
+        "Four",
+        "Eight",
+        "Three",
+        "Five"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Undivided human society is the outcome of",
+      options: [
+        "Living with justice",
+        "Dominating human being",
+        "Living in harmony in nature",
+        "Developing more and more in science and technology"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Human Development essentially means",
+      options: [
+        "Transformation from animal consciousness to human consciousness",
+        "Being the best",
+        "Making the nation a super power",
+        "Earning more physical facilities/wealth"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Animal consciousness is ________.",
+      options: [
+        "Giving priority to physical facilities, maximization of sensory pleasures and accumulation of wealth",
+        "Giving priority to relationship, right understanding and inherent feeling of happiness",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Human consciousness is ________.",
+      options: [
+        "Giving priority to physical facilities, maximization of sensory pleasures and accumulation of wealth",
+        "Giving priority to relationship, right understanding and inherent feeling of happiness",
+        "Emerging more competitive and dominant on others",
+        "None of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Behaviour and work are the outcome of",
+      options: [
+        "Desires",
+        "Thoughts",
+        "Expectations",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Disrespect leads to ________.",
+      options: [
+        "Ego",
+        "Depression",
+        "Acrimony",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "________ on intention is a major reason for problems in relationships.",
+      options: [
+        "Trust",
+        "Belief",
+        "Doubt",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "The continuity of plant species is maintained in the nature by ________ method.",
+      options: [
+        "Right value",
+        "Seed conformance",
+        "Constitution conformance",
+        "Breed conformance"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "The basic activities of plant (Bio or Pranic) order are ________.",
+      options: [
+        "Selection/tasting",
+        "Knowing/Assuming",
+        "Recognition/Fulfilment",
+        "Composition/Decomposition"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Existence means ________.",
+      options: [
+        "Whatever that exist",
+        "To be in harmony with whatever that exist",
+        "Unit submerged in space",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Compassion is the value at the level of ________.",
+      options: [
+        "Individual/self",
+        "Family/Human‑human relationship",
+        "Society/Universal human order",
+        "Nature/Interaction with rest of the nature"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Kindness (Daya) is the value at the level of ________.",
+      options: [
+        "Individual/self",
+        "Family/Human‑human relationship",
+        "Society/Universal human order",
+        "Nature/Interaction with rest of the nature"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "If a person neither has the ability nor has the means to fulfill his/her needs, the participation in relation to making available the body is ________.",
+      options: [
+        "Compassion",
+        "Kindness",
+        "Benevolence",
+        "Generosity"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Methods to remove unethical practices",
+      options: [
+        "Audit inspections",
+        "Carrying out sting operations",
+        "Promoting awareness",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which of the following should not be the key question to be answered while planning a production system?",
+      options: [
+        "What to produce?",
+        "How and how much to produce?",
+        "For whom to produce?",
+        "How to make/earn huge profit?"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "A good policy initiative reflects ________.",
+      options: [
+        "Conducive to human welfare",
+        "Conducive to protection, enrichment and right utilization of resources",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Perseverance means ________.",
+      options: [
+        "Commitment for living in harmony at all 4 levels with patience",
+        "Commitment in helping others to understand harmony and live in harmony at all the 4 levels",
+        "Commitment to invest one’s self, body and physical facilities for understanding and living in harmony at all the 4 levels",
+        "All of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Bravery means ________.",
+      options: [
+        "Commitment for living in harmony at all 4 levels with patience",
+        "Commitment in helping others to understand harmony and live in harmony at all the 4 levels",
+        "Commitment to invest one’s self, body and physical facilities for understanding and living in harmony at all the 4 levels",
+        "All of these"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Generosity means ________.",
+      options: [
+        "Commitment for living in harmony at all 4 levels with patience",
+        "Commitment in helping others to understand harmony and live in harmony at all the 4 levels",
+        "Commitment to invest one’s self, body and physical facilities for understanding and living in harmony at all the 4 levels",
+        "All of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Self‑restraint is the expressed value of ________.",
+      options: [
+        "Guidance",
+        "Gratitude",
+        "Trust",
+        "Love"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "There is ________ in the 4 orders of the nature.",
+      options: [
+        "Mutual fulfilment",
+        "Opposition",
+        "Tendency to balance",
+        "Struggle"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Awakening to the activity of ________ leads to clarity of co‑existence and submergence.",
+      options: [
+        "Contemplation",
+        "Understanding",
+        "Realization",
+        "Comparing"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Awakening to the activity of ________ leads to clarity of Harmony in nature, Self organization (Innateness).",
+      options: [
+        "Contemplation",
+        "Understanding",
+        "Realization",
+        "Comparing"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Awakening to the activity of ________ leads to clarity of Relationship, Natural characteristic or participation in larger order.",
+      options: [
+        "Contemplation",
+        "Understanding",
+        "Realization",
+        "Comparing"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which among the following indicates the participation in larger order?",
+      options: [
+        "Natural characteristic",
+        "Innateness",
+        "Co‑existence",
+        "Form"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which one of the following indicates self organization?",
+      options: [
+        "Natural characteristic",
+        "Innateness",
+        "Co‑existence",
+        "Form"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Which one of the following indicates submergence?",
+      options: [
+        "Natural characteristic",
+        "Innateness",
+        "Co‑existence",
+        "Form"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Which aspect/dimension of a unit indicates its size, colour, density, etc.?",
+      options: [
+        "Natural characteristic",
+        "Innateness",
+        "Co‑existence",
+        "Form"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Which aspect/dimension of a unit indicates the impact of one unit on the other unit?",
+      options: [
+        "Property",
+        "Natural characteristic",
+        "Form",
+        "Co‑existence"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "What aspect/dimension of a Plant change with the time and space?",
+      options: [
+        "Co‑existence and innateness",
+        "Natural characteristic and innateness",
+        "Form and property",
+        "Property and co‑existence"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "What is the innateness of a Plant?",
+      options: [
+        "Existence + Growth",
+        "Cruelty/Non‑cruelty",
+        "Nurture/Worsen",
+        "Will to live in Self"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Which statement indicates the submergence of a Plant in this existence?",
+      options: [
+        "Every cell of the Plant is energized in co‑existence with space",
+        "Every cell of the Plant is self‑organized in co‑existence with space",
+        "Every cell of the Plant recognizes and fulfills its relationship with other units",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Contemplation leads to a feeling of ________.",
+      options: [
+        "Bliss",
+        "Happiness",
+        "Satisfaction",
+        "Peace"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Understanding leads to a feeling of ________.",
+      options: [
+        "Bliss",
+        "Happiness",
+        "Satisfaction",
+        "Peace"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Unguided self leads to ________.",
+      options: [
+        "Obsession for sensation",
+        "Obsession for indulgence",
+        "Obsession for Profit",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "Existential Law consists of ________.",
+      options: [
+        "Physical Law",
+        "Behavioural Law",
+        "Societal Law",
+        "All of these"
+      ],
+      correctIndex: 3
+    },
+    {
+      text: "The base of unconditional relationship is ________.",
+      options: [
+        "Right feeling",
+        "Thought",
+        "Expectation",
+        "None of these"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Right sequence in which Human Tradition can be materialized:",
+      options: [
+        "Human Education, Human Conduct, Human Constitution, Human Order",
+        "Human Constitution, Human Order, Human Education, Human Conduct",
+        "Human Conduct, Human Order, Human Education, Human Constitution",
+        "Human Order, Human Education, Human Constitution, Human Conduct"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "‘Co‑existence’ is ever present, ever effective, ever ________.",
+      options: [
+        "Expensive",
+        "Expressive",
+        "Extended",
+        "Exhausted"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "To attain the universal order, which of the following is most effective?",
+      options: [
+        "Human Order",
+        "Material Order",
+        "Pranic Order",
+        "Animal Order"
+      ],
+      correctIndex: 0
+    },
+    {
+      text: "Complete alignment of our view/vision with reality is ________.",
+      options: [
+        "Education",
+        "Qualification",
+        "Knowledge",
+        "Happiness"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Right Mindfulness means ________.",
+      options: [
+        "Mind is full of multiple thoughts",
+        "Continuous awareness",
+        "Remembering things in sequence",
+        "Possessing a great memory power"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Justice takes care of our ________.",
+      options: [
+        "Physical and mental well‑being",
+        "Relationship in human interaction",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Education and health take care of our ________.",
+      options: [
+        "Physical and mental well‑being",
+        "Relationship in human interaction",
+        "Both",
+        "None of these"
+      ],
+      correctIndex: 0
+    }
+  ]
+});
