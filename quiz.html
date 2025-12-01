@@ -56,7 +56,7 @@
   <!-- MCQ Quiz Logic (no Supabase, pure JS) -->
   <script>
     // ========= QUESTION BANK =========
-    // Add MCQs for each subject here manually (they do NOT come from PDFs).
+    // Manually add MCQs for each subject here.
     const QUESTION_BANK = {
       PSP: [
         {
@@ -98,8 +98,6 @@
           correctIndex: 2
         }
       ],
-
-      // ===== UHV MCQs (you can add more here) =====
       UHV: [
         {
           question: "UHV in engineering/academics stands for:",
@@ -132,7 +130,6 @@
           correctIndex: 2
         }
       ],
-
       COI: [
         {
           question: "COI in many curriculums stands for:",
@@ -163,7 +160,6 @@
 
       quizMessage.classList.add('hidden');
 
-      // Build quiz card HTML
       const card = document.createElement('article');
       card.className = 'card';
 
@@ -235,12 +231,10 @@
       });
     }
 
-    // Handle subject button clicks
     subjectButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         const subject = btn.dataset.subject;
 
-        // Set active state
         subjectButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
