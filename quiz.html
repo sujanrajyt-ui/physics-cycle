@@ -1,544 +1,370 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Physics Cycle - MCQ Quiz</title>
+  <meta charset="utf-8" />
+  <title>UHV Quiz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
   <style>
-    .btn-secondary {
-      background: #6b7280;
-      box-shadow: none;
+    :root{
+      --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b;
+      --accent:#2563eb; --accent-2:#1d4ed8; --ok:#059669; --bad:#dc2626; --border:#e5e7eb;
     }
-    .btn-secondary:hover {
-      background: #4b5563;
-    }
-    .quiz-option {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.6rem;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      cursor: pointer;
-      font-size: 0.9rem;
-      background: #f9fafb;
-    }
-    .quiz-option input {
-      accent-color: #2563eb;
-    }
-    #quiz-feedback {
-      margin-top: 0.6rem;
-      font-size: 0.9rem;
-      padding: 0.4rem 0.6rem;
-      border-radius: 8px;
-      display: none;
-    }
-    #quiz-feedback.correct {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #16a34a;
-    }
-    #quiz-feedback.incorrect {
-      display: block;
-      background: #fee2e2;
-      color: #b91c1c;
-      border: 1px solid #ef4444;
-    }
-    #quiz-feedback.info {
-      display: block;
-      background: #e0f2fe;
-      color: #0ea5e9;
-      border: 1px solid #38bdf8;
-    }
-    #final-summary {
-      margin-top: 0.6rem;
-      font-size: 0.9rem;
-      padding: 0.4rem 0.6rem;
-      border-radius: 8px;
-      background: #eef2ff;
-      color: #4338ca;
-      border: 1px solid #a5b4fc;
-      display: none;
-    }
-    .coming-soon-text {
-      font-size: 0.9rem;
-      color: #6b7280;
-      margin-top: 0.4rem;
-    }
-    .btn.coming-soon {
-      background: #9ca3af;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-    .btn.coming-soon:hover {
-      background: #9ca3af;
-      transform: none;
-    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
+    .container{max-width:1100px; margin:24px auto; padding:0 16px;}
+    header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+    .brand{display:flex;align-items:center;gap:10px;}
+    .badge{background:#eef2ff;color:#1e293b;border:1px solid #c7d2fe;border-radius:999px;padding:4px 10px;font-size:12px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
+    .controls{display:grid;grid-template-columns:1fr 1fr auto; gap:10px; align-items:end;}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;}
+    select,button{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;}
+    button{background:var(--accent);color:white;border-color:var(--accent-2);cursor:pointer;}
+    button.secondary{background:#f1f5f9;color:#0f172a;border-color:var(--border);}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .panel{margin-top:14px; display:none;}
+    .panel.active{display:block;}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .muted{color:var(--muted); font-size:13px;}
+    .qbox{padding:12px;border:1px dashed var(--border);border-radius:10px;margin-bottom:10px;background:#fcfcff;}
+    .qtext{font-weight:600;margin-bottom:8px;}
+    ol.opts{margin:0; padding-left:22px;}
+    ol.opts li{margin:6px 0; padding:8px 10px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;}
+    ol.opts li:hover{border-color:#cbd5e1; background:#f8fafc;}
+    ol.opts li.correct{border-color:#86efac;background:#ecfdf5;}
+    ol.opts li.wrong{border-color:#fecaca;background:#fef2f2;}
+    .trick{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:10px;}
+    .nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px;}
+    .progress{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:8px 0 0;}
+    .bar{height:100%;background:var(--accent);width:0%;}
+    .grid{display:grid;grid-template-columns:280px 1fr; gap:12px;align-items:start;}
+    .sidebar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:70vh;overflow:auto;}
+    .unit{padding:8px;border-radius:8px;cursor:pointer;}
+    .unit:hover{background:#f8fafc;}
+    .unit.active{background:#eef2ff;border:1px solid #c7d2fe;}
+    .small{font-size:12px;color:var(--muted);}
+    .result{display:grid;gap:8px;}
+    .score{font-size:20px;font-weight:700;}
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo">Physics Cycle</div>
-      <nav class="nav-links">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="branches.html" class="nav-link">Notes</a>
-        <a href="quiz.html" class="nav-link active">Quiz</a>
-      </nav>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h2 style="margin:0;">UHV Quiz</h2>
+        <span class="badge" id="summaryBadge">Loading…</span>
+      </div>
+      <div class="muted" id="comingNote">If you see “Coming soon” elsewhere, this page will still render the quiz.</div>
+    </header>
+
+    <div class="card">
+      <div class="controls">
+        <div>
+          <label for="unitSelect">Unit</label>
+          <select id="unitSelect">
+            <option value="__all__">All Units</option>
+          </select>
+        </div>
+        <div>
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect">
+            <option value="practice">Practice (infinite, instant feedback)</option>
+            <option value="test">Test (20 questions, score)</option>
+          </select>
+        </div>
+        <div>
+          <button id="startBtn">Start</button>
+        </div>
+      </div>
+
+      <div class="panel" id="quizPanel">
+        <div class="meta">
+          <div>
+            <span class="badge" id="unitBadge">Unit</span>
+            <span class="muted" id="qCounter">Q 0/0</span>
+          </div>
+          <div style="min-width:140px;">
+            <div class="progress"><div class="bar" id="progressBar"></div></div>
+          </div>
+        </div>
+
+        <div class="qbox">
+          <div class="qtext" id="qText">Question text</div>
+          <ol class="opts" id="qOpts"></ol>
+          <div class="trick" id="qTrick" style="display:none;"></div>
+        </div>
+
+        <div class="nav">
+          <div>
+            <button class="secondary" id="prevBtn">Prev</button>
+            <button class="secondary" id="nextBtn">Next</button>
+          </div>
+          <div>
+            <button class="secondary" id="endBtn" style="display:none;">End Test</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="resultPanel">
+        <div class="result">
+          <div class="score" id="scoreLine">Score: 0/0</div>
+          <div class="muted" id="resultNote">Well done. You can restart with different settings.</div>
+          <div>
+            <button id="restartBtn">Restart</button>
+          </div>
+        </div>
+      </div>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="page-header">
-      <div class="page-title-block">
-        <h1 class="page-title">MCQ Quiz</h1>
-        <p class="page-subtitle">
-          Choose a subject and unit. Questions appear in random order, 10 at a time. For each question, click "Answer" to see if you're right. After 10 questions, you'll see your score and can continue until all questions are done.
-        </p>
+    <div class="grid" style="margin-top:12px;">
+      <div class="sidebar" id="unitList"></div>
+      <div class="card">
+        <div class="muted">Tip: Click a unit on the left to preview its question count. Quiz content is driven by uhv-data.bundle.js.</div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- 1. SUBJECT SELECTION -->
-    <section>
-      <h2 style="font-size:1rem;margin-bottom:0.5rem;">1. Choose a subject</h2>
-      <div id="quiz-subject-buttons" class="subjects-buttons semester-buttons"></div>
-    </section>
+  <!-- Load dataset FIRST -->
+  <script src="uhv-data.bundle.js" defer></script>
 
-    <!-- 2. UNIT SELECTION -->
-    <section style="margin-top:1.5rem;">
-      <h2 style="font-size:1rem;margin-bottom:0.5rem;">2. Choose a unit</h2>
-      <div id="quiz-unit-buttons" class="subjects-buttons">
-        <p id="unit-placeholder" style="font-size:0.9rem;color:#6b7280;">
-          Select a subject first.
-        </p>
-      </div>
-      <p id="coming-soon-subject" class="coming-soon-text hidden"></p>
-    </section>
-
-    <!-- 3. QUESTION CARD -->
-    <section id="quiz-card" class="card hidden" style="margin-top:1.5rem;">
-      <div class="card-header-row">
-        <h2 id="quiz-title" class="card-title"></h2>
-        <span id="quiz-progress" class="branch-code"></span>
-      </div>
-      <p id="quiz-unit-label" class="card-desc"></p>
-
-      <div id="question-block" style="margin-top:0.75rem;">
-        <p id="question-text" style="font-weight:500;margin-bottom:0.5rem;"></p>
-        <div id="options-container"
-             style="display:flex;flex-direction:column;gap:0.4rem;"></div>
-      </div>
-
-      <div id="quiz-feedback"></div>
-      <div id="final-summary"></div>
-
-      <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:1rem;gap:0.5rem;flex-wrap:wrap;">
-        <button id="check-btn" class="btn" type="button">Answer</button>
-        <button id="next-btn" class="btn btn-secondary" type="button" style="display:none;">
-          Next Question
-        </button>
-        <button id="next-set-btn" class="btn btn-secondary" type="button" style="display:none;">
-          Next 10 Questions
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
-  </footer>
-
-  <!-- QUIZ DATA ROOT OBJECT -->
+  <!-- App logic -->
   <script>
-    // Global data object; subject files (psp.js, physics.js, etc.)
-    // will add their questions into this.
-    const quizData = {};
+    (function () {
+      const els = {
+        unitSelect: document.getElementById('unitSelect'),
+        modeSelect: document.getElementById('modeSelect'),
+        startBtn: document.getElementById('startBtn'),
+        quizPanel: document.getElementById('quizPanel'),
+        resultPanel: document.getElementById('resultPanel'),
+        qText: document.getElementById('qText'),
+        qOpts: document.getElementById('qOpts'),
+        qTrick: document.getElementById('qTrick'),
+        qCounter: document.getElementById('qCounter'),
+        progressBar: document.getElementById('progressBar'),
+        unitBadge: document.getElementById('unitBadge'),
+        summaryBadge: document.getElementById('summaryBadge'),
+        comingNote: document.getElementById('comingNote'),
+        prevBtn: document.getElementById('prevBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        endBtn: document.getElementById('endBtn'),
+        resultNote: document.getElementById('resultNote'),
+        scoreLine: document.getElementById('scoreLine'),
+        restartBtn: document.getElementById('restartBtn'),
+        unitList: document.getElementById('unitList')
+      };
 
-    // Subjects to show on the UI:
-    const allSubjects = [
-      "PSP",
-      "Physics",
-      "Calculus",
-      "Basic Electronics",
-      "ADLD",
-      "UHV",
-      "COI"
-    ];
-  </script>
+      const state = {
+        ready: false,
+        units: [],
+        currentUnitName: '__all__',
+        pool: [],
+        index: 0,
+        answered: new Map(), // key: index -> chosenIdx
+        mode: 'practice',
+        score: 0,
+        total: 0
+      };
 
-  <!-- SUBJECT DATA FILES -->
-  <script src="psp.js"></script>
-  <script src="physics.js"></script>
-  <script src="calculus.js"></script>
-  <script src="basicelectronics.js"></script>
-  <script src="uhv.js"></script>
-  <script src="coi.js"></script>
-  <script src="adld.js"></script> <!-- ADLD data file -->
-
-  <!-- QUIZ LOGIC -->
-  <script>
-    // =============== STATE ===============
-    let currentSubject = null;
-    let currentUnit = null;
-    let currentQuestions = [];
-    let questionOrder = [];
-    let currentOrderIndex = 0;
-    let questionsAnsweredOverall = 0;
-    let questionsAnsweredInBatch = 0;
-    let correctOverall = 0;
-    let correctInBatch = 0;
-    let batchNumber = 1;
-    const BATCH_SIZE = 10;
-
-    // =============== ELEMENTS ===============
-    const subjectButtonsContainer = document.getElementById("quiz-subject-buttons");
-    const unitButtonsContainer = document.getElementById("quiz-unit-buttons");
-    const unitPlaceholder = document.getElementById("unit-placeholder");
-    const comingSoonSubjectEl = document.getElementById("coming-soon-subject");
-
-    const quizCard = document.getElementById("quiz-card");
-    const quizTitle = document.getElementById("quiz-title");
-    const quizUnitLabel = document.getElementById("quiz-unit-label");
-    const quizProgress = document.getElementById("quiz-progress");
-
-    const questionText = document.getElementById("question-text");
-    const optionsContainer = document.getElementById("options-container");
-
-    const checkBtn = document.getElementById("check-btn");
-    const nextBtn = document.getElementById("next-btn");
-    const nextSetBtn = document.getElementById("next-set-btn");
-
-    const feedbackEl = document.getElementById("quiz-feedback");
-    const finalSummaryEl = document.getElementById("final-summary");
-
-    // =============== UTILS ===============
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+      function getUnitsFromData() {
+        const qd = window.quizData || {};
+        const raw = qd.UHV || {};
+        const units = Object.entries(raw).map(([name, questions]) => ({ name, questions }));
+        return units;
       }
-      return array;
-    }
 
-    // =============== RENDER SUBJECTS & UNITS ===============
-    function renderSubjectButtons() {
-      subjectButtonsContainer.innerHTML = "";
-      comingSoonSubjectEl.classList.add("hidden");
-
-      allSubjects.forEach((subject) => {
-        const hasUnits =
-          quizData[subject] && Object.keys(quizData[subject]).length > 0;
-
-        const btn = document.createElement("button");
-        btn.className = "btn subject-btn";
-        if (!hasUnits) btn.classList.add("coming-soon");
-
-        btn.dataset.subject = subject;
-        btn.textContent = subject + (hasUnits ? "" : " (Coming soon)");
-
-        btn.addEventListener("click", () => {
-          currentSubject = subject;
-          currentUnit = null;
-          resetState();
-          hideQuiz();
-
-          subjectButtonsContainer
-            .querySelectorAll(".subject-btn")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-
-          renderUnitButtons(hasUnits);
+      function updateSummary() {
+        const units = state.units;
+        const total = units.reduce((n,u)=>n+(u.questions?.length||0),0);
+        els.summaryBadge.textContent = `${units.length} units • ${total} questions`;
+        // Sidebar
+        els.unitList.innerHTML = '';
+        units.forEach((u, i) => {
+          const div = document.createElement('div');
+          div.className = 'unit' + (i===0 ? ' active':'');
+          div.textContent = u.name;
+          const small = document.createElement('div');
+          small.className = 'small';
+          small.textContent = `${u.questions.length} questions`;
+          div.appendChild(small);
+          div.addEventListener('click', () => {
+            els.unitList.querySelectorAll('.unit').forEach(n => n.classList.remove('active'));
+            div.classList.add('active');
+            // also reflect in select
+            els.unitSelect.value = u.name;
+          });
+          els.unitList.appendChild(div);
         });
-
-        subjectButtonsContainer.appendChild(btn);
-      });
-    }
-
-    function renderUnitButtons(hasUnitsForSubject) {
-      unitButtonsContainer.innerHTML = "";
-      if (unitPlaceholder) unitPlaceholder.remove();
-      comingSoonSubjectEl.classList.add("hidden");
-
-      if (!hasUnitsForSubject) {
-        const p = document.createElement("p");
-        p.style.fontSize = "0.9rem";
-        p.style.color = "#6b7280";
-        p.textContent = `Quizzes for ${currentSubject} are coming soon.`;
-        unitButtonsContainer.appendChild(p);
-        return;
       }
 
-      const unitsObj = quizData[currentSubject] || {};
-      const unitNames = Object.keys(unitsObj);
-
-      if (unitNames.length === 0) {
-        const p = document.createElement("p");
-        p.style.fontSize = "0.9rem";
-        p.style.color = "#6b7280";
-        p.textContent = `Quizzes for ${currentSubject} are coming soon.`;
-        unitButtonsContainer.appendChild(p);
-        return;
-      }
-
-      unitNames.forEach((unitName) => {
-        const questions = unitsObj[unitName] || [];
-        const btn = document.createElement("button");
-        btn.className = "btn chapter-btn";
-        btn.textContent = questions.length
-          ? unitName
-          : `${unitName} (Coming soon)`;
-
-        btn.addEventListener("click", () => {
-          currentUnit = unitName;
-          resetState();
-          hideQuiz();
-
-          unitButtonsContainer
-            .querySelectorAll(".chapter-btn")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-
-          if (!questions.length) {
-            finalSummaryEl.style.display = "block";
-            finalSummaryEl.textContent = `Quiz for "${unitName}" is coming soon.`;
-            return;
-          }
-
-          startUnitQuiz();
+      function populateUnitSelect() {
+        const sel = els.unitSelect;
+        sel.innerHTML = '<option value="__all__">All Units</option>';
+        state.units.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.name;
+          opt.textContent = u.name;
+          sel.appendChild(opt);
         });
-
-        unitButtonsContainer.appendChild(btn);
-      });
-    }
-
-    // =============== QUIZ FLOW ===============
-    function resetState() {
-      currentQuestions = [];
-      questionOrder = [];
-      currentOrderIndex = 0;
-      questionsAnsweredOverall = 0;
-      questionsAnsweredInBatch = 0;
-      correctOverall = 0;
-      correctInBatch = 0;
-      batchNumber = 1;
-      resetFeedback();
-      finalSummaryEl.style.display = "none";
-      finalSummaryEl.textContent = "";
-      checkBtn.disabled = false;
-      nextBtn.style.display = "none";
-      nextSetBtn.style.display = "none";
-    }
-
-    function startUnitQuiz() {
-      if (!currentSubject || !currentUnit) return;
-
-      currentQuestions = quizData[currentSubject][currentUnit] || [];
-      if (!currentQuestions.length) {
-        finalSummaryEl.style.display = "block";
-        finalSummaryEl.textContent = `Quiz for "${currentUnit}" is coming soon.`;
-        return;
       }
 
-      questionOrder = shuffle(
-        Array.from({ length: currentQuestions.length }, (_, i) => i)
-      );
-      currentOrderIndex = 0;
-      questionsAnsweredOverall = 0;
-      questionsAnsweredInBatch = 0;
-      correctOverall = 0;
-      correctInBatch = 0;
-      batchNumber = 1;
-
-      quizCard.classList.remove("hidden");
-      quizTitle.textContent = currentSubject;
-      quizUnitLabel.textContent = currentUnit;
-      finalSummaryEl.style.display = "none";
-      nextSetBtn.style.display = "none";
-
-      renderQuestion();
-    }
-
-    function renderQuestion() {
-      resetFeedback();
-      if (
-        !currentQuestions.length ||
-        currentOrderIndex < 0 ||
-        currentOrderIndex >= currentQuestions.length
-      ) {
-        return;
-      }
-
-      const total = currentQuestions.length;
-      const qIndex = questionOrder[currentOrderIndex];
-      const q = currentQuestions[qIndex];
-
-      quizProgress.textContent = `Q ${currentOrderIndex + 1} / ${total}`;
-      questionText.textContent = q.text;
-
-      optionsContainer.innerHTML = "";
-      q.options.forEach((opt, index) => {
-        const label = document.createElement("label");
-        label.className = "quiz-option";
-
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "quiz-option";
-        input.value = index;
-
-        const span = document.createElement("span");
-        span.textContent = opt;
-
-        label.appendChild(input);
-        label.appendChild(span);
-        optionsContainer.appendChild(label);
-      });
-
-      checkBtn.disabled = false;
-      nextBtn.style.display = "none";
-      nextSetBtn.style.display = "none";
-    }
-
-    function getSelectedOptionIndex() {
-      const inputs = optionsContainer.querySelectorAll('input[name="quiz-option"]');
-      for (const input of inputs) {
-        if (input.checked) return parseInt(input.value, 10);
-      }
-      return null;
-    }
-
-    function lockOptions() {
-      const inputs = optionsContainer.querySelectorAll('input[name="quiz-option"]');
-      inputs.forEach((input) => {
-        input.disabled = true;
-      });
-    }
-
-    function resetFeedback() {
-      feedbackEl.className = "";
-      feedbackEl.style.display = "none";
-      feedbackEl.textContent = "";
-    }
-
-    function showInfo(msg) {
-      feedbackEl.className = "info";
-      feedbackEl.textContent = msg;
-      feedbackEl.style.display = "block";
-    }
-
-    function showCorrect(msg) {
-      feedbackEl.className = "correct";
-      feedbackEl.textContent = msg;
-      feedbackEl.style.display = "block";
-    }
-
-    function showIncorrect(msg) {
-      feedbackEl.className = "incorrect";
-      feedbackEl.textContent = msg;
-      feedbackEl.style.display = "block";
-    }
-
-    function hideQuiz() {
-      quizCard.classList.add("hidden");
-      resetFeedback();
-      finalSummaryEl.style.display = "none";
-    }
-
-    function showBatchSummary(isFinal) {
-      const total = currentQuestions.length;
-      finalSummaryEl.style.display = "block";
-
-      if (isFinal) {
-        finalSummaryEl.textContent =
-          `Unit complete. Total score: ${correctOverall} / ${total}.`;
-      } else {
-        finalSummaryEl.textContent =
-          `Batch ${batchNumber} complete. ` +
-          `Score this batch: ${correctInBatch} / ${questionsAnsweredInBatch}. ` +
-          `Total so far: ${correctOverall} / ${questionsAnsweredOverall}.`;
-      }
-    }
-
-    // =============== EVENTS ===============
-    checkBtn.addEventListener("click", () => {
-      const selectedIndex = getSelectedOptionIndex();
-      if (selectedIndex === null) {
-        showInfo("Please select an option first.");
-        return;
-      }
-
-      const qIndex = questionOrder[currentOrderIndex];
-      const q = currentQuestions[qIndex];
-
-      if (selectedIndex === q.correctIndex) {
-        correctOverall++;
-        correctInBatch++;
-        showCorrect("Correct!");
-      } else {
-        showIncorrect("Wrong. Correct answer: " + q.options[q.correctIndex]);
-      }
-
-      questionsAnsweredOverall++;
-      questionsAnsweredInBatch++;
-
-      lockOptions();
-      checkBtn.disabled = true;
-
-      const isLastQuestionOverall =
-        currentOrderIndex === currentQuestions.length - 1;
-      const batchLimitReached = questionsAnsweredInBatch >= BATCH_SIZE;
-
-      if (!isLastQuestionOverall && !batchLimitReached) {
-        nextBtn.style.display = "inline-block";
-        nextSetBtn.style.display = "none";
-      } else {
-        nextBtn.style.display = "none";
-        const isFinal = isLastQuestionOverall;
-        showBatchSummary(isFinal);
-
-        if (!isFinal) {
-          nextSetBtn.textContent = "Next 10 Questions";
-          nextSetBtn.dataset.mode = "nextBatch";
-          nextSetBtn.style.display = "inline-block";
+      function buildPool() {
+        const unitName = state.currentUnitName;
+        if (unitName === '__all__') {
+          state.pool = state.units.flatMap(u => u.questions || []);
+          state.unitForIndex = null; // not tracked per-q in practice; we can omit
         } else {
-          nextSetBtn.textContent = "Finish";
-          nextSetBtn.dataset.mode = "finish";
-          nextSetBtn.style.display = "inline-block";
+          const unit = state.units.find(u => u.name === unitName);
+          state.pool = [...(unit?.questions || [])];
+        }
+        state.total = state.pool.length;
+        state.index = 0;
+        state.answered.clear();
+        state.score = 0;
+      }
+
+      function showPanel(which) {
+        els.quizPanel.classList.toggle('active', which === 'quiz');
+        els.resultPanel.classList.toggle('active', which === 'result');
+      }
+
+      function renderQuestion() {
+        const q = state.pool[state.index];
+        if (!q) return;
+        els.qText.textContent = `${state.index+1}. ${q.text}`;
+        els.qOpts.innerHTML = '';
+        q.options.forEach((opt, j) => {
+          const li = document.createElement('li');
+          li.textContent = opt;
+          li.setAttribute('data-idx', j);
+          li.addEventListener('click', () => handleChoice(j));
+          els.qOpts.appendChild(li);
+        });
+
+        const chosen = state.answered.get(state.index);
+        if (typeof chosen === 'number') applyMarking(chosen, q.correctIndex);
+
+        // Meta
+        els.qCounter.textContent = `Q ${state.index+1}/${state.total}`;
+        els.unitBadge.textContent = state.currentUnitName === '__all__' ? 'All Units' : state.currentUnitName;
+        const pct = state.total ? Math.round(((state.index+1)/state.total)*100) : 0;
+        els.progressBar.style.width = pct + '%';
+
+        // Hide trick until answered (practice) or always show in practice?
+        if (state.mode === 'practice') {
+          els.qTrick.style.display = 'block';
+          els.qTrick.textContent = 'Trick: ' + (q.trick || '—');
+        } else {
+          // test mode → only reveal after answering
+          const reveal = typeof chosen === 'number';
+          els.qTrick.style.display = reveal ? 'block' : 'none';
+          els.qTrick.textContent = reveal ? ('Trick: ' + (q.trick || '—')) : '';
+        }
+
+        // Nav buttons
+        els.prevBtn.disabled = state.index === 0;
+        els.nextBtn.disabled = state.index >= state.total - 1;
+        els.endBtn.style.display = (state.mode === 'test') ? 'inline-block' : 'none';
+      }
+
+      function applyMarking(chosenIdx, correctIdx) {
+        const items = els.qOpts.querySelectorAll('li');
+        items.forEach((li, j) => {
+          li.classList.remove('correct','wrong');
+          if (j === correctIdx) li.classList.add('correct');
+          if (j === chosenIdx && j !== correctIdx) li.classList.add('wrong');
+        });
+      }
+
+      function handleChoice(j) {
+        const q = state.pool[state.index];
+        if (!q) return;
+        const already = state.answered.get(state.index);
+        // In test mode, lock once chosen
+        if (state.mode === 'test' && typeof already === 'number') return;
+
+        state.answered.set(state.index, j);
+        applyMarking(j, q.correctIndex);
+        if (state.mode === 'test') {
+          if (j === q.correctIndex) state.score++;
+          els.qTrick.style.display = 'block';
+          els.qTrick.textContent = 'Trick: ' + (q.trick || '—');
         }
       }
-    });
 
-    nextBtn.addEventListener("click", () => {
-      if (currentOrderIndex < currentQuestions.length - 1) {
-        currentOrderIndex++;
-        renderQuestion();
-      }
-    });
-
-    nextSetBtn.addEventListener("click", () => {
-      const mode = nextSetBtn.dataset.mode;
-      if (mode === "nextBatch") {
-        questionsAnsweredInBatch = 0;
-        correctInBatch = 0;
-        batchNumber++;
-        finalSummaryEl.style.display = "none";
-        nextSetBtn.style.display = "none";
-
-        if (currentOrderIndex < currentQuestions.length - 1) {
-          currentOrderIndex++;
+      function nextQ() {
+        if (state.index < state.total - 1) {
+          state.index++;
           renderQuestion();
         }
-      } else if (mode === "finish") {
-        quizCard.classList.add("hidden");
-        nextSetBtn.style.display = "none";
       }
-    });
+      function prevQ() {
+        if (state.index > 0) {
+          state.index--;
+          renderQuestion();
+        }
+      }
 
-    // =============== INIT ===============
-    document.addEventListener("DOMContentLoaded", () => {
-      renderSubjectButtons();
-    });
+      function endTest() {
+        showPanel('result');
+        els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${Math.round((state.score/state.total)*100)}%)`;
+        els.resultNote.textContent = 'Review your performance or restart with different settings.';
+      }
+
+      function start() {
+        state.currentUnitName = els.unitSelect.value;
+        state.mode = els.modeSelect.value;
+        buildPool();
+        if (state.mode === 'test') {
+          // pick 20 or less random
+          const N = Math.min(20, state.pool.length);
+          // simple shuffle copy
+          const shuffled = state.pool.map((x,i)=>({x, r:Math.random()})).sort((a,b)=>a.r-b.r).map(o=>o.x);
+          state.pool = shuffled.slice(0,N);
+          state.total = state.pool.length;
+        }
+        showPanel('quiz');
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function restart() {
+        showPanel('quiz');
+        start();
+      }
+
+      function onDataReady() {
+        state.units = getUnitsFromData();
+        if (!state.units.length) {
+          els.summaryBadge.textContent = 'No data found';
+          return;
+        }
+        state.ready = true;
+        populateUnitSelect();
+        updateSummary();
+      }
+
+      // Wire handlers
+      els.startBtn.addEventListener('click', start);
+      els.prevBtn.addEventListener('click', prevQ);
+      els.nextBtn.addEventListener('click', nextQ);
+      els.endBtn.addEventListener('click', endTest);
+      els.restartBtn.addEventListener('click', restart);
+
+      // Handle dataset readiness
+      document.addEventListener('quiz-data-ready', onDataReady, { once: true });
+      // Also attempt after DOM ready (in case event fired earlier)
+      document.addEventListener('DOMContentLoaded', () => {
+        const qd = window.quizData;
+        if (qd?.UHV && !state.ready) onDataReady();
+      });
+
+      // Safety timeout to handle cases where defer order differs
+      setTimeout(() => {
+        const qd = window.quizData;
+        if (qd?.UHV && !state.ready) onDataReady();
+      }, 400);
+
+    })();
   </script>
 </body>
 </html>
