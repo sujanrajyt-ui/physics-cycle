@@ -1,3 +1,9 @@
+// Ensure quizData exists
+var quizData = (typeof quizData !== 'undefined' && quizData) ? quizData : {};
+
+// =========================
+// UHV Dataset (Units 1–3)
+// =========================
 Object.assign(quizData, {
   "UHV": {
     "Unit 1: Human Values (MCQs)": [
@@ -2377,3 +2383,159 @@ Object.assign(quizData["UHV"], {
     }
   ]
 });
+
+
+// =====================================
+// Add Mnemonics / Tricks to each MCQ
+// =====================================
+(function addTricksToUHV(quizData) {
+  if (!quizData || !quizData.UHV) return;
+
+  const norm = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/[’'"]/g, "")
+      .replace(/‑|–|—/g, "-")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const answerKeyTricks = [
+    { key: /all of these/, tip: "If each option aligns with harmony/universality → All of these." },
+
+    { key: /natural acceptance/, tip: "Nature doesn’t change → ‘Natural’ = invariant & universal." },
+    { key: /right understanding/, tip: "When core/central/basic guideline is asked → Right Understanding." },
+    { key: /ethics/, tip: "Profession + values → Ethics (Right understanding applied to profession)." },
+    { key: /co-?existence/, tip: "Central to existence = Co-existence (‘co’ = connected & continuous)." },
+    { key: /fearlessness/, tip: "Justice in relationships removes fear → Fearlessness in society." },
+    { key: /respect/, tip: "Respect = Right Evaluation (re-spect = ‘see again’ → evaluate rightly)." },
+    { key: /trust/, tip: "TRL: Trust is foundation; Respect is evaluation; Love is complete." },
+    { key: /love/, tip: "Love is the complete / all-encompassing value." },
+    { key: /prosperity/, tip: "Prosperity = feeling of ‘more than enough’ physical facility." },
+    { key: /happiness/, tip: "Happiness comes from inner harmony, not sensations or wealth." },
+
+    { key: /universal.*natural.*rational.*verifiable|verifiable|universal|rational/, tip: "UNaRV: Universal, Natural, Rational, Verifiable = basic guidelines." },
+
+    { key: /value domain/, tip: "Value = Understanding; Skill = Learning (V→U, S→L)." },
+    { key: /skill domain/, tip: "Skill deals with Learning; Value deals with Understanding." },
+
+    { key: /individual/, tip: "Levels of living: I-F-S-N (Individual → Family → Society → Nature)." },
+    { key: /family/, tip: "Levels of living: I-F-S-N. Family is 2nd." },
+    { key: /society/, tip: "Levels of living: I-F-S-N. Society is 3rd." },
+    { key: /nature/, tip: "Levels of living: I-F-S-N. Nature is 4th." },
+
+    { key: /self/, tip: "Self = Seer + Doer + Enjoyer; needs are qualitative & continuous." },
+    { key: /body/, tip: "Body = instrument of Self; needs are quantitative & temporary." },
+
+    { key: /sanyam/, tip: "Sanyam = Self-regulation: nurturing, protection & right utilization." },
+    { key: /swasthya/, tip: "Swasthya = ‘self-state’: parts in harmony = good health." },
+
+    { key: /space/, tip: "Space is all-pervading, ever-present; no activity." },
+    { key: /consciousness/, tip: "Consciousness is continuous; knowing/recognizing occur here." },
+    { key: /material unit|physio/, tip: "Material/physio-chemical = temporary in existence." },
+
+    { key: /undivided human society/, tip: "Justice in relationships → Undivided human society." },
+    { key: /universal human order/, tip: "Starts with Individual → Family → Society → Universal order." },
+
+    { key: /plant|pranic/, tip: "Plant/Pranic → composition/decomposition; seed conformance." },
+    { key: /animal/, tip: "Animal → breed conformance; priority to physical facility (animal consciousness)." },
+    { key: /physical/, tip: "Physical order → composition & decomposition only." },
+    { key: /human/, tip: "Human → education–sanskar based inheritance." }
+  ];
+
+  const questionKeyTricks = [
+    { key: /invariant.*universal/, tip: "Invariant + universal → ‘Natural’ → Natural Acceptance." },
+    { key: /identify the correct order/, tip: "URP ladder: Right Understanding → Relationship → Physical facility." },
+    { key: /holistic development/, tip: "All three: Right understanding + Relationship + Physical facility." },
+    { key: /experiential validation/, tip: "Verify by Natural Acceptance, then live it → experiential validation." },
+    { key: /justice.*society/, tip: "Justice in relationships → removes fear → Fearlessness in society." },
+    { key: /animal consciousness/, tip: "Animal consciousness prioritizes Physical Facility." },
+    { key: /four levels.*living|lived at four levels/, tip: "IFSN: Individual → Family → Society → Nature." },
+    { key: /four dimensions.*human being/, tip: "TBWR: Thought → Behaviour → Work → Realization." },
+    { key: /aspiration/, tip: "CHaP: Continuity of Happiness & Prosperity = universal aspiration." },
+    { key: /basic guideline.*value education/, tip: "UNaRV: Universal, Natural, Rational, Verifiable." },
+    { key: /value education.*domains|two domains/, tip: "Value→Understanding; Skill→Learning (V→U, S→L)." },
+    { key: /order of appearance.*four orders/, tip: "Physical → Plant → Animal → Human (simple→complex)." },
+    { key: /continuous happiness.*prosperity/, tip: "CHaP → Basic human aspirations." },
+    { key: /physical comforts only|animal.*consciousness/, tip: "Physical comfort only → Animal consciousness." },
+    { key: /prosperity.*more than required/, tip: "Prosperity = ‘more than enough’ feeling." },
+    { key: /self-exploration/, tip: "3S: self-talk, self-evaluation, self-investigation." },
+    { key: /sanyam/, tip: "Sanyam = Self-regulation: nurturing, protection, right utilization." },
+    { key: /swasthya/, tip: "Swasthya = harmony among body parts = health." },
+    { key: /entry point.*humanistic tradition|implementation.*humanistic tradition/, tip: "Entry point = Humanistic Education." },
+    { key: /love.*all encompassing|complete value/, tip: "Love is complete; Trust = foundation; Respect = evaluation." },
+    { key: /respect means/, tip: "Respect = Right Evaluation (re-spect = see again)." },
+    { key: /four orders.*harmony|innateness|self organization/, tip: "Dimensions: Form, Property, Natural Characteristic, Innateness, Co-existence." },
+    { key: /space.*ever|space is/, tip: "Space: ever-present, all-pervading, no activity." },
+    { key: /education and health/, tip: "Education & health → physical/mental well-being." },
+    { key: /justice takes care/, tip: "Justice → relationships (mutual happiness)." },
+    { key: /comprehensive human goal.*mastery/, tip: "‘Mastery over nature’ is NOT a human goal." }
+  ];
+
+  function buildTrick(qText, correctOption) {
+    const q = norm(qText);
+    const a = norm(correctOption);
+
+    for (const { key, tip } of questionKeyTricks) {
+      if (key.test(q)) return tip;
+    }
+
+    for (const { key, tip } of answerKeyTricks) {
+      if (key.test(a)) return tip;
+    }
+
+    if (/right understanding/.test(a) && /profession|ethic|professional/.test(q))
+      return "Right understanding applied to profession → Ethics.";
+
+    if (/co-?existence/.test(a))
+      return "Existence → Co-existence (‘co’ = connected & continuous).";
+
+    if (/all of these/.test(a))
+      return "All options fit the harmony theme → All of these.";
+
+    if (/levels of living/.test(q))
+      return "IFSN: Individual → Family → Society → Nature.";
+
+    if (/value.*domain|skill.*domain/.test(q))
+      return "Value→Understanding; Skill→Learning (V→U, S→L).";
+
+    if (/self.*body|body.*self/.test(q))
+      return "Self = qualitative & continuous; Body = quantitative & temporary; Body is instrument of Self.";
+
+    if (/aspiration/.test(q))
+      return "CHaP: Continuity of Happiness & Prosperity.";
+
+    if (/four orders/.test(q))
+      return "P→Pl→A→H: Physical → Plant → Animal → Human.";
+
+    return "Use anchors: URP (Understanding→Relationship→Physical), IFSN (levels), UNaRV (guidelines), TRL (Trust/Respect/Love).";
+  }
+
+  Object.keys(quizData.UHV).forEach((unitName) => {
+    const unit = quizData.UHV[unitName];
+    if (!Array.isArray(unit)) return;
+    unit.forEach((q) => {
+      const correctOption = q.options?.[q.correctIndex];
+      q.trick = buildTrick(q.text, correctOption);
+    });
+  });
+
+  // Optional preview (comment out for production)
+  try {
+    const firstUnitName = Object.keys(quizData.UHV)[0];
+    const preview = (quizData.UHV[firstUnitName] || []).slice(0, 8).map((q, i) => ({
+      "#": i + 1,
+      Q: q.text,
+      Answer: q.options[q.correctIndex],
+      Trick: q.trick
+    }));
+    console.table(preview);
+  } catch (_) {}
+})(quizData);
+
+// Export if needed (ESM/CommonJS guards)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = quizData;
+}
+if (typeof window !== 'undefined') {
+  window.quizData = quizData;
+}
