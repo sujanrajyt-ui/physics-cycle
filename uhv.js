@@ -1,3 +1,5 @@
+// uhv-data.js
+
 // Ensure quizData exists
 var quizData = (typeof quizData !== 'undefined' && quizData) ? quizData : {};
 
@@ -2519,7 +2521,8 @@ Object.assign(quizData["UHV"], {
     });
   });
 
-  // Optional preview (comment out for production)
+  // Optional preview (uncomment to debug)
+  /*
   try {
     const firstUnitName = Object.keys(quizData.UHV)[0];
     const preview = (quizData.UHV[firstUnitName] || []).slice(0, 8).map((q, i) => ({
@@ -2530,12 +2533,58 @@ Object.assign(quizData["UHV"], {
     }));
     console.table(preview);
   } catch (_) {}
+  */
 })(quizData);
 
-// Export if needed (ESM/CommonJS guards)
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = quizData;
-}
-if (typeof window !== 'undefined') {
-  window.quizData = quizData;
-}
+
+// =====================================
+// Publish + adapt the dataset so UIs find it
+// =====================================
+(function publishAndAdapt() {
+  var qd = (typeof quizData !== 'undefined' && quizData) ? quizData : {};
+  if (!qd.UHV) { qd.UHV = {}; }
+
+  // Build common shapes
+  const units = Object.entries(qd.UHV).map(([name, questions]) => ({
+    id: name,
+    name,
+    questions
+  }));
+
+  qd.UHVUnits = units;                 // array of units
+  qd.units = qd.units || units;        // generic alias
+  qd.categories = qd.categories || [{  // categories shape
+    id: 'UHV',
+    name: 'UHV',
+    units
+  }];
+  qd.subjects = qd.subjects || ['UHV'];
+  qd.allQuestions = units.flatMap(u => u.questions || []);
+  qd.totalQuestions = qd.allQuestions.length;
+
+  // Make global + aliases
+  if (typeof window !== 'undefined') {
+    window.quizData = qd;
+    window.data = window.data || qd;        // some UIs read window.data
+    window.questions = window.questions || qd.allQuestions; // some read window.questions
+
+    try {
+      document.dispatchEvent(new CustomEvent('quiz-data-ready', {
+        detail: { subjects: Object.keys(qd), total: qd.totalQuestions }
+      }));
+    } catch (_) {}
+  }
+
+  // Node / CommonJS
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = qd;
+  }
+
+  // Debug peek (uncomment to verify)
+  /*
+  try {
+    console.log('[UHV] units:', units.length, 'total questions:', qd.totalQuestions);
+    console.table(units.map(u => ({ unit: u.name, count: u.questions?.length || 0 })));
+  } catch (_) {}
+  */
+})();
