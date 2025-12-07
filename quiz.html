@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Multi-Subject Quiz</title>
+  <title>Multi-Subject Quiz + Answer Key</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
@@ -29,8 +29,18 @@
     .setup .field{display:flex;align-items:center;gap:6px;}
     .panel{margin-top:14px; display:none;}
     .panel.active{display:block;}
-    .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
     .muted{color:var(--muted); font-size:13px;}
+    .grid{display:grid;grid-template-columns:300px 1fr; gap:12px;align-items:start;}
+    .sidebar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:70vh;overflow:auto;}
+    .side-section{margin-bottom:12px;}
+    .side-title{font-weight:700;margin-bottom:6px;}
+    .unit{padding:8px;border-radius:8px;cursor:pointer;}
+    .unit:hover{background:#f8fafc;}
+    .unit.active{background:#eef2ff;border:1px solid #c7d2fe;}
+    .small{font-size:12px;color:var(--muted);}
+
+    /* Quiz panel */
+    .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
     .qbox{padding:12px;border:1px dashed var(--border);border-radius:10px;margin-bottom:10px;background:#fcfcff;}
     .qtext{font-weight:600;margin-bottom:8px;}
     ol.opts{margin:0; padding-left:22px;}
@@ -42,16 +52,6 @@
     .nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px;}
     .progress{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:8px 0 0;}
     .bar{height:100%;background:#2563eb;width:0%;}
-    .grid{display:grid;grid-template-columns:300px 1fr; gap:12px;align-items:start;}
-    .sidebar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:70vh;overflow:auto;}
-    .side-section{margin-bottom:12px;}
-    .side-title{font-weight:700;margin-bottom:6px;}
-    .unit{padding:8px;border-radius:8px;cursor:pointer;}
-    .unit:hover{background:#f8fafc;}
-    .unit.active{background:#eef2ff;border:1px solid #c7d2fe;}
-    .small{font-size:12px;color:var(--muted);}
-    .result{display:grid;gap:8px;}
-    .score{font-size:20px;font-weight:700;}
 
     /* Answer Key panel */
     #keyPanel .qitem{border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff;}
@@ -63,39 +63,35 @@
   <div class="container">
     <header>
       <div class="brand">
-        <h2 style="margin:0;">Multi-Subject Quiz</h2>
+        <h2 style="margin:0;">Multi-Subject Quiz + Answer Key</h2>
         <span class="badge" id="summaryBadge">Loading…</span>
       </div>
-      <div class="muted">Pick a subject & unit. Start quiz, or view the Answer Key (correct options highlighted in green). Customize count and shuffling.</div>
+      <div class="muted">Pick Subject & Unit. Default view shows Answer Key (correct answers in green). Switch to Quiz to practice/test.</div>
     </header>
 
     <div class="card">
       <div class="controls">
         <div>
           <label for="subjectSelect">Subject</label>
-          <select id="subjectSelect">
-            <option value="__all__">All Subjects</option>
-          </select>
+          <select id="subjectSelect"><option value="__all__">All Subjects</option></select>
         </div>
         <div>
           <label for="unitSelect">Unit</label>
-          <select id="unitSelect">
-            <option value="__all__">All Units</option>
+          <select id="unitSelect"><option value="__all__">All Units</option></select>
+        </div>
+        <div>
+          <label for="viewSelect">View</label>
+          <select id="viewSelect">
+            <option value="answers">Answer Key</option>
+            <option value="quiz">Quiz</option>
           </select>
         </div>
         <div>
-          <label for="modeSelect">Mode</label>
-          <select id="modeSelect">
-            <option value="practice">Practice (instant feedback)</option>
-            <option value="test">Test (scored)</option>
-          </select>
-        </div>
-        <div>
-          <button id="startBtn">Start</button>
+          <button id="startBtn">Start Quiz</button>
         </div>
       </div>
 
-      <!-- Setup row -->
+      <!-- Setup row (applies to both Answer Key and Quiz) -->
       <div class="setup">
         <div class="field">
           <label for="countInput" class="muted">Question count</label>
@@ -103,7 +99,24 @@
         </div>
         <label class="chip"><input type="checkbox" id="shuffleQuestions" checked> Shuffle questions</label>
         <label class="chip"><input type="checkbox" id="shuffleOptions" checked> Shuffle options</label>
-        <button id="keyBtn" class="ghost">Show Answer Key</button>
+
+        <!-- Quiz-only controls -->
+        <div class="field" id="quizModeWrap">
+          <label for="modeSelect" class="muted">Quiz mode</label>
+          <select id="modeSelect">
+            <option value="practice">Practice (instant feedback)</option>
+            <option value="test">Test (scored)</option>
+          </select>
+        </div>
+
+        <!-- Answer Key actions -->
+        <button id="printKeyBtn" class="secondary">Print Key</button>
+      </div>
+
+      <!-- Answer Key Panel -->
+      <div class="panel" id="keyPanel">
+        <div id="keyHeader" class="muted" style="margin-bottom:8px;"></div>
+        <div id="keyList"></div>
       </div>
 
       <!-- Quiz Panel -->
@@ -138,22 +151,11 @@
 
       <!-- Result Panel -->
       <div class="panel" id="resultPanel">
-        <div class="result">
-          <div class="score" id="scoreLine">Score: 0/0</div>
-          <div class="muted" id="resultNote">Great job! Try another subject or unit.</div>
-          <div>
-            <button id="restartBtn">Restart</button>
-          </div>
+        <div class="score" id="scoreLine">Score: 0/0</div>
+        <div class="muted" id="resultNote">Great job! Try another subject or unit.</div>
+        <div>
+          <button id="restartBtn">Restart</button>
         </div>
-      </div>
-
-      <!-- Answer Key Panel -->
-      <div class="panel" id="keyPanel">
-        <div class="actions">
-          <button id="printKeyBtn" class="secondary">Print</button>
-          <button id="hideKeyBtn" class="secondary">Hide Answer Key</button>
-        </div>
-        <div id="keyList"></div>
       </div>
     </div>
 
@@ -169,23 +171,22 @@
         </div>
       </div>
       <div class="card">
-        <div class="muted">Tip: Subject files populate automatically. Ensure psp.js, physics.js, calculas.js, basicelectronics.js are in the same folder.</div>
+        <div class="muted">Tip: Default view is Answer Key (green highlights). To practice, set View = Quiz and click Start Quiz.</div>
       </div>
     </div>
   </div>
 
   <!-- Ensure quizData exists BEFORE subject files load -->
-  <script>
-    window.quizData = window.quizData || {};
-  </script>
+  <script>window.quizData = window.quizData || {};</script>
 
   <!-- Include your subject JS files -->
   <script src="psp.js" defer></script>
   <script src="physics.js" defer></script>
-  <script src="calculas.js" defer></script>
+  <script src="calculus.js" defer></script>
   <script src="basicelectronics.js" defer></script>
+  <script src="uhv.js" defer></script>
 
-  <!-- Core: registration API + trick generator (same as before) + app with new Answer Key and setup -->
+  <!-- App: registry + trick generator (unchanged) + Answer Key-first UX -->
   <script defer>
     // --- Registry API ---
     window.quizSubjects = window.quizSubjects || {};
@@ -233,128 +234,60 @@
       });
     }
 
-    // --- Trick Generator (same heuristics as before) ---
+    // --- Trick Generator (kept concise) ---
     function addTricksToUnits(units, subjectId) {
       const norm = (s) => String(s||"").toLowerCase().replace(/[’'"]/g,"").replace(/‑|–|—/g,"-").replace(/\s+/g," ").trim();
-      const generalAnswerTips = [{ key:/all of these|both .* (a|b)/, tip:"If each option is independently true/compatible, 'All of these' fits." }];
+      const gen = [{ key:/all of these|both .* (a|b)/, tip:"If all options fit, choose 'All of these'." }];
 
-      const pspQ = [
-        { key:/assembler|assembly.*machine/, tip:"Assembly → Machine code is done by the Assembler (Compiler is high-level → machine)." },
-        { key:/formatted output|printf/, tip:"Formatted output → printf; formatted input → scanf." },
-        { key:/scanf.*%s|string.*scanf/, tip:"scanf(\"%s\", str) reads until whitespace; gets() reads until newline." },
-        { key:/escape.*new line|\\n/, tip:"New line in C is '\\n'." },
-        { key:/argv\[0]/, tip:"argv[0] is the program name; user args start at argv[1]." },
-        { key:/right shift|bitwise.*right/, tip:">> is right shift; << is left shift (×2^k)." },
-        { key:/modulo|%.*integer/, tip:"In C, % (modulo) is defined for integers." },
-        { key:/ternary|conditional.*\?:/, tip:"Ternary ?: is right-associative." },
-        { key:/precedence.*lowest|lowest.*precedence/, tip:"Comma operator has the lowest precedence in C." },
-        { key:/post.*increment|a\+\+.*printf/, tip:"Post-increment returns old value first, then increments." },
-        { key:/switch.*case.*float|switch.*case.*label/, tip:"switch cases require integer/char constants; no float in labels." },
-        { key:/if.*\(x\s*=\s*5\)|if.*semicolon/, tip:"Use == for compare. A stray semicolon ends the if; next line always runs." },
-        { key:/printf\(\"%5d\"/, tip:"%5d prints in width 5 (right-aligned) → spaces before number." },
-        { key:/implicit type conversion|promotion/, tip:"In expressions, float promotes to double; char promotes to int." }
-      ];
-      const pspA = [
-        { key:/assembler/, tip:"Assembly → Machine = Assembler. Compiler is HLL → machine." },
-        { key:/printf\(\)/, tip:"printf = formatted output; scanf = formatted input; puts prints string with newline." },
-        { key:/scanf\(\)/, tip:"scanf = formatted input; use &var for non-array scalars." },
-        { key:/getchar\(\)/, tip:"getchar reads a single character; putchar writes one." },
-        { key:/gets\(\)/, tip:"gets() reads until newline (unsafe). puts() writes string with newline." },
-        { key:/%x/, tip:"%x prints in hexadecimal; %o octal; %llu = unsigned long long." },
-        { key:/>>/, tip:"Right shift operator: >>." },
-        { key:/do-?while/, tip:"do-while executes the loop body at least once." },
-        { key:/comma|,/, tip:"Comma operator has the lowest precedence." }
-      ];
-      const phyQ = [
-        { key:/de broglie|matter wave|λ\s*=\s*h\/p/, tip:"de Broglie: λ = h/p. Larger momentum → shorter wavelength." },
-        { key:/same kinetic energy.*electron.*proton|λe.*λp/, tip:"At same KE, λ ∝ 1/√m → electron has larger λ than proton." },
-        { key:/uncertainty|heisenberg|Δx.*Δp/, tip:"Heisenberg: Δx·Δp ≥ ħ/2 (≈ h/4π). Exact position → infinite momentum uncertainty." },
-        { key:/wave ?function|ψ/, tip:"Acceptable ψ: single-valued, finite, continuous, normalizable. |ψ|² is probability density." },
-        { key:/infinite potential well|particle in a box|n²/, tip:"In box: En ∝ n²; ground state max probability at center (x=L/2)." },
-        { key:/group velocity.*phase/, tip:"Matter waves: group velocity equals particle velocity; phase may exceed c." }
-      ];
-      const phyA = [
-        { key:/electron diffraction/, tip:"Electron diffraction is the classic evidence for matter waves." },
-        { key:/probability density/, tip:"|ψ|² = probability density." },
-        { key:/complex/, tip:"ψ can be complex; only |ψ|² is physical." },
-        { key:/unity/, tip:"Total probability over all space must be 1 (normalized)." },
-        { key:/n²/, tip:"Energy in infinite well scales as n²." }
-      ];
-      const calQ = [
-        { key:/maclaurin.*e\^x/, tip:"e^x = 1 + x + x²/2! + x³/6 + …" },
-        { key:/radius of curvature|curvature/, tip:"For y=f(x): ρ = (1 + (y')²)^{3/2} / |y''|. Bigger curvature → smaller radius." },
-        { key:/polar.*r\s*=\s*f\(θ\)|tan θ|cot θ/, tip:"Polar identities: tanψ = r/(dr/dθ); cotψ = (1/r)(dθ/dr)." },
-        { key:/jacobian|∂\(x,y\)\/∂\(r,θ\)/, tip:"Jacobian (x,y) wrt (r,θ) is r (x= r cosθ, y= r sinθ)." },
-        { key:/pde.*parabolic|hyperbolic|elliptic|wave|laplace/, tip:"Wave: u_tt = c² u_xx (hyperbolic). Laplace: u_xx + u_yy = 0 (elliptic). Heat: u_t = k u_xx (parabolic)." },
-        { key:/double integral.*symmetric.*xy/, tip:"Over symmetric domain, integrals of odd functions (like x or xy) vanish." },
-        { key:/gamma|beta.*function/, tip:"Γ(1/2)=√π; B(m,n)= Γ(m)Γ(n)/Γ(m+n); Γ(n+1)=nΓ(n)." }
-      ];
-      const calA = [
-        { key:/√π/, tip:"Γ(1/2) = √π." },
-        { key:/π/, tip:"B(1/2,1/2) = π." },
-        { key:/0/, tip:"Symmetric region + odd integrand → integral is 0." }
-      ];
-      const beQ = [
-        { key:/zener.*regulat|breakdown|constant voltage/, tip:"Zener in breakdown → nearly constant voltage (regulator)." },
-        { key:/full wave.*frequency|rectifier.*100\s*hz|50\s*hz/, tip:"Full-wave rectifier doubles mains frequency: 50Hz → 100Hz." },
-        { key:/ripple factor.*smaller/, tip:"Smaller ripple factor → output closer to pure DC." },
-        { key:/forward bias.*diode/, tip:"Forward-biased diode → low resistance; reverse → high." },
-        { key:/ce amplifier.*phase/, tip:"CE amplifier introduces ~180° phase shift." },
-        { key:/β|alpha|current gain/, tip:"β = IC/IB; α ≈ IC/IE; α = β/(1+β), β= α/(1−α)." },
-        { key:/mosfet.*voltage controlled|bjt.*current controlled/, tip:"MOSFET is voltage-controlled; BJT is current-controlled." },
-        { key:/op-amp.*ideal/, tip:"Ideal op-amp: Ri→∞, Ro→0, A→∞, infinite bandwidth & slew rate." },
-        { key:/integrator/, tip:"Op-amp integrator has a capacitor in feedback; V0 = −(1/RC)∫Vi dt." },
-        { key:/differentiator/, tip:"Op-amp differentiator has a resistor in feedback; V0 = −Rf C dVi/dt." },
-        { key:/non-inverting gain/, tip:"Gain = 1 + Rf/R1 (non-inverting). Inverting gain = −Rf/R1." },
-        { key:/cmrr/, tip:"CMRR = Ad/Ac (differential/common-mode gains)." },
-        { key:/oscillator|barkhausen/, tip:"Barkhausen: |Aβ| = 1 and total phase shift 0°/360°." },
-        { key:/colpitts|hartley|phase shift/, tip:"Colpitts: split capacitors; Hartley: split inductors; RC phase shift: 3 RC sections → 180° total." }
-      ];
-      const beA = [
-        { key:/cut-in voltage/, tip:"Cut-in/threshold: forward voltage where diode current rises fast (~0.7V Si, ~0.3V Ge)." },
-        { key:/81\.2%|40\.6%|46%/, tip:"Rectifier efficiency: Half-wave ≈ 40.6%; Full-wave ≈ 81.2%." },
-        { key:/0\.707.*i|r\.m\.s.*im/, tip:"For full-wave: Irms = Im/√2 = 0.707 Im." },
-        { key:/constant voltage/, tip:"Zener in breakdown = constant voltage source (within ratings)." },
-        { key:/100 hz/, tip:"Full-wave rectifiers output at 2× mains frequency." },
-        { key:/voltage controlled/, tip:"MOSFET is voltage-controlled (oxide capacitor at gate)." },
-        { key:/current controlled/, tip:"BJT is current-controlled (IC ≈ β·IB in active region)." },
-        { key:/a\/\(1 \+ aβ\)/, tip:"Negative feedback: Af = A/(1 + Aβ); Positive: Af = A/(1 − Aβ)." }
-      ];
+      function scan(list, s){ for(const r of list) if(r.key.test(s)) return r.tip; return null; }
 
-      function scan(list, s) { return list.find(r => r.key.test(s))?.tip || null; }
-      units.forEach(u => {
-        (u.questions || []).forEach(q => {
-          if (!q) return;
-          const qn = norm(q.text);
-          const an = norm(q.options?.[q.correctIndex] || '');
-          let tip = scan(generalAnswerTips, an);
-          if (!tip && /psp|c programming|decision|loop|array|pointer|function|storage|recursion|structure|file/i.test(subjectId||"")) tip = scan(pspQ, qn) || scan(pspA, an);
-          if (!tip && /physics|quantum|semiconductor|laser|fiber|conductor|superconductor/i.test(subjectId||"")) tip = scan(phyQ, qn) || scan(phyA, an);
-          if (!tip && /calculus|differential|partial|equation|integral|ode|pde|beta|gamma/i.test(subjectId||"")) tip = scan(calQ, qn) || scan(calA, an);
-          if (!tip && /basic electronics|bjt|mosfet|op.?amp|oscillator|feedback|communication|embedded/i.test(subjectId||"")) tip = scan(beQ, qn) || scan(beA, an);
-          if (!tip) tip = "Use definitions, standard formulas, and ‘always-true’ properties to eliminate.";
-          q.trick = q.trick || tip;
-        });
-      });
+      const subject = (subjectId||'').toLowerCase();
+      units.forEach(u => (u.questions||[]).forEach(q => {
+        const a = q.options?.[q.correctIndex] || '';
+        let tip = scan(gen, a.toLowerCase());
+        if (!tip) {
+          if (subject.includes('psp')) {
+            if (/assembler|assembly.*machine/.test(q.text.toLowerCase())) tip="Assembler converts Assembly→Machine.";
+            else if (/printf|formatted output/.test(q.text.toLowerCase())) tip="printf = formatted output; scanf = input.";
+            else if (/switch.*case.*float/.test(q.text.toLowerCase())) tip="switch labels must be integral constants.";
+          } else if (subject.includes('physics')) {
+            if (/de broglie|λ\s*=/.test(q.text.toLowerCase())) tip="de Broglie: λ = h/p.";
+            else if (/uncertainty|heisenberg/.test(q.text.toLowerCase())) tip="Δx·Δp ≥ ħ/2.";
+          } else if (subject.includes('calculus')) {
+            if (/maclaurin.*e\^x/.test(q.text.toLowerCase())) tip="e^x = 1 + x + x²/2! + ...";
+            else if (/laplace|wave|heat/.test(q.text.toLowerCase())) tip="Wave=hyperbolic; Laplace=elliptic; Heat=parabolic.";
+          } else if (subject.includes('basic electronics')) {
+            if (/zener/.test(q.text.toLowerCase())) tip="Zener in breakdown ≈ constant voltage.";
+            else if (/non-?inverting.*gain/.test(q.text.toLowerCase())) tip="Gain = 1 + Rf/R1.";
+          } else if (subject.includes('uhv')) {
+            if (/invariant.*universal/.test(q.text.toLowerCase())) tip="Invariant + universal → Natural Acceptance.";
+            else if (/identify the correct order/.test(q.text.toLowerCase())) tip="URP: Understanding → Relationship → Physical.";
+          }
+        }
+        q.trick = q.trick || tip || "Use core definitions and always-true properties.";
+      }));
     }
 
-    // ===== App Logic =====
+    // ===== App Logic (Answer Key-first) =====
     (function () {
       const els = {
         subjectSelect: document.getElementById('subjectSelect'),
         unitSelect: document.getElementById('unitSelect'),
+        viewSelect: document.getElementById('viewSelect'),
         modeSelect: document.getElementById('modeSelect'),
         countInput: document.getElementById('countInput'),
         shuffleQuestions: document.getElementById('shuffleQuestions'),
         shuffleOptions: document.getElementById('shuffleOptions'),
-        keyBtn: document.getElementById('keyBtn'),
+        printKeyBtn: document.getElementById('printKeyBtn'),
         startBtn: document.getElementById('startBtn'),
-        quizPanel: document.getElementById('quizPanel'),
-        resultPanel: document.getElementById('resultPanel'),
+
         keyPanel: document.getElementById('keyPanel'),
         keyList: document.getElementById('keyList'),
-        printKeyBtn: document.getElementById('printKeyBtn'),
-        hideKeyBtn: document.getElementById('hideKeyBtn'),
+        keyHeader: document.getElementById('keyHeader'),
+
+        quizPanel: document.getElementById('quizPanel'),
+        resultPanel: document.getElementById('resultPanel'),
+
         qText: document.getElementById('qText'),
         qOpts: document.getElementById('qOpts'),
         qTrick: document.getElementById('qTrick'),
@@ -362,64 +295,49 @@
         progressBar: document.getElementById('progressBar'),
         subjectBadge: document.getElementById('subjectBadge'),
         unitBadge: document.getElementById('unitBadge'),
-        summaryBadge: document.getElementById('summaryBadge'),
         prevBtn: document.getElementById('prevBtn'),
         nextBtn: document.getElementById('nextBtn'),
         endBtn: document.getElementById('endBtn'),
         scoreLine: document.getElementById('scoreLine'),
         restartBtn: document.getElementById('restartBtn'),
+
+        summaryBadge: document.getElementById('summaryBadge'),
         subjectList: document.getElementById('subjectList'),
         unitList: document.getElementById('unitList'),
-        sideUnitsTitle: document.getElementById('sideUnitsTitle')
+        sideUnitsTitle: document.getElementById('sideUnitsTitle'),
+        quizModeWrap: document.getElementById('quizModeWrap')
       };
 
       const state = {
-        subjects: {},
-        subjectOrder: [],
-        currentSubjectId: '__all__',
-        currentUnitId: '__all__',
-        basePool: [],
-        pool: [],            // prepared pool (maybe shuffled options)
-        index: 0,
-        answered: new Map(),
-        mode: 'practice',
-        score: 0,
-        total: 0,
-        settings: {
-          count: null,
-          shuffleQuestions: true,
-          shuffleOptions: true
-        }
+        subjects: {}, subjectOrder: [],
+        currentSubjectId: '__all__', currentUnitId: '__all__',
+        basePool: [], pool: [],
+        index: 0, answered: new Map(), score: 0, total: 0,
+        view: 'answers', mode: 'practice',
+        settings: { count: null, shuffleQuestions: true, shuffleOptions: true }
       };
 
-      // Utilities
-      function shuffle(arr) {
-        const a = arr.slice();
-        for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-        return a;
-      }
-      function cloneQuestion(q) {
-        return { text:q.text, options:q.options.slice(), correctIndex:q.correctIndex, trick:q.trick };
-      }
+      // Utils
+      function shuffle(arr) { const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+      function cloneQuestion(q){ return { text:q.text, options:q.options.slice(), correctIndex:q.correctIndex, trick:q.trick }; }
       function prepareQuestion(q, shuffleOpts) {
         const copy = cloneQuestion(q);
         if (!shuffleOpts) return copy;
-        const indices = copy.options.map((_,i)=>i);
-        const order = shuffle(indices);
-        const newOptions = order.map(i => copy.options[i]);
-        const newCorrect = order.indexOf(copy.correctIndex);
-        copy.options = newOptions;
-        copy.correctIndex = newCorrect;
+        const order = shuffle(copy.options.map((_,i)=>i));
+        copy.options = order.map(i => copy.options[i]);
+        copy.correctIndex = order.indexOf(copy.correctIndex);
         return copy;
       }
+      function show(panel){ els.keyPanel.classList.toggle('active', panel==='key'); els.quizPanel.classList.toggle('active', panel==='quiz'); els.resultPanel.classList.toggle('active', panel==='result'); }
 
+      // Build sidebar + selects
       function updateSummary() {
         const subs = Object.values(state.subjects);
         const unitsCount = subs.reduce((n,s)=>n+s.units.length,0);
         const totalQs = subs.reduce((n,s)=>n+s.units.reduce((m,u)=>m+(u.questions?.length||0),0),0);
         els.summaryBadge.textContent = `${subs.length} subjects • ${unitsCount} units • ${totalQs} questions`;
 
-        // sidebar subjects
+        // Subjects in sidebar
         els.subjectList.innerHTML = '';
         state.subjectOrder.forEach(id => {
           const s = state.subjects[id];
@@ -427,17 +345,12 @@
           div.className = 'unit' + (id===state.currentSubjectId ? ' active':'');
           div.innerHTML = `<strong>${s.name}</strong><div class="small">${s.units.length} units • ${s.totalQuestions} Qs</div>`;
           div.addEventListener('click', () => {
-            state.currentSubjectId = id;
-            els.subjectSelect.value = id;
-            populateUnitSelect();
-            renderSidebarUnits();
+            els.subjectSelect.value = id; onSubjectChange();
           });
           els.subjectList.appendChild(div);
         });
-
         renderSidebarUnits();
       }
-
       function renderSidebarUnits() {
         const id = state.currentSubjectId;
         els.sideUnitsTitle.textContent = id==='__all__' ? 'Units (all subjects)' : `Units (${state.subjects[id]?.name})`;
@@ -447,20 +360,12 @@
           state.subjectOrder.forEach(sid => {
             const s = state.subjects[sid];
             const h = document.createElement('div');
-            h.className = 'small';
-            h.style.margin = '8px 0 4px';
-            h.textContent = s.name;
+            h.className = 'small'; h.style.margin='8px 0 4px'; h.textContent = s.name;
             els.unitList.appendChild(h);
             s.units.forEach(u => {
               const div = document.createElement('div');
-              div.className = 'unit';
-              div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
-              div.addEventListener('click', () => {
-                els.subjectSelect.value = sid;
-                state.currentSubjectId = sid;
-                populateUnitSelect();
-                els.unitSelect.value = u.id;
-              });
+              div.className = 'unit'; div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
+              div.addEventListener('click', () => { els.subjectSelect.value = sid; onSubjectChange(); els.unitSelect.value = u.id; onUnitChange(); });
               els.unitList.appendChild(div);
             });
           });
@@ -468,24 +373,18 @@
           const s = state.subjects[id];
           s.units.forEach(u => {
             const div = document.createElement('div');
-            div.className = 'unit';
-            div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
-            div.addEventListener('click', () => {
-              els.unitSelect.value = u.id;
-            });
+            div.className = 'unit'; div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
+            div.addEventListener('click', () => { els.unitSelect.value = u.id; onUnitChange(); });
             els.unitList.appendChild(div);
           });
         }
       }
-
       function populateSubjectSelect() {
         const sel = els.subjectSelect;
         sel.innerHTML = '<option value="__all__">All Subjects</option>';
         state.subjectOrder.forEach(id => {
-          const s = state.subjects[id];
-          const opt = document.createElement('option');
-          opt.value = id; opt.textContent = s.name;
-          sel.appendChild(opt);
+          const s = state.subjects[id]; const opt = document.createElement('option');
+          opt.value = id; opt.textContent = s.name; sel.appendChild(opt);
         });
       }
       function populateUnitSelect() {
@@ -497,206 +396,64 @@
         if (subId !== '__all__') {
           const s = state.subjects[subId];
           s.units.forEach(u => {
-            const opt = document.createElement('option');
-            opt.value = u.id; opt.textContent = u.name;
+            const opt = document.createElement('option'); opt.value = u.id; opt.textContent = u.name;
             sel.appendChild(opt);
           });
         }
       }
 
+      // Build pools
       function buildBasePool() {
-        const subId = els.subjectSelect.value;
-        const unitId = els.unitSelect.value;
-        state.currentSubjectId = subId;
-        state.currentUnitId = unitId;
-
+        const subId = state.currentSubjectId;
+        const unitId = state.currentUnitId;
         let pool = [];
         if (subId === '__all__') {
-          Object.values(state.subjects).forEach(s => {
-            s.units.forEach(u => pool.push(...(u.questions || [])));
-          });
+          Object.values(state.subjects).forEach(s => s.units.forEach(u => pool.push(...(u.questions||[]))));
         } else {
-          const s = state.subjects[subId];
-          if (!s) { state.basePool = []; return; }
-          if (unitId === '__all__') {
-            s.units.forEach(u => pool.push(...(u.questions || [])));
-          } else {
-            const u = s.units.find(x => x.id === unitId);
-            pool = [...(u?.questions || [])];
+          const s = state.subjects[subId]; if (!s) { state.basePool=[]; return; }
+          if (unitId === '__all__') s.units.forEach(u => pool.push(...(u.questions||[])));
+          else {
+            const u = s.units.find(x => x.id===unitId); pool = [...(u?.questions||[])];
           }
         }
         state.basePool = pool;
       }
-
       function applySettingsAndPreparePool() {
         let list = state.basePool.slice();
-
-        // shuffle questions setting
         if (state.settings.shuffleQuestions) list = shuffle(list);
-
-        // apply count
-        let count = state.settings.count;
-        if (state.mode === 'test' && (count == null || count === '')) {
+        let count = els.countInput.value || null;
+        if (state.view === 'quiz' && state.mode === 'test' && (count==null || count==='')) {
           count = Math.min(20, list.length);
         }
-        if (count && Number(count) > 0) {
-          list = list.slice(0, Math.min(Number(count), list.length));
-        }
-
-        // prepare (shuffle options if selected)
+        if (count && Number(count)>0) list = list.slice(0, Math.min(Number(count), list.length));
         state.pool = list.map(q => prepareQuestion(q, state.settings.shuffleOptions));
-        state.total = state.pool.length;
-        state.index = 0;
-        state.answered.clear();
-        state.score = 0;
+        state.total = state.pool.length; state.index=0; state.answered.clear(); state.score=0;
       }
 
-      function showPanel(which) {
-        els.quizPanel.classList.toggle('active', which === 'quiz');
-        els.resultPanel.classList.toggle('active', which === 'result');
-        els.keyPanel.classList.toggle('active', which === 'key');
-      }
-
-      function renderQuestion() {
-        const q = state.pool[state.index];
-        if (!q) return;
-
-        els.qText.textContent = `${state.index+1}. ${q.text}`;
-        els.qOpts.innerHTML = '';
-        q.options.forEach((opt, j) => {
-          const li = document.createElement('li');
-          li.textContent = opt;
-          li.setAttribute('data-idx', j);
-          li.addEventListener('click', () => handleChoice(j));
-          els.qOpts.appendChild(li);
-        });
-
-        const chosen = state.answered.get(state.index);
-        if (typeof chosen === 'number') applyMarking(chosen, q.correctIndex);
-
-        els.qCounter.textContent = `Q ${state.index+1}/${state.total}`;
-        const sName = state.currentSubjectId==='__all__' ? 'All Subjects' : (state.subjects[state.currentSubjectId]?.name || '');
-        const unitLabel = state.currentUnitId==='__all__' ? 'All Units' : (findCurrentUnit()?.name || '');
-        els.subjectBadge.textContent = sName || 'Subject';
-        els.unitBadge.textContent = unitLabel || 'Unit';
-
-        const pct = state.total ? Math.round(((state.index+1)/state.total)*100) : 0;
-        els.progressBar.style.width = pct + '%';
-
-        if (state.mode === 'practice') {
-          els.qTrick.style.display = 'block';
-          els.qTrick.textContent = 'Trick: ' + (q.trick || '—');
-        } else {
-          const reveal = typeof chosen === 'number';
-          els.qTrick.style.display = reveal ? 'block' : 'none';
-          els.qTrick.textContent = reveal ? ('Trick: ' + (q.trick || '—')) : '';
-        }
-
-        els.prevBtn.disabled = state.index === 0;
-        els.nextBtn.disabled = state.index >= state.total - 1;
-        els.endBtn.style.display = (state.mode === 'test') ? 'inline-block' : 'none';
-      }
-
-      function findCurrentUnit() {
-        const sub = state.subjects[state.currentSubjectId];
-        if (!sub) return null;
-        return sub.units.find(u => u.id === state.currentUnitId);
-      }
-
-      function applyMarking(chosenIdx, correctIdx) {
-        const items = els.qOpts.querySelectorAll('li');
-        items.forEach((li, j) => {
-          li.classList.remove('correct','wrong');
-          if (j === correctIdx) li.classList.add('correct');
-          if (j === chosenIdx && j !== correctIdx) li.classList.add('wrong');
-        });
-      }
-
-      function handleChoice(j) {
-        const q = state.pool[state.index];
-        if (!q) return;
-        const already = state.answered.get(state.index);
-        if (state.mode === 'test' && typeof already === 'number') return;
-
-        state.answered.set(state.index, j);
-        applyMarking(j, q.correctIndex);
-        if (state.mode === 'test') {
-          if (j === q.correctIndex) state.score++;
-          els.qTrick.style.display = 'block';
-          els.qTrick.textContent = 'Trick: ' + (q.trick || '—');
-        }
-      }
-
-      function nextQ() { if (state.index < state.total - 1) { state.index++; renderQuestion(); } }
-      function prevQ() { if (state.index > 0) { state.index--; renderQuestion(); } }
-      function endTest() {
-        showPanel('result');
-        const pct = state.total ? Math.round((state.score/state.total)*100) : 0;
-        els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${pct}%)`;
-      }
-      function start() {
-        state.mode = els.modeSelect.value;
-        state.settings.count = els.countInput.value || null;
-        state.settings.shuffleQuestions = els.shuffleQuestions.checked;
-        state.settings.shuffleOptions = els.shuffleOptions.checked;
-
-        buildBasePool();
-        applySettingsAndPreparePool();
-        showPanel('quiz');
-        renderQuestion();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-
+      // Answer Key
       function buildAnswerKey() {
-        // Build from current selection & settings
-        buildBasePool();
-        applySettingsAndPreparePool();
-
+        buildBasePool(); applySettingsAndPreparePool();
         const sName = state.currentSubjectId==='__all__' ? 'All Subjects' : (state.subjects[state.currentSubjectId]?.name || '');
-        const unitLabel = state.currentUnitId==='__all__' ? 'All Units' : (findCurrentUnit()?.name || '');
-        els.subjectBadge.textContent = sName || 'Subject';
-        els.unitBadge.textContent = unitLabel || 'Unit';
-
+        const uName = state.currentUnitId==='__all__' ? 'All Units' : (findCurrentUnit()?.name || '');
+        els.keyHeader.textContent = `${sName} • ${uName} • ${state.total} Qs`;
         els.keyList.innerHTML = '';
         state.pool.forEach((q, idx) => {
-          const wrap = document.createElement('div');
-          wrap.className = 'qitem';
-          const h = document.createElement('h4');
-          h.textContent = `${idx+1}. ${q.text}`;
-          wrap.appendChild(h);
-
-          const ol = document.createElement('ol');
-          ol.className = 'opts';
+          const wrap = document.createElement('div'); wrap.className = 'qitem';
+          const h = document.createElement('h4'); h.textContent = `${idx+1}. ${q.text}`; wrap.appendChild(h);
+          const ol = document.createElement('ol'); ol.className = 'opts';
           q.options.forEach((opt, j) => {
-            const li = document.createElement('li');
-            li.textContent = opt;
-            if (j === q.correctIndex) li.classList.add('correct'); // highlight in green
+            const li = document.createElement('li'); li.textContent = opt;
+            if (j === q.correctIndex) li.classList.add('correct');
             ol.appendChild(li);
           });
           wrap.appendChild(ol);
-
-          const trick = document.createElement('div');
-          trick.className = 'trick';
-          trick.textContent = 'Trick: ' + (q.trick || '—');
-          wrap.appendChild(trick);
-
+          const trick = document.createElement('div'); trick.className='trick'; trick.textContent='Trick: ' + (q.trick || '—'); wrap.appendChild(trick);
           els.keyList.appendChild(wrap);
         });
+        show('key');
       }
-
-      function showAnswerKey() {
-        buildAnswerKey();
-        showPanel('key');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-
-      function hideAnswerKey() {
-        showPanel('quiz');
-      }
-
       function printKey() {
-        const win = window.open('', '_blank');
-        if (!win) return;
+        const win = window.open('', '_blank'); if (!win) return;
         win.document.write('<!doctype html><title>Answer Key</title>');
         win.document.write('<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:16px;} ol{padding-left:22px;} li{margin:6px 0;padding:6px;border:1px solid #ddd;border-radius:6px;} li.correct{background:#ecfdf5;border-color:#86efac;} .q{margin:0 0 8px 0;font-weight:600;}</style>');
         state.pool.forEach((q, idx) => {
@@ -707,56 +464,111 @@
           });
           win.document.write(`</ol></div>`);
         });
-        win.document.close();
-        win.focus();
-        win.print();
+        win.document.close(); win.focus(); win.print();
+      }
+
+      // Quiz
+      function findCurrentUnit() {
+        const sub = state.subjects[state.currentSubjectId]; if (!sub) return null;
+        return sub.units.find(u => u.id === state.currentUnitId);
+      }
+      function renderQuestion() {
+        const q = state.pool[state.index]; if (!q) return;
+        els.qText.textContent = `${state.index+1}. ${q.text}`;
+        els.qOpts.innerHTML=''; q.options.forEach((opt,j)=>{ const li=document.createElement('li'); li.textContent=opt; li.dataset.idx=j; li.addEventListener('click',()=>handleChoice(j)); els.qOpts.appendChild(li); });
+        const chosen = state.answered.get(state.index); if (typeof chosen==='number') applyMarking(chosen, q.correctIndex);
+        const sName = state.currentSubjectId==='__all__' ? 'All Subjects' : (state.subjects[state.currentSubjectId]?.name || '');
+        const uName = state.currentUnitId==='__all__' ? 'All Units' : (findCurrentUnit()?.name || '');
+        els.subjectBadge.textContent = sName; els.unitBadge.textContent = uName;
+        els.qCounter.textContent = `Q ${state.index+1}/${state.total}`;
+        const pct = state.total ? Math.round(((state.index+1)/state.total)*100) : 0; els.progressBar.style.width=pct+'%';
+        if (state.mode==='practice') { els.qTrick.style.display='block'; els.qTrick.textContent='Trick: ' + (q.trick || '—'); }
+        else { const reveal=(typeof chosen==='number'); els.qTrick.style.display=reveal?'block':'none'; els.qTrick.textContent=reveal?('Trick: ' + (q.trick || '—')):''; }
+        els.prevBtn.disabled = state.index===0; els.nextBtn.disabled = state.index>=state.total-1; els.endBtn.style.display=(state.mode==='test')?'inline-block':'none';
+      }
+      function applyMarking(chosenIdx, correctIdx) {
+        const items = els.qOpts.querySelectorAll('li'); items.forEach((li,j)=>{ li.classList.remove('correct','wrong'); if (j===correctIdx) li.classList.add('correct'); if (j===chosenIdx && j!==correctIdx) li.classList.add('wrong'); });
+      }
+      function handleChoice(j) {
+        const q=state.pool[state.index]; if (!q) return;
+        const already = state.answered.get(state.index); if (state.mode==='test' && typeof already==='number') return;
+        state.answered.set(state.index, j); applyMarking(j, q.correctIndex);
+        if (state.mode==='test') { if (j===q.correctIndex) state.score++; els.qTrick.style.display='block'; els.qTrick.textContent='Trick: ' + (q.trick || '—'); }
+      }
+      function startQuiz() {
+        state.view='quiz'; state.mode=els.modeSelect.value;
+        state.settings.count = els.countInput.value || null;
+        state.settings.shuffleQuestions = els.shuffleQuestions.checked;
+        state.settings.shuffleOptions = els.shuffleOptions.checked;
+        buildBasePool(); applySettingsAndPreparePool(); show('quiz'); renderQuestion(); window.scrollTo({top:0,behavior:'smooth'});
+      }
+      function endTest() { show('result'); const pct = state.total ? Math.round((state.score/state.total)*100) : 0; els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${pct}%)`; }
+      function nextQ(){ if (state.index<state.total-1){ state.index++; renderQuestion(); } }
+      function prevQ(){ if (state.index>0){ state.index--; renderQuestion(); } }
+
+      // Events for UX
+      function onSubjectChange() {
+        state.currentSubjectId = els.subjectSelect.value; populateUnitSelect(); renderSidebarUnits();
+        if (state.view==='answers') { onUnitChange(); } // auto show key
+      }
+      function onUnitChange() {
+        state.currentUnitId = els.unitSelect.value;
+        if (state.view==='answers') { buildAnswerKey(); }
+      }
+      function onViewChange() {
+        state.view = els.viewSelect.value;
+        els.startBtn.style.display = (state.view==='quiz') ? 'inline-block' : 'none';
+        els.quizModeWrap.style.display = (state.view==='quiz') ? 'flex' : 'none';
+        if (state.view==='answers') { buildAnswerKey(); }
+        else { show('quiz'); } // wait for Start Quiz
+      }
+      function onSettingsChange() {
+        state.settings.shuffleQuestions = els.shuffleQuestions.checked;
+        state.settings.shuffleOptions = els.shuffleOptions.checked;
+        // Rebuild key immediately if in key view
+        if (state.view==='answers') buildAnswerKey();
       }
 
       // Wire UI
-      els.startBtn.addEventListener('click', start);
+      els.subjectSelect.addEventListener('change', onSubjectChange);
+      els.unitSelect.addEventListener('change', onUnitChange);
+      els.viewSelect.addEventListener('change', onViewChange);
+      els.shuffleQuestions.addEventListener('change', onSettingsChange);
+      els.shuffleOptions.addEventListener('change', onSettingsChange);
+      els.countInput.addEventListener('input', ()=>{ if (state.view==='answers') buildAnswerKey(); });
+      els.printKeyBtn.addEventListener('click', printKey);
+
+      els.startBtn.addEventListener('click', startQuiz);
       els.prevBtn.addEventListener('click', prevQ);
       els.nextBtn.addEventListener('click', nextQ);
       els.endBtn.addEventListener('click', endTest);
-      els.restartBtn.addEventListener('click', start);
-      els.subjectSelect.addEventListener('change', () => {
-        populateUnitSelect();
-        renderSidebarUnits();
-      });
-      els.keyBtn.addEventListener('click', showAnswerKey);
-      els.hideKeyBtn.addEventListener('click', hideAnswerKey);
-      els.printKeyBtn.addEventListener('click', printKey);
+      els.restartBtn.addEventListener('click', startQuiz);
 
       // Subject registrations
       document.addEventListener('subject-registered', () => {
         state.subjects = window.quizSubjects || {};
-        state.subjectOrder = Object.values(state.subjects)
-          .sort((a,b)=>a.name.localeCompare(b.name))
-          .map(s=>s.id);
-        populateSubjectSelect();
-        updateSummary();
+        state.subjectOrder = Object.values(state.subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
+        populateSubjectSelect(); updateSummary();
+        // Auto select first subject if none chosen and show key
+        if (state.currentSubjectId==='__all__' && state.subjectOrder.length) {
+          els.subjectSelect.value = state.subjectOrder[0]; onSubjectChange();
+        }
       });
 
       document.addEventListener('DOMContentLoaded', () => {
-        // Auto-register from quizData (your files)
         autoRegisterFromQuizData();
-        // In case subjects were registered before DOM ready
+        // If subjects already there, init UI
         state.subjects = window.quizSubjects || {};
-        state.subjectOrder = Object.values(state.subjects)
-          .sort((a,b)=>a.name.localeCompare(b.name))
-          .map(s=>s.id);
-        populateSubjectSelect();
-        updateSummary();
+        state.subjectOrder = Object.values(state.subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
+        populateSubjectSelect(); updateSummary();
+        els.viewSelect.value = 'answers'; onViewChange(); // default Answer Key
       });
 
-      // Safety timeout (if defer order varies)
       setTimeout(() => {
         if (!Object.keys(window.quizSubjects||{}).length) autoRegisterFromQuizData();
         state.subjects = window.quizSubjects || {};
-        state.subjectOrder = Object.values(state.subjects)
-          .sort((a,b)=>a.name.localeCompare(b.name))
-          .map(s=>s.id);
-        populateSubjectSelect();
-        updateSummary();
+        state.subjectOrder = Object.values(state.subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
+        populateSubjectSelect(); updateSummary();
       }, 400);
     })();
   </script>
