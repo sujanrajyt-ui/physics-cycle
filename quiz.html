@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Multi-Subject Quiz + Answer Key</title>
+  <title>Quiz + Answer Key (Simple Buttons)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
@@ -11,173 +11,152 @@
     }
     *{box-sizing:border-box}
     body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
-    .container{max-width:1150px; margin:24px auto; padding:0 16px;}
+    .container{max-width:1100px; margin:24px auto; padding:0 16px;}
     header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
     .brand{display:flex;align-items:center;gap:10px;}
     .badge{background:#eef2ff;color:#1e293b;border:1px solid #c7d2fe;border-radius:999px;padding:4px 10px;font-size:12px;}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
-    .controls{display:grid;grid-template-columns:1fr 1fr 1fr auto; gap:10px; align-items:end;}
-    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;}
-    select,button,input{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;background:#fff;}
-    button{background:var(--accent);color:white;border-color:var(--accent-2);cursor:pointer;}
-    button.secondary{background:#f1f5f9;color:#0f172a;border-color:var(--border);}
-    button.ghost{background:#fff;color:#2563eb;border-color:#2563eb;}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .setup{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px;}
-    .setup .chip{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:6px 10px;background:#fff;font-size:13px;color:#0f172a;}
-    .setup .chip input[type="checkbox"]{transform:scale(1.1);}
-    .setup .field{display:flex;align-items:center;gap:6px;}
-    .panel{margin-top:14px; display:none;}
-    .panel.active{display:block;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
     .muted{color:var(--muted); font-size:13px;}
-    .grid{display:grid;grid-template-columns:300px 1fr; gap:12px;align-items:start;}
-    .sidebar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:70vh;overflow:auto;}
-    .side-section{margin-bottom:12px;}
-    .side-title{font-weight:700;margin-bottom:6px;}
-    .unit{padding:8px;border-radius:8px;cursor:pointer;}
-    .unit:hover{background:#f8fafc;}
-    .unit.active{background:#eef2ff;border:1px solid #c7d2fe;}
-    .small{font-size:12px;color:#64748b;}
-
-    /* Quiz panel */
+    .section-title{font-weight:700;margin:6px 0 10px 0;}
+    .btn-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+      padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:#fff;color:#0f172a;
+      text-align:center;cursor:pointer;user-select:none;min-height:46px;}
+    .btn:hover{border-color:#cbd5e1;background:#f8fafc;}
+    .btn.active{background:#eef2ff;border-color:#c7d2fe;color:#0f172a;font-weight:700;}
+    .btn.primary{background:var(--accent);border-color:var(--accent-2);color:#fff;}
+    .btn.secondary{background:#f1f5f9;border-color:var(--border);}
+    .btn.ghost{background:#fff;border-color:var(--accent);color:var(--accent);}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .setup{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px;}
+    .chip{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:6px 10px;background:#fff;font-size:13px;}
+    .chip input[type="checkbox"]{transform:scale(1.1);}
+    .field{display:flex;align-items:center;gap:6px;}
+    input,select{border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:14px;background:#fff;}
+    /* panel control */
+    .panel{display:none;margin-top:12px;}
+    .panel.active{display:block;}
+    /* Empty state */
+    #emptyState{padding:16px;border:1px dashed var(--border);border-radius:10px;background:#fff; color:#475569; margin-top:12px;}
+    /* Answer Key items */
+    .qitem{border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff;}
+    .qitem h4{margin:0 0 8px 0;font-size:14px;}
+    ol.opts{margin:0; padding-left:22px;}
+    ol.opts li{margin:6px 0; padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;}
+    ol.opts li.correct{border-color:#86efac;background:#ecfdf5;}
+    .trick{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:10px;white-space:pre-wrap;}
+    /* Quiz layout */
     .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
     .qbox{padding:12px;border:1px dashed var(--border);border-radius:10px;margin-bottom:10px;background:#fcfcff;}
     .qtext{font-weight:600;margin-bottom:8px;}
-    ol.opts{margin:0; padding-left:22px;}
-    ol.opts li{margin:6px 0; padding:8px 10px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;}
-    ol.opts li:hover{border-color:#cbd5e1; background:#f8fafc;}
-    ol.opts li.correct{border-color:#86efac;background:#ecfdf5;}
-    ol.opts li.wrong{border-color:#fecaca;background:#fef2f2;}
-    .trick{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:10px;white-space:pre-wrap;}
+    .optbtn{margin:6px 0; padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;}
+    .optbtn.correct{border-color:#86efac;background:#ecfdf5;}
+    .optbtn.wrong{border-color:#fecaca;background:#fef2f2;}
     .nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px;}
     .progress{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:8px 0 0;}
     .bar{height:100%;background:#2563eb;width:0%;}
-
-    /* Answer Key panel */
-    #keyPanel .qitem{border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff;}
-    #keyPanel .qitem h4{margin:0 0 8px 0;font-size:14px;}
-    #keyPanel .actions{display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px;}
-
-    /* Empty state */
-    #emptyState{padding:16px;border:1px dashed var(--border);border-radius:10px;background:#fff; color:#475569; margin-top:12px;}
+    /* Segmented toggle */
+    .seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .seg button{border:none;background:#fff;padding:8px 12px;cursor:pointer;}
+    .seg button.active{background:#2563eb;color:#fff;}
+    @media (max-width: 560px){
+      .btn{padding:12px 10px; min-height:44px;}
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="card">
       <div class="brand">
-        <h2 style="margin:0;">Multi-Subject Quiz + Answer Key</h2>
+        <h2 style="margin:0;">Quiz + Answer Key</h2>
         <span class="badge" id="summaryBadge">Loading…</span>
       </div>
-      <div class="muted">Select a Subject and a specific Unit to view the Answer Key (green) or start a Quiz.</div>
+      <div class="muted">Tap a Subject, then a Unit. Answer Key shows first (green = correct). Switch to Quiz to practice/test.</div>
     </header>
 
+    <!-- Subject picker -->
     <div class="card">
-      <div class="controls">
-        <div>
-          <label for="subjectSelect">Subject</label>
-          <select id="subjectSelect"><option value="__all__">All Subjects</option></select>
-        </div>
-        <div>
-          <label for="unitSelect">Unit</label>
-          <select id="unitSelect"><option value="__all__">All Units</option></select>
-        </div>
-        <div>
-          <label for="viewSelect">View</label>
-          <select id="viewSelect">
-            <option value="answers">Answer Key</option>
-            <option value="quiz">Quiz</option>
-          </select>
-        </div>
-        <div>
-          <button id="startBtn" disabled>Start Quiz</button>
-        </div>
+      <div class="section-title">Choose Subject</div>
+      <div id="subjectButtons" class="btn-grid">
+        <!-- Buttons appear here -->
       </div>
+    </div>
 
-      <!-- Setup row (applies to both Answer Key and Quiz) -->
+    <!-- Unit picker (shown after subject chosen) -->
+    <div class="card" id="unitCard" style="display:none;">
+      <div class="section-title">Choose Unit</div>
+      <div id="unitButtons" class="btn-grid"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="card">
+      <div class="section-title">View & Settings</div>
       <div class="setup">
-        <div class="field">
-          <label for="countInput" class="muted">Question count</label>
-          <input id="countInput" type="number" min="1" placeholder="All" style="width:120px;">
+        <div class="seg" id="viewSeg">
+          <button data-view="answers" class="active">Answer Key</button>
+          <button data-view="quiz">Quiz</button>
         </div>
-        <label class="chip"><input type="checkbox" id="shuffleQuestions" checked> Shuffle questions</label>
-        <label class="chip"><input type="checkbox" id="shuffleOptions" checked> Shuffle options</label>
-
-        <!-- Quiz-only controls -->
-        <div class="field" id="quizModeWrap">
-          <label for="modeSelect" class="muted">Quiz mode</label>
+        <div class="field" id="quizModeWrap" style="display:none;">
+          <label for="modeSelect" class="muted">Mode</label>
           <select id="modeSelect">
-            <option value="practice">Practice (instant feedback)</option>
-            <option value="test">Test (scored)</option>
+            <option value="practice">Practice</option>
+            <option value="test">Test</option>
           </select>
         </div>
-
-        <!-- Answer Key actions -->
-        <button id="printKeyBtn" class="secondary" disabled>Print Key</button>
-      </div>
-
-      <!-- Empty state -->
-      <div id="emptyState">Please select a Subject and a specific Unit to display content.</div>
-
-      <!-- Answer Key Panel -->
-      <div class="panel" id="keyPanel">
-        <div id="keyHeader" class="muted" style="margin-bottom:8px;"></div>
-        <div id="keyList"></div>
-      </div>
-
-      <!-- Quiz Panel -->
-      <div class="panel" id="quizPanel">
-        <div class="meta">
-          <div>
-            <span class="badge" id="subjectBadge">Subject</span>
-            <span class="badge" id="unitBadge">Unit</span>
-            <span class="muted" id="qCounter">Q 0/0</span>
-          </div>
-          <div style="min-width:160px;">
-            <div class="progress"><div class="bar" id="progressBar"></div></div>
-          </div>
+        <div class="field">
+          <label for="countInput" class="muted">Questions</label>
+          <input id="countInput" type="number" min="1" placeholder="All" style="width:110px;">
         </div>
-
-        <div class="qbox">
-          <div class="qtext" id="qText">Question text</div>
-          <ol class="opts" id="qOpts"></ol>
-          <div class="trick" id="qTrick" style="display:none;"></div>
-        </div>
-
-        <div class="nav">
-          <div>
-            <button class="secondary" id="prevBtn">Prev</button>
-            <button class="secondary" id="nextBtn">Next</button>
-          </div>
-          <div>
-            <button class="secondary" id="endBtn" style="display:none;">End Test</button>
-          </div>
-        </div>
+        <label class="chip"><input type="checkbox" id="shuffleQuestions" checked> Shuffle Qs</label>
+        <label class="chip"><input type="checkbox" id="shuffleOptions" checked> Shuffle Options</label>
+        <button id="printKeyBtn" class="btn secondary" disabled>Print Key</button>
+        <button id="startBtn" class="btn primary" disabled>Start Quiz</button>
       </div>
+      <div id="emptyState">Please pick a Subject and then a Unit.</div>
+    </div>
 
-      <!-- Result Panel -->
-      <div class="panel" id="resultPanel">
-        <div class="score" id="scoreLine">Score: 0/0</div>
-        <div class="muted" id="resultNote">Great job! Try another subject or unit.</div>
+    <!-- Answer Key -->
+    <div class="panel" id="keyPanel">
+      <div id="keyHeader" class="muted" style="margin-bottom:8px;"></div>
+      <div id="keyList"></div>
+    </div>
+
+    <!-- Quiz -->
+    <div class="panel" id="quizPanel">
+      <div class="meta">
         <div>
-          <button id="restartBtn">Restart</button>
+          <span class="badge" id="subjectBadge">Subject</span>
+          <span class="badge" id="unitBadge">Unit</span>
+          <span class="muted" id="qCounter">Q 0/0</span>
+        </div>
+        <div style="min-width:160px;">
+          <div class="progress"><div class="bar" id="progressBar"></div></div>
+        </div>
+      </div>
+
+      <div class="qbox">
+        <div class="qtext" id="qText">Question text</div>
+        <div id="qOpts"></div>
+        <div class="trick" id="qTrick" style="display:none;"></div>
+      </div>
+
+      <div class="nav">
+        <div>
+          <button class="btn secondary" id="prevBtn">Prev</button>
+          <button class="btn secondary" id="nextBtn">Next</button>
+        </div>
+        <div>
+          <button class="btn secondary" id="endBtn" style="display:none;">End Test</button>
         </div>
       </div>
     </div>
 
-    <div class="grid" style="margin-top:12px;">
-      <div class="sidebar">
-        <div class="side-section">
-          <div class="side-title">Subjects</div>
-          <div id="subjectList"></div>
-        </div>
-        <div class="side-section">
-          <div class="side-title" id="sideUnitsTitle">Units (selected subject)</div>
-          <div id="unitList"></div>
-        </div>
-      </div>
+    <!-- Result -->
+    <div class="panel" id="resultPanel">
       <div class="card">
-        <div class="muted">Tip: Nothing shows until you pick a Subject and a specific Unit. Then view the Answer Key or start a Quiz.</div>
+        <div class="section-title">Result</div>
+        <div class="muted" id="scoreLine">Score: 0/0</div>
+        <div style="margin-top:10px;"><button id="restartBtn" class="btn">Restart Quiz</button></div>
       </div>
     </div>
   </div>
@@ -185,89 +164,22 @@
   <!-- Ensure quizData exists BEFORE subject files load -->
   <script>window.quizData = window.quizData || {};</script>
 
-  <!-- Include your subject JS files -->
+  <!-- Subject files -->
   <script src="psp.js" defer></script>
   <script src="physics.js" defer></script>
   <script src="calculus.js" defer></script>
   <script src="basicelectronics.js" defer></script>
   <script src="uhv.js" defer></script>
 
-  <!-- App -->
   <script defer>
-    // --- Registry API ---
-    window.quizSubjects = window.quizSubjects || {};
-    function registerSubject(id, raw) {
-      const subjectId = String(id).trim();
-      const subjectName = (raw && raw.name) ? raw.name : subjectId;
-      let units = [];
-      if (raw && Array.isArray(raw.units)) {
-        units = raw.units.map(u => ({
-          id: u.id || u.name || 'Unit-' + Math.random().toString(36).slice(2,7),
-          name: u.name || u.id,
-          questions: Array.isArray(u.questions) ? u.questions : []
-        }));
-      } else if (raw && typeof raw === 'object') {
-        units = Object.entries(raw).map(([unitName, qs]) => ({
-          id: unitName,
-          name: unitName,
-          questions: Array.isArray(qs) ? qs : []
-        }));
-      } else {
-        return;
-      }
-      addTricksToUnits(units, subjectId);
-      window.quizSubjects[subjectId] = {
-        id: subjectId,
-        name: subjectName,
-        units,
-        totalQuestions: units.reduce((n,u)=>n+(u.questions?.length||0),0)
-      };
-      document.dispatchEvent(new CustomEvent('subject-registered', {
-        detail: { id: subjectId, name: subjectName, count: window.quizSubjects[subjectId].totalQuestions }
-      }));
-    }
-
-    // --- Auto-register from quizData (your files use quizData.SUBJECT) ---
-    function autoRegisterFromQuizData() {
-      const qd = window.quizData || {};
-      const skip = new Set(['UHVUnits','units','categories','subjects','allQuestions','totalQuestions']);
-      Object.keys(qd).forEach(key => {
-        if (skip.has(key)) return;
-        const raw = qd[key];
-        if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
-          registerSubject(key, raw);
-        }
-      });
-    }
-
-    // --- Trick Generator (condensed) ---
-    function addTricksToUnits(units, subjectId) {
-      const s = (subjectId||'').toLowerCase();
-      units.forEach(u => (u.questions||[]).forEach(q => {
-        if (q.trick) return;
-        if (/all of these/.test(q.options[q.correctIndex]?.toLowerCase()||'')) q.trick = "If all options fit, 'All of these' is likely.";
-        else if (s.includes('psp')) {
-          if (/assembler|assembly.*machine/i.test(q.text)) q.trick="Assembler converts Assembly→Machine.";
-          else if (/printf|formatted output/i.test(q.text)) q.trick="printf = formatted output; scanf = input.";
-        } else if (s.includes('physics')) {
-          if (/de broglie|λ\s*=/i.test(q.text)) q.trick="de Broglie: λ = h/p.";
-        } else if (s.includes('calculus')) {
-          if (/maclaurin.*e\^x/i.test(q.text)) q.trick="e^x = 1 + x + x²/2! + …";
-        } else if (s.includes('basic electronics')) {
-          if (/zener/i.test(q.text)) q.trick="Zener in breakdown ≈ constant voltage.";
-        } else if (s.includes('uhv')) {
-          if (/invariant.*universal/i.test(q.text)) q.trick="Invariant + universal → Natural Acceptance.";
-        }
-        q.trick = q.trick || "Use core definitions and always-true properties.";
-      }));
-    }
-
-    // ===== App Logic (hide until ready) =====
+    // Auto-register from quizData (no need for registerSubject; we’ll read window.quizData.*)
     (function () {
       const els = {
-        subjectSelect: document.getElementById('subjectSelect'),
-        unitSelect: document.getElementById('unitSelect'),
-        viewSelect: document.getElementById('viewSelect'),
+        subjectButtons: document.getElementById('subjectButtons'),
+        unitCard: document.getElementById('unitCard'),
+        unitButtons: document.getElementById('unitButtons'),
+        viewSeg: document.getElementById('viewSeg'),
+        quizModeWrap: document.getElementById('quizModeWrap'),
         modeSelect: document.getElementById('modeSelect'),
         countInput: document.getElementById('countInput'),
         shuffleQuestions: document.getElementById('shuffleQuestions'),
@@ -277,12 +189,11 @@
 
         emptyState: document.getElementById('emptyState'),
         keyPanel: document.getElementById('keyPanel'),
-        keyList: document.getElementById('keyList'),
         keyHeader: document.getElementById('keyHeader'),
+        keyList: document.getElementById('keyList'),
 
         quizPanel: document.getElementById('quizPanel'),
         resultPanel: document.getElementById('resultPanel'),
-
         qText: document.getElementById('qText'),
         qOpts: document.getElementById('qOpts'),
         qTrick: document.getElementById('qTrick'),
@@ -295,261 +206,226 @@
         endBtn: document.getElementById('endBtn'),
         scoreLine: document.getElementById('scoreLine'),
         restartBtn: document.getElementById('restartBtn'),
-
         summaryBadge: document.getElementById('summaryBadge'),
-        subjectList: document.getElementById('subjectList'),
-        unitList: document.getElementById('unitList'),
-        sideUnitsTitle: document.getElementById('sideUnitsTitle'),
-        quizModeWrap: document.getElementById('quizModeWrap')
       };
 
       const state = {
         subjects: {}, subjectOrder: [],
-        currentSubjectId: '__all__', currentUnitId: '__all__',
+        subjectId: null, unitId: null,
         basePool: [], pool: [],
         index: 0, answered: new Map(), score: 0, total: 0,
         view: 'answers', mode: 'practice',
         settings: { count: null, shuffleQuestions: true, shuffleOptions: true }
       };
 
-      // Utils
-      function shuffle(arr) { const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-      function cloneQuestion(q){ return { text:q.text, options:q.options.slice(), correctIndex:q.correctIndex, trick:q.trick }; }
-      function prepareQuestion(q, shuffleOpts){ const c=cloneQuestion(q); if(!shuffleOpts) return c; const idx=c.options.map((_,i)=>i); const ord=shuffle(idx); c.options=ord.map(i=>c.options[i]); c.correctIndex=ord.indexOf(c.correctIndex); return c; }
-      function show(panel){ els.keyPanel.classList.toggle('active', panel==='key'); els.quizPanel.classList.toggle('active', panel==='quiz'); els.resultPanel.classList.toggle('active', panel==='result'); }
-      function isReady(){ return state.currentSubjectId!=='__all__' && state.currentUnitId!=='__all__'; }
+      function buildSubjectsFromQuizData() {
+        const qd = window.quizData || {};
+        const subjects = {};
+        Object.keys(qd).forEach(key => {
+          const val = qd[key];
+          if (val && typeof val === 'object' && !Array.isArray(val)) {
+            // treat as subject
+            const units = Object.entries(val).map(([name, qs]) => ({
+              id: name, name, questions: Array.isArray(qs) ? qs : []
+            }));
+            subjects[key] = { id:key, name:key, units, total: units.reduce((n,u)=>n+u.questions.length,0) };
+          }
+        });
+        state.subjects = subjects;
+        state.subjectOrder = Object.values(subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
+        els.summaryBadge.textContent = `${state.subjectOrder.length} subjects • ${Object.values(subjects).reduce((n,s)=>n+s.units.length,0)} units`;
+      }
+
+      function renderSubjectButtons() {
+        els.subjectButtons.innerHTML = '';
+        state.subjectOrder.forEach(id => {
+          const s = state.subjects[id];
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.textContent = s.name;
+          btn.addEventListener('click', () => {
+            state.subjectId = id;
+            // highlight
+            els.subjectButtons.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            renderUnitButtons();
+            clearPanels();
+            toggleControls();
+          });
+          els.subjectButtons.appendChild(btn);
+        });
+      }
+
+      function renderUnitButtons() {
+        if (!state.subjectId) return;
+        const s = state.subjects[state.subjectId];
+        els.unitButtons.innerHTML = '';
+        s.units.forEach(u => {
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.textContent = u.name;
+          btn.addEventListener('click', () => {
+            state.unitId = u.id;
+            els.unitButtons.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            // Default to Answer Key view
+            state.view = 'answers';
+            setViewButtons();
+            buildAnswerKey();
+            toggleControls();
+          });
+          els.unitButtons.appendChild(btn);
+        });
+        els.unitCard.style.display = 'block';
+      }
+
+      function isReady(){ return !!(state.subjectId && state.unitId); }
       function toggleControls(){
         const ready = isReady();
-        els.startBtn.disabled = !ready || state.view!=='quiz';
         els.printKeyBtn.disabled = !ready || state.view!=='answers';
+        els.startBtn.disabled = !ready || state.view!=='quiz';
+        els.quizModeWrap.style.display = (state.view==='quiz') ? 'flex' : 'none';
+        els.emptyState.style.display = ready ? 'none' : 'block';
       }
-      function showEmpty(msg){
+      function clearPanels(){
+        els.keyPanel.classList.remove('active');
+        els.quizPanel.classList.remove('active');
+        els.resultPanel.classList.remove('active');
         els.emptyState.style.display = 'block';
-        els.emptyState.textContent = msg || 'Please select a Subject and a specific Unit to display content.';
-        show(null); // hide panels
       }
-      function hideEmpty(){ els.emptyState.style.display = 'none'; }
-
-      function updateSummary() {
-        const subs = Object.values(state.subjects);
-        const unitsCount = subs.reduce((n,s)=>n+s.units.length,0);
-        const totalQs = subs.reduce((n,s)=>n+s.units.reduce((m,u)=>m+(u.questions?.length||0),0),0);
-        document.getElementById('summaryBadge').textContent = `${subs.length} subjects • ${unitsCount} units • ${totalQs} questions`;
-
-        // Sidebar subjects
-        els.subjectList.innerHTML = '';
-        state.subjectOrder.forEach(id => {
-          const s = state.subjects[id];
-          const div = document.createElement('div');
-          div.className = 'unit' + (id===state.currentSubjectId ? ' active':'');
-          div.innerHTML = `<strong>${s.name}</strong><div class="small">${s.units.length} units • ${s.totalQuestions} Qs</div>`;
-          div.addEventListener('click', () => { els.subjectSelect.value = id; onSubjectChange(); });
-          els.subjectList.appendChild(div);
-        });
-        renderSidebarUnits();
-      }
-      function renderSidebarUnits() {
-        const id = state.currentSubjectId;
-        els.sideUnitsTitle.textContent = id==='__all__' ? 'Units (all subjects)' : `Units (${state.subjects[id]?.name})`;
-        els.unitList.innerHTML = '';
-
-        if (id==='__all__') {
-          state.subjectOrder.forEach(sid => {
-            const s = state.subjects[sid];
-            const h = document.createElement('div');
-            h.className = 'small'; h.style.margin='8px 0 4px'; h.textContent = s.name;
-            els.unitList.appendChild(h);
-            s.units.forEach(u => {
-              const div = document.createElement('div');
-              div.className = 'unit'; div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
-              div.addEventListener('click', () => { els.subjectSelect.value = sid; onSubjectChange(); els.unitSelect.value = u.id; onUnitChange(); });
-              els.unitList.appendChild(div);
-            });
-          });
-        } else {
-          const s = state.subjects[id];
-          s.units.forEach(u => {
-            const div = document.createElement('div');
-            div.className = 'unit'; div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
-            div.addEventListener('click', () => { els.unitSelect.value = u.id; onUnitChange(); });
-            els.unitList.appendChild(div);
-          });
-        }
-      }
-      function populateSubjectSelect() {
-        const sel = els.subjectSelect;
-        sel.innerHTML = '<option value="__all__">All Subjects</option>';
-        state.subjectOrder.forEach(id => {
-          const s = state.subjects[id]; const opt = document.createElement('option');
-          opt.value = id; opt.textContent = s.name; sel.appendChild(opt);
-        });
-      }
-      function populateUnitSelect() {
-        const subId = els.subjectSelect.value;
-        state.currentSubjectId = subId;
-        const sel = els.unitSelect;
-        sel.innerHTML = '<option value="__all__">All Units</option>';
-
-        if (subId !== '__all__') {
-          const s = state.subjects[subId];
-          s.units.forEach(u => {
-            const opt = document.createElement('option'); opt.value = u.id; opt.textContent = u.name;
-            sel.appendChild(opt);
-          });
-        }
+      function setViewButtons(){
+        const buttons = els.viewSeg.querySelectorAll('button');
+        buttons.forEach(b => b.classList.toggle('active', b.dataset.view===state.view));
       }
 
-      function buildBasePool() {
-        const subId = state.currentSubjectId;
-        const unitId = state.currentUnitId;
-        let pool = [];
-        if (subId === '__all__') pool=[];
-        else {
-          const s = state.subjects[subId]; if (!s) { state.basePool=[]; return; }
-          if (unitId === '__all__') pool=[];
-          else {
-            const u = s.units.find(x => x.id===unitId); pool = [...(u?.questions||[])];
-          }
-        }
-        state.basePool = pool;
+      function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+      function cloneQ(q){ return { text:q.text, options:q.options.slice(), correctIndex:q.correctIndex, trick:q.trick }; }
+      function prepQ(q, shuffleOpts){ const c=cloneQ(q); if(!shuffleOpts)return c; const order=shuffle(c.options.map((_,i)=>i)); c.options=order.map(i=>c.options[i]); c.correctIndex=order.indexOf(c.correctIndex); return c; }
+
+      function buildBasePool(){
+        if (!isReady()) { state.basePool=[]; return; }
+        const s = state.subjects[state.subjectId];
+        const u = s.units.find(x => x.id===state.unitId);
+        state.basePool = (u?.questions || []).slice();
       }
-      function applySettingsAndPreparePool() {
+
+      function applySettings(){
         let list = state.basePool.slice();
         if (state.settings.shuffleQuestions) list = shuffle(list);
         let count = els.countInput.value || null;
-        if (state.view === 'quiz' && state.mode === 'test' && (count==null || count==='')) count = Math.min(20, list.length);
+        if (state.view==='quiz' && state.mode==='test' && (count==null || count==='')) count = Math.min(20, list.length);
         if (count && Number(count)>0) list = list.slice(0, Math.min(Number(count), list.length));
-        state.pool = list.map(q => prepareQuestion(q, state.settings.shuffleOptions));
+        state.pool = list.map(q => prepQ(q, state.settings.shuffleOptions));
         state.total = state.pool.length; state.index=0; state.answered.clear(); state.score=0;
       }
 
-      // Answer Key flow
-      function buildAnswerKey() {
-        if (!isReady()) { showEmpty(); toggleControls(); return; }
-        hideEmpty();
-        state.view='answers';
-        buildBasePool(); applySettingsAndPreparePool();
-        const sName = state.subjects[state.currentSubjectId]?.name || '';
-        const uName = (state.subjects[state.currentSubjectId]?.units.find(u=>u.id===state.currentUnitId)?.name) || '';
-        els.keyHeader.textContent = `${sName} • ${uName} • ${state.total} Qs`;
+      // Answer Key
+      function buildAnswerKey(){
+        if (!isReady()) return;
+        buildBasePool(); state.view='answers'; applySettings();
+        const title = `${state.subjectId} • ${state.unitId} • ${state.total} Qs`;
+        els.keyHeader.textContent = title;
         els.keyList.innerHTML = '';
-        state.pool.forEach((q, idx) => {
-          const wrap = document.createElement('div'); wrap.className = 'qitem';
-          const h = document.createElement('h4'); h.textContent = `${idx+1}. ${q.text}`; wrap.appendChild(h);
-          const ol = document.createElement('ol'); ol.className = 'opts';
-          q.options.forEach((opt, j) => {
-            const li = document.createElement('li'); li.textContent = opt;
-            if (j === q.correctIndex) li.classList.add('correct');
-            ol.appendChild(li);
-          });
+        state.pool.forEach((q, i) => {
+          const wrap=document.createElement('div'); wrap.className='qitem';
+          const h=document.createElement('h4'); h.textContent=`${i+1}. ${q.text}`; wrap.appendChild(h);
+          const ol=document.createElement('ol'); ol.className='opts';
+          q.options.forEach((opt,j)=>{ const li=document.createElement('li'); li.textContent=opt; if(j===q.correctIndex) li.classList.add('correct'); ol.appendChild(li); });
           wrap.appendChild(ol);
-          const trick = document.createElement('div'); trick.className='trick'; trick.textContent='Trick: ' + (q.trick || '—'); wrap.appendChild(trick);
+          const trick=document.createElement('div'); trick.className='trick'; trick.textContent='Trick: ' + (q.trick||'—'); wrap.appendChild(trick);
           els.keyList.appendChild(wrap);
         });
-        show('key'); toggleControls();
+        els.keyPanel.classList.add('active'); els.quizPanel.classList.remove('active'); els.resultPanel.classList.remove('active');
+        toggleControls();
+        window.scrollTo({top:0,behavior:'smooth'});
       }
 
-      // Quiz flow
-      function renderQuestion() {
-        if (!isReady()) { showEmpty(); toggleControls(); return; }
-        const q = state.pool[state.index]; if (!q) return;
+      function printKey(){
+        if (!isReady()) return;
+        const w = window.open('', '_blank'); if (!w) return;
+        w.document.write('<!doctype html><title>Answer Key</title>');
+        w.document.write('<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:16px;} ol{padding-left:22px;} li{margin:6px 0;padding:6px;border:1px solid #ddd;border-radius:6px;} li.correct{background:#ecfdf5;border-color:#86efac;} .q{margin:0 0 8px 0;font-weight:600;}</style>');
+        state.pool.forEach((q, idx) => {
+          w.document.write(`<div><div class="q">${idx+1}. ${q.text}</div><ol>`);
+          q.options.forEach((opt,j)=>{ const cls=(j===q.correctIndex)?'class="correct"':''; w.document.write(`<li ${cls}>${opt}</li>`); });
+          w.document.write(`</ol></div>`);
+        });
+        w.document.close(); w.focus(); w.print();
+      }
+
+      // Quiz
+      function renderQuestion(){
+        if (!isReady()) return;
+        const q=state.pool[state.index]; if(!q) return;
         els.qText.textContent = `${state.index+1}. ${q.text}`;
-        els.qOpts.innerHTML=''; q.options.forEach((opt,j)=>{ const li=document.createElement('li'); li.textContent=opt; li.dataset.idx=j; li.addEventListener('click',()=>handleChoice(j)); els.qOpts.appendChild(li); });
-        const chosen = state.answered.get(state.index); if (typeof chosen==='number') applyMarking(chosen, q.correctIndex);
-        const sName = state.subjects[state.currentSubjectId]?.name || ''; const uName = (state.subjects[state.currentSubjectId]?.units.find(u=>u.id===state.currentUnitId)?.name) || '';
-        els.subjectBadge.textContent = sName; els.unitBadge.textContent = uName;
+        els.qOpts.innerHTML='';
+        q.options.forEach((opt,j)=>{
+          const b=document.createElement('div'); b.className='optbtn'; b.textContent=opt; b.addEventListener('click',()=>choose(j)); els.qOpts.appendChild(b);
+        });
+        const chosen=state.answered.get(state.index);
+        if (typeof chosen==='number') mark(chosen,q.correctIndex);
+        els.subjectBadge.textContent = state.subjectId; els.unitBadge.textContent = state.unitId;
         els.qCounter.textContent = `Q ${state.index+1}/${state.total}`;
         const pct = state.total ? Math.round(((state.index+1)/state.total)*100) : 0; els.progressBar.style.width=pct+'%';
-        if (state.mode==='practice') { els.qTrick.style.display='block'; els.qTrick.textContent='Trick: ' + (q.trick || '—'); }
-        else { const reveal=(typeof chosen==='number'); els.qTrick.style.display=reveal?'block':'none'; els.qTrick.textContent=reveal?('Trick: ' + (q.trick || '—')):''; }
+        if (state.mode==='practice'){ els.qTrick.style.display='block'; els.qTrick.textContent='Trick: ' + (q.trick||'—'); }
+        else { const reveal=(typeof chosen==='number'); els.qTrick.style.display=reveal?'block':'none'; els.qTrick.textContent=reveal?('Trick: ' + (q.trick||'—')):''; }
         els.prevBtn.disabled = state.index===0; els.nextBtn.disabled = state.index>=state.total-1; els.endBtn.style.display=(state.mode==='test')?'inline-block':'none';
       }
-      function applyMarking(chosenIdx, correctIdx) {
-        const items = els.qOpts.querySelectorAll('li'); items.forEach((li,j)=>{ li.classList.remove('correct','wrong'); if (j===correctIdx) li.classList.add('correct'); if (j===chosenIdx && j!==correctIdx) li.classList.add('wrong'); });
+      function mark(chosen, correct){
+        els.qOpts.querySelectorAll('.optbtn').forEach((b,idx)=>{
+          b.classList.remove('correct','wrong');
+          if (idx===correct) b.classList.add('correct');
+          if (idx===chosen && idx!==correct) b.classList.add('wrong');
+        });
       }
-      function handleChoice(j) {
-        const q=state.pool[state.index]; if (!q) return;
-        const already = state.answered.get(state.index); if (state.mode==='test' && typeof already==='number') return;
-        state.answered.set(state.index, j); applyMarking(j, q.correctIndex);
-        if (state.mode==='test') { if (j===q.correctIndex) state.score++; els.qTrick.style.display='block'; els.qTrick.textContent='Trick: ' + (q.trick || '—'); }
+      function choose(j){
+        const q=state.pool[state.index]; const already = state.answered.get(state.index);
+        if (state.mode==='test' && typeof already==='number') return;
+        state.answered.set(state.index, j); mark(j,q.correctIndex);
+        if (state.mode==='test'){ if (j===q.correctIndex) state.score++; els.qTrick.style.display='block'; els.qTrick.textContent='Trick: '+(q.trick||'—'); }
       }
-      function startQuiz() {
-        if (!isReady()) { showEmpty(); toggleControls(); return; }
+      function startQuiz(){
+        if (!isReady()) return;
         state.view='quiz'; state.mode=els.modeSelect.value;
         state.settings.count = els.countInput.value || null;
         state.settings.shuffleQuestions = els.shuffleQuestions.checked;
         state.settings.shuffleOptions = els.shuffleOptions.checked;
-        hideEmpty(); buildBasePool(); applySettingsAndPreparePool(); show('quiz'); renderQuestion(); window.scrollTo({top:0,behavior:'smooth'});
-        toggleControls();
+        buildBasePool(); applySettings();
+        els.keyPanel.classList.remove('active'); els.resultPanel.classList.remove('active'); els.quizPanel.classList.add('active');
+        renderQuestion(); toggleControls(); window.scrollTo({top:0,behavior:'smooth'});
       }
-      function endTest() { show('result'); const pct = state.total ? Math.round((state.score/state.total)*100) : 0; els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${pct}%)`; }
+      function endTest(){ els.quizPanel.classList.remove('active'); els.resultPanel.classList.add('active'); const pct = state.total ? Math.round((state.score/state.total)*100) : 0; els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${pct}%)`; }
+      function nextQ(){ if(state.index<state.total-1){ state.index++; renderQuestion(); } }
+      function prevQ(){ if(state.index>0){ state.index--; renderQuestion(); } }
 
       // Events
-      function onSubjectChange() {
-        state.currentSubjectId = els.subjectSelect.value; populateUnitSelect(); renderSidebarUnits(); toggleControls();
-        if (!isReady()) { showEmpty(); return; }
-        if (state.view==='answers') buildAnswerKey();
-      }
-      function onUnitChange() {
-        state.currentUnitId = els.unitSelect.value; toggleControls();
-        if (!isReady()) { showEmpty(); return; }
-        if (state.view==='answers') buildAnswerKey();
-      }
-      function onViewChange() {
-        state.view = els.viewSelect.value;
-        toggleControls();
-        if (!isReady()) { showEmpty(); return; }
-        if (state.view==='answers') buildAnswerKey();
-        else { show('quiz'); /* wait for Start */ }
-      }
-      function onSettingsChange() {
+      els.viewSeg.addEventListener('click', (e)=>{
+        const btn=e.target.closest('button'); if(!btn) return;
+        state.view = btn.dataset.view;
+        setViewButtons();
         toggleControls();
         if (!isReady()) return;
         if (state.view==='answers') buildAnswerKey();
-      }
-
-      // Wire UI
-      els.subjectSelect.addEventListener('change', onSubjectChange);
-      els.unitSelect.addEventListener('change', onUnitChange);
-      els.viewSelect.addEventListener('change', onViewChange);
-      els.shuffleQuestions.addEventListener('change', onSettingsChange);
-      els.shuffleOptions.addEventListener('change', onSettingsChange);
-      els.countInput.addEventListener('input', ()=>{ if (isReady() && state.view==='answers') buildAnswerKey(); });
-      els.printKeyBtn.addEventListener('click', ()=>{ if (isReady()) printKey(); });
-
+        else { els.keyPanel.classList.remove('active'); els.resultPanel.classList.remove('active'); els.quizPanel.classList.remove('active'); }
+      });
+      els.modeSelect.addEventListener('change', ()=> state.mode=els.modeSelect.value);
+      els.shuffleQuestions.addEventListener('change', ()=>{ state.settings.shuffleQuestions=els.shuffleQuestions.checked; if (state.view==='answers' && isReady()) buildAnswerKey(); });
+      els.shuffleOptions.addEventListener('change', ()=>{ state.settings.shuffleOptions=els.shuffleOptions.checked; if (state.view==='answers' && isReady()) buildAnswerKey(); });
+      els.countInput.addEventListener('input', ()=>{ if (state.view==='answers' && isReady()) buildAnswerKey(); });
+      els.printKeyBtn.addEventListener('click', printKey);
       els.startBtn.addEventListener('click', startQuiz);
-      els.prevBtn.addEventListener('click', ()=>{ if (state.index>0){ state.index--; renderQuestion(); }});
-      els.nextBtn.addEventListener('click', ()=>{ if (state.index<state.total-1){ state.index++; renderQuestion(); }});
+      els.prevBtn.addEventListener('click', prevQ);
+      els.nextBtn.addEventListener('click', nextQ);
       els.endBtn.addEventListener('click', endTest);
       els.restartBtn.addEventListener('click', startQuiz);
 
-      // Subject registrations
-      document.addEventListener('subject-registered', () => {
-        state.subjects = window.quizSubjects || {};
-        state.subjectOrder = Object.values(state.subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
-        populateSubjectSelect(); updateSummary();
-        // Do NOT auto-select; wait for user to pick
-        showEmpty();
-        toggleControls();
+      // Initialize subjects from quizData after DOM ready
+      document.addEventListener('DOMContentLoaded', ()=>{
+        buildSubjectsFromQuizData();
+        renderSubjectButtons();
       });
-
-      document.addEventListener('DOMContentLoaded', () => {
-        autoRegisterFromQuizData();
-        // If subjects already there, init UI
-        state.subjects = window.quizSubjects || {};
-        state.subjectOrder = Object.values(state.subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
-        populateSubjectSelect(); updateSummary();
-        showEmpty();
-        toggleControls();
-      });
-
-      setTimeout(() => {
-        if (!Object.keys(window.quizSubjects||{}).length) autoRegisterFromQuizData();
-        state.subjects = window.quizSubjects || {};
-        state.subjectOrder = Object.values(state.subjects).sort((a,b)=>a.name.localeCompare(b.name)).map(s=>s.id);
-        populateSubjectSelect(); updateSummary();
-        toggleControls();
-      }, 400);
+      // Safety: after a bit, rebuild (in case subject files load later)
+      setTimeout(()=>{ buildSubjectsFromQuizData(); renderSubjectButtons(); }, 400);
     })();
   </script>
 </body>
