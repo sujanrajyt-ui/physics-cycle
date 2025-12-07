@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>UHV Quiz</title>
+  <title>Multi-Subject Quiz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
@@ -11,12 +11,12 @@
     }
     *{box-sizing:border-box}
     body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
-    .container{max-width:1100px; margin:24px auto; padding:0 16px;}
+    .container{max-width:1150px; margin:24px auto; padding:0 16px;}
     header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
     .brand{display:flex;align-items:center;gap:10px;}
     .badge{background:#eef2ff;color:#1e293b;border:1px solid #c7d2fe;border-radius:999px;padding:4px 10px;font-size:12px;}
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
-    .controls{display:grid;grid-template-columns:1fr 1fr auto; gap:10px; align-items:end;}
+    .controls{display:grid;grid-template-columns:1fr 1fr 1fr auto; gap:10px; align-items:end;}
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;}
     select,button{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;}
     button{background:var(--accent);color:white;border-color:var(--accent-2);cursor:pointer;}
@@ -33,12 +33,14 @@
     ol.opts li:hover{border-color:#cbd5e1; background:#f8fafc;}
     ol.opts li.correct{border-color:#86efac;background:#ecfdf5;}
     ol.opts li.wrong{border-color:#fecaca;background:#fef2f2;}
-    .trick{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:10px;}
+    .trick{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:10px;white-space:pre-wrap;}
     .nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px;}
     .progress{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:8px 0 0;}
     .bar{height:100%;background:var(--accent);width:0%;}
-    .grid{display:grid;grid-template-columns:280px 1fr; gap:12px;align-items:start;}
+    .grid{display:grid;grid-template-columns:300px 1fr; gap:12px;align-items:start;}
     .sidebar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:70vh;overflow:auto;}
+    .side-section{margin-bottom:12px;}
+    .side-title{font-weight:700;margin-bottom:6px;}
     .unit{padding:8px;border-radius:8px;cursor:pointer;}
     .unit:hover{background:#f8fafc;}
     .unit.active{background:#eef2ff;border:1px solid #c7d2fe;}
@@ -51,14 +53,20 @@
   <div class="container">
     <header>
       <div class="brand">
-        <h2 style="margin:0;">UHV Quiz</h2>
+        <h2 style="margin:0;">Multi-Subject Quiz</h2>
         <span class="badge" id="summaryBadge">Loading…</span>
       </div>
-      <div class="muted" id="comingNote">If you see “Coming soon” elsewhere, this page will still render the quiz.</div>
+      <div class="muted">Choose Subject and Unit. Practice or run a 20-question Test. Tricks show explanations.</div>
     </header>
 
     <div class="card">
       <div class="controls">
+        <div>
+          <label for="subjectSelect">Subject</label>
+          <select id="subjectSelect">
+            <option value="__all__">All Subjects</option>
+          </select>
+        </div>
         <div>
           <label for="unitSelect">Unit</label>
           <select id="unitSelect">
@@ -68,8 +76,8 @@
         <div>
           <label for="modeSelect">Mode</label>
           <select id="modeSelect">
-            <option value="practice">Practice (infinite, instant feedback)</option>
-            <option value="test">Test (20 questions, score)</option>
+            <option value="practice">Practice (instant feedback)</option>
+            <option value="test">Test (20 Qs)</option>
           </select>
         </div>
         <div>
@@ -80,10 +88,11 @@
       <div class="panel" id="quizPanel">
         <div class="meta">
           <div>
+            <span class="badge" id="subjectBadge">Subject</span>
             <span class="badge" id="unitBadge">Unit</span>
             <span class="muted" id="qCounter">Q 0/0</span>
           </div>
-          <div style="min-width:140px;">
+          <div style="min-width:160px;">
             <div class="progress"><div class="bar" id="progressBar"></div></div>
           </div>
         </div>
@@ -108,7 +117,7 @@
       <div class="panel" id="resultPanel">
         <div class="result">
           <div class="score" id="scoreLine">Score: 0/0</div>
-          <div class="muted" id="resultNote">Well done. You can restart with different settings.</div>
+          <div class="muted" id="resultNote">Great job! Try another subject or unit.</div>
           <div>
             <button id="restartBtn">Restart</button>
           </div>
@@ -117,20 +126,233 @@
     </div>
 
     <div class="grid" style="margin-top:12px;">
-      <div class="sidebar" id="unitList"></div>
+      <div class="sidebar">
+        <div class="side-section">
+          <div class="side-title">Subjects</div>
+          <div id="subjectList"></div>
+        </div>
+        <div class="side-section">
+          <div class="side-title" id="sideUnitsTitle">Units (selected subject)</div>
+          <div id="unitList"></div>
+        </div>
+      </div>
       <div class="card">
-        <div class="muted">Tip: Click a unit on the left to preview its question count. Quiz content is driven by uhv-data.bundle.js.</div>
+        <div class="muted">Tip: Subject files populate automatically. Make sure psp.js, physics.js, calculas.js, basicelectronics.js are in the same folder.</div>
       </div>
     </div>
   </div>
 
-  <!-- Load dataset FIRST -->
-  <script src="uhv-data.bundle.js" defer></script>
-
-  <!-- App logic -->
+  <!-- Ensure quizData exists BEFORE subject files load -->
   <script>
+    window.quizData = window.quizData || {};
+  </script>
+
+  <!-- Include your subject JS files (already provided by you) -->
+  <script src="psp.js" defer></script>
+  <script src="physics.js" defer></script>
+  <script src="calculas.js" defer></script>
+  <script src="basicelectronics.js" defer></script>
+
+  <!-- Core: registration + trick generator + app -->
+  <script defer>
+    // --- Registry API (optional for future files) ---
+    window.quizSubjects = window.quizSubjects || {};
+    function registerSubject(id, raw) {
+      const subjectId = String(id).trim();
+      const subjectName = (raw && raw.name) ? raw.name : subjectId;
+      let units = [];
+      if (raw && Array.isArray(raw.units)) {
+        units = raw.units.map(u => ({
+          id: u.id || u.name || 'Unit-' + Math.random().toString(36).slice(2,7),
+          name: u.name || u.id,
+          questions: Array.isArray(u.questions) ? u.questions : []
+        }));
+      } else if (raw && typeof raw === 'object') {
+        units = Object.entries(raw).map(([unitName, qs]) => ({
+          id: unitName,
+          name: unitName,
+          questions: Array.isArray(qs) ? qs : []
+        }));
+      } else {
+        return;
+      }
+      addTricksToUnits(units, subjectId);
+      window.quizSubjects[subjectId] = {
+        id: subjectId,
+        name: subjectName,
+        units,
+        totalQuestions: units.reduce((n,u)=>n+(u.questions?.length||0),0)
+      };
+      document.dispatchEvent(new CustomEvent('subject-registered', {
+        detail: { id: subjectId, name: subjectName, count: window.quizSubjects[subjectId].totalQuestions }
+      }));
+    }
+
+    // --- Auto-register from quizData (your files use quizData.PSP / Physics / Calculus / Basic Electronics) ---
+    function autoRegisterFromQuizData() {
+      const qd = window.quizData || {};
+      const skip = new Set(['UHVUnits','units','categories','subjects','allQuestions','totalQuestions']);
+      Object.keys(qd).forEach(key => {
+        if (skip.has(key)) return;
+        const raw = qd[key];
+        if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+          registerSubject(key, raw);
+        }
+      });
+    }
+
+    // --- Trick Generator (subject-aware heuristics) ---
+    function addTricksToUnits(units, subjectId) {
+      const norm = (s) => String(s||"").toLowerCase().replace(/[’'"]/g,"").replace(/‑|–|—/g,"-").replace(/\s+/g," ").trim();
+
+      // General patterns across subjects
+      const generalAnswerTips = [
+        { key:/all of these|both .* (a|b)/, tip:"If each option is independently true/compatible, 'All of these' fits." },
+      ];
+
+      // PSP (C Programming) patterns
+      const pspQ = [
+        { key:/assembler|assembly.*machine/, tip:"Assembly → Machine code is done by the Assembler (Compiler is for high-level → machine)." },
+        { key:/formatted output|printf/, tip:"Formatted output → printf; formatted input → scanf." },
+        { key:/scanf.*%s|string.*scanf/, tip:"scanf(\"%s\", str) reads until whitespace; gets() reads until newline." },
+        { key:/escape.*new line|\\n/, tip:"New line in C is '\\n'." },
+        { key:/argv\[0]/, tip:"argv[0] is the program name; user args start at argv[1]." },
+        { key:/right shift|bitwise.*right/, tip:">> is right shift; << is left shift (×2^k)." },
+        { key:/modulo|%.*integer/, tip:"In C, % (modulo) is defined for integers." },
+        { key:/ternary|conditional.*\?:/, tip:"Ternary ?: is right-associative." },
+        { key:/precedence.*lowest|lowest.*precedence/, tip:"Comma operator has the lowest precedence in C." },
+        { key:/post.*increment|a\+\+.*printf/, tip:"Post-increment returns old value first, then increments." },
+        { key:/switch.*case.*float|switch.*case.*label/, tip:"switch cases require integer/char constants; no float in labels." },
+        { key:/if.*\(x\s*=\s*5\)|if.*semicolon/, tip:"Use == for compare. A stray semicolon ends the if; next line always runs." },
+        { key:/printf\(\"%5d\"/, tip:"%5d prints in width 5 (right-aligned) → spaces before number." },
+        { key:/implicit type conversion|promotion/, tip:"In expressions, float promotes to double; char promotes to int." }
+      ];
+      const pspA = [
+        { key:/assembler/, tip:"Assembly → Machine = Assembler. Compiler is HLL → machine." },
+        { key:/printf\(\)/, tip:"printf = formatted output; scanf = formatted input; puts prints string with newline." },
+        { key:/scanf\(\)/, tip:"scanf = formatted input; use &var for non-array scalars." },
+        { key:/getchar\(\)/, tip:"getchar reads a single character; putchar writes one." },
+        { key:/gets\(\)/, tip:"gets() reads until newline (unsafe). puts() writes string with newline." },
+        { key:/%x/, tip:"%x prints in hexadecimal; %o octal; %llu = unsigned long long." },
+        { key:/>>/, tip:"Right shift operator: >>." },
+        { key:/do-?while/, tip:"do-while executes the loop body at least once." },
+        { key:/comma|,/, tip:"Comma operator has the lowest precedence." }
+      ];
+
+      // Physics patterns
+      const phyQ = [
+        { key:/de broglie|matter wave|λ\s*=\s*h\/p/, tip:"de Broglie: λ = h/p. Larger momentum → shorter wavelength." },
+        { key:/same kinetic energy.*electron.*proton|λe.*λp/, tip:"At same KE, λ ∝ 1/√m → electron has larger λ than proton." },
+        { key:/uncertainty|heisenberg|Δx.*Δp/, tip:"Heisenberg: Δx·Δp ≥ ħ/2 (≈ h/4π). Exact position → infinite momentum uncertainty." },
+        { key:/wave ?function|ψ/, tip:"Acceptable ψ: single-valued, finite, continuous, normalizable. |ψ|² is probability density." },
+        { key:/infinite potential well|particle in a box|n²/, tip:"In box: En ∝ n²; ground state max probability at center (x=L/2)." },
+        { key:/group velocity.*phase/, tip:"Matter waves: group velocity equals particle velocity; phase may exceed c; often vg·vp = c² (rel.)." }
+      ];
+      const phyA = [
+        { key:/electron diffraction/, tip:"Electron diffraction is the classic evidence for matter waves." },
+        { key:/probability density/, tip:"|ψ|² = probability density." },
+        { key:/complex/, tip:"ψ can be complex; only |ψ|² is physical." },
+        { key:/unity/, tip:"Total probability over all space must be 1 (normalized)." },
+        { key:/n²/, tip:"Energy in infinite well scales as n²." }
+      ];
+
+      // Calculus patterns
+      const calQ = [
+        { key:/maclaurin.*e\^x/, tip:"e^x = 1 + x + x²/2! + x³/6 + …" },
+        { key:/radius of curvature|curvature/, tip:"For y=f(x): ρ = (1 + (y')²)^{3/2} / |y''|. Bigger curvature → smaller radius." },
+        { key:/polar.*r\s*=\s*f\(θ\)|tan θ|cot θ/, tip:"Polar slope identities: tan(ψ) = r/(dr/dθ); cot(ψ) = (1/r)(dθ/dr)." },
+        { key:/jacobian|∂\(x,y\)\/∂\(r,θ\)/, tip:"Jacobian (x,y) wrt (r,θ) is r (since x= r cosθ, y= r sinθ)." },
+        { key:/pde.*parabolic|hyperbolic|elliptic|wave|laplace/, tip:"Wave: u_tt = c² u_xx (hyperbolic). Laplace: u_xx + u_yy = 0 (elliptic). Heat: u_t = k u_xx (parabolic)." },
+        { key:/double integral.*symmetric.*xy/, tip:"Over symmetric domain, integrals of odd functions (like x or xy) vanish." },
+        { key:/gamma|beta.*function/, tip:"Γ(1/2)=√π; B(m,n)= Γ(m)Γ(n)/Γ(m+n); Γ(n+1)=nΓ(n)." }
+      ];
+      const calA = [
+        { key:/√π/, tip:"Γ(1/2) = √π." },
+        { key:/π/, tip:"B(1/2,1/2) = π." },
+        { key:/0/, tip:"Symmetric region + odd integrand → integral is 0." }
+      ];
+
+      // Basic Electronics patterns
+      const beQ = [
+        { key:/zener.*regulat|breakdown|constant voltage/, tip:"Zener in breakdown → nearly constant voltage (regulator)." },
+        { key:/full wave.*frequency|rectifier.*100\s*hz|50\s*hz/, tip:"Full-wave rectifier doubles mains frequency: 50Hz → 100Hz." },
+        { key:/ripple factor.*smaller/, tip:"Smaller ripple factor → output closer to pure DC." },
+        { key:/forward bias.*diode/, tip:"Forward-biased diode → low resistance; reverse → high." },
+        { key:/ce amplifier.*phase/, tip:"CE amplifier introduces ~180° phase shift." },
+        { key:/β|alpha|current gain/, tip:"β = IC/IB; α ≈ IC/IE; α = β/(1+β), β= α/(1−α)." },
+        { key:/mosfet.*voltage controlled|bjt.*current controlled/, tip:"MOSFET is voltage-controlled; BJT is current-controlled." },
+        { key:/op-amp.*ideal/, tip:"Ideal op-amp: Ri→∞, Ro→0, A→∞, infinite bandwidth & slew rate." },
+        { key:/integrator/, tip:"Op-amp integrator has a capacitor in feedback; V0 = −(1/RC)∫Vi dt." },
+        { key:/differentiator/, tip:"Op-amp differentiator has a resistor in feedback; V0 = −Rf C dVi/dt." },
+        { key:/non-inverting gain/, tip:"Gain = 1 + Rf/R1 (non-inverting). Inverting gain = −Rf/R1." },
+        { key:/cmrr/, tip:"CMRR = Ad/Ac (differential/common-mode gains)." },
+        { key:/oscillator|barkhausen/, tip:"Barkhausen: |Aβ| = 1 and total phase shift 0°/360° for sustained oscillations." },
+        { key:/colpitts|hartley|phase shift/, tip:"Colpitts: split capacitors; Hartley: split inductors; RC phase shift: 3 RC sections → 180° total." }
+      ];
+      const beA = [
+        { key:/cut-in voltage/, tip:"Cut-in/threshold: forward voltage where diode current rises fast (~0.7V Si, ~0.3V Ge)." },
+        { key:/81\.2%|40\.6%|46%/, tip:"Rectifier efficiency: Half-wave ≈ 40.6%; Full-wave ≈ 81.2%." },
+        { key:/0\.707.*i|r\.m\.s.*im/, tip:"For full-wave: Irms = Im/√2 = 0.707 Im." },
+        { key:/constant voltage/, tip:"Zener in breakdown = constant voltage source (within ratings)." },
+        { key:/100 hz/, tip:"Full-wave rectifiers output at 2× mains frequency." },
+        { key:/voltage controlled/, tip:"MOSFET is voltage-controlled (Gate controls channel via oxide capacitor)." },
+        { key:/current controlled/, tip:"BJT is current-controlled (IC ≈ β·IB in active region)." },
+        { key:/a\/\(1 \+ aβ\)/, tip:"Negative feedback: Af = A/(1 + Aβ); Positive: Af = A/(1 − Aβ)." }
+      ];
+
+      function tipFor(qText, answerText, subject) {
+        const q = norm(qText), a = norm(answerText);
+        // Subject-specific first
+        const scan = (list) => { for (const r of list) if (r.key.test(q)) return r.tip; return null; };
+        const scanA = (list) => { for (const r of list) if (r.key.test(a)) return r.tip; return null; };
+
+        // General
+        for (const r of generalAnswerTips) if (r.key.test(a)) return r.tip;
+
+        if (/psp|c programming|decision.*loop|array|pointer|function|storage|recursion|structure|file/i.test(subject||"")) {
+          const t = scan(pspQ) || scanA(pspA);
+          if (t) return t;
+        }
+        if (/physics|quantum|semiconductor|laser|fiber|conductor|superconductor/i.test(subject||"")) {
+          const t = scan(phyQ) || scanA(phyA);
+          if (t) return t;
+        }
+        if (/calculus|differential|partial|equation|integral|ode|pde|beta|gamma/i.test(subject||"")) {
+          const t = scan(calQ) || scanA(calA);
+          if (t) return t;
+        }
+        if (/basic electronics|bjt|mosfet|op.?amp|oscillator|feedback|communication|embedded/i.test(subject||"")) {
+          const t = scan(beQ) || scanA(beA);
+          if (t) return t;
+        }
+
+        // Cross-topic helpful defaults
+        if (/even if not matched/.test('')) {}
+        if (/symmetric.*region.*odd|xy\b/.test(q)) return "Odd function over symmetric region integrates to zero.";
+        if (/non-?inverting/.test(q) && /gain/.test(q)) return "Non-inverting gain = 1 + Rf/R1.";
+        if (/inverting/.test(q) && /gain/.test(q)) return "Inverting gain = −Rf/R1.";
+        if (/cmrr/.test(q)) return "CMRR = Ad/Ac (higher is better).";
+        if (/laplace|wave|heat/.test(q)) return "Laplace: elliptic; Wave: hyperbolic; Heat: parabolic.";
+        if (/heisenberg|uncertainty/.test(q)) return "Δx·Δp ≥ ħ/2; tighter position → looser momentum.";
+        if (/switch.*case.*float/.test(q)) return "switch case labels must be integral constants.";
+        if (/printf.*%5d/.test(q)) return "Width 5 → right-aligned spaces before number.";
+
+        return "Use core anchors: pick definitions, standard formulas, and ‘always-true’ properties.";
+      }
+
+      units.forEach(u => {
+        (u.questions || []).forEach(q => {
+          if (!q) return;
+          const ans = q.options?.[q.correctIndex];
+          if (!q.trick && ans) q.trick = tipFor(q.text, ans, subjectId);
+        });
+      });
+    }
+
+    // ===== App Logic =====
     (function () {
       const els = {
+        subjectSelect: document.getElementById('subjectSelect'),
         unitSelect: document.getElementById('unitSelect'),
         modeSelect: document.getElementById('modeSelect'),
         startBtn: document.getElementById('startBtn'),
@@ -141,82 +363,147 @@
         qTrick: document.getElementById('qTrick'),
         qCounter: document.getElementById('qCounter'),
         progressBar: document.getElementById('progressBar'),
+        subjectBadge: document.getElementById('subjectBadge'),
         unitBadge: document.getElementById('unitBadge'),
         summaryBadge: document.getElementById('summaryBadge'),
-        comingNote: document.getElementById('comingNote'),
         prevBtn: document.getElementById('prevBtn'),
         nextBtn: document.getElementById('nextBtn'),
         endBtn: document.getElementById('endBtn'),
-        resultNote: document.getElementById('resultNote'),
         scoreLine: document.getElementById('scoreLine'),
         restartBtn: document.getElementById('restartBtn'),
-        unitList: document.getElementById('unitList')
+        subjectList: document.getElementById('subjectList'),
+        unitList: document.getElementById('unitList'),
+        sideUnitsTitle: document.getElementById('sideUnitsTitle')
       };
 
       const state = {
-        ready: false,
-        units: [],
-        currentUnitName: '__all__',
+        subjects: {},   // id -> {id, name, units[]}
+        subjectOrder: [],
+        currentSubjectId: '__all__',
+        currentUnitId: '__all__',
         pool: [],
         index: 0,
-        answered: new Map(), // key: index -> chosenIdx
+        answered: new Map(),
         mode: 'practice',
         score: 0,
         total: 0
       };
 
-      function getUnitsFromData() {
-        const qd = window.quizData || {};
-        const raw = qd.UHV || {};
-        const units = Object.entries(raw).map(([name, questions]) => ({ name, questions }));
-        return units;
-      }
-
       function updateSummary() {
-        const units = state.units;
-        const total = units.reduce((n,u)=>n+(u.questions?.length||0),0);
-        els.summaryBadge.textContent = `${units.length} units • ${total} questions`;
-        // Sidebar
-        els.unitList.innerHTML = '';
-        units.forEach((u, i) => {
+        const subs = Object.values(state.subjects);
+        const unitsCount = subs.reduce((n,s)=>n+s.units.length,0);
+        const totalQs = subs.reduce((n,s)=>n+s.units.reduce((m,u)=>m+(u.questions?.length||0),0),0);
+        els.summaryBadge.textContent = `${subs.length} subjects • ${unitsCount} units • ${totalQs} questions`;
+
+        // sidebar subjects
+        els.subjectList.innerHTML = '';
+        state.subjectOrder.forEach(id => {
+          const s = state.subjects[id];
           const div = document.createElement('div');
-          div.className = 'unit' + (i===0 ? ' active':'');
-          div.textContent = u.name;
-          const small = document.createElement('div');
-          small.className = 'small';
-          small.textContent = `${u.questions.length} questions`;
-          div.appendChild(small);
+          div.className = 'unit' + (id===state.currentSubjectId ? ' active':'');
+          div.innerHTML = `<strong>${s.name}</strong><div class="small">${s.units.length} units • ${s.totalQuestions} Qs</div>`;
           div.addEventListener('click', () => {
-            els.unitList.querySelectorAll('.unit').forEach(n => n.classList.remove('active'));
-            div.classList.add('active');
-            // also reflect in select
-            els.unitSelect.value = u.name;
+            state.currentSubjectId = id;
+            els.subjectSelect.value = id;
+            populateUnitSelect();
+            renderSidebarUnits();
           });
-          els.unitList.appendChild(div);
+          els.subjectList.appendChild(div);
         });
+
+        renderSidebarUnits();
       }
 
-      function populateUnitSelect() {
-        const sel = els.unitSelect;
-        sel.innerHTML = '<option value="__all__">All Units</option>';
-        state.units.forEach(u => {
+      function renderSidebarUnits() {
+        const id = state.currentSubjectId;
+        els.sideUnitsTitle.textContent = id==='__all__' ? 'Units (all subjects)' : `Units (${state.subjects[id]?.name})`;
+        els.unitList.innerHTML = '';
+
+        if (id==='__all__') {
+          state.subjectOrder.forEach(sid => {
+            const s = state.subjects[sid];
+            const h = document.createElement('div');
+            h.className = 'small';
+            h.style.margin = '8px 0 4px';
+            h.textContent = s.name;
+            els.unitList.appendChild(h);
+            s.units.forEach(u => {
+              const div = document.createElement('div');
+              div.className = 'unit';
+              div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
+              div.addEventListener('click', () => {
+                els.subjectSelect.value = sid;
+                state.currentSubjectId = sid;
+                populateUnitSelect();
+                els.unitSelect.value = u.id;
+              });
+              els.unitList.appendChild(div);
+            });
+          });
+        } else {
+          const s = state.subjects[id];
+          s.units.forEach(u => {
+            const div = document.createElement('div');
+            div.className = 'unit';
+            div.innerHTML = `${u.name} <span class="small">• ${u.questions.length} Qs</span>`;
+            div.addEventListener('click', () => {
+              els.unitSelect.value = u.id;
+            });
+            els.unitList.appendChild(div);
+          });
+        }
+      }
+
+      function populateSubjectSelect() {
+        const sel = els.subjectSelect;
+        sel.innerHTML = '<option value="__all__">All Subjects</option>';
+        state.subjectOrder.forEach(id => {
+          const s = state.subjects[id];
           const opt = document.createElement('option');
-          opt.value = u.name;
-          opt.textContent = u.name;
+          opt.value = id; opt.textContent = s.name;
           sel.appendChild(opt);
         });
       }
 
-      function buildPool() {
-        const unitName = state.currentUnitName;
-        if (unitName === '__all__') {
-          state.pool = state.units.flatMap(u => u.questions || []);
-          state.unitForIndex = null; // not tracked per-q in practice; we can omit
-        } else {
-          const unit = state.units.find(u => u.name === unitName);
-          state.pool = [...(unit?.questions || [])];
+      function populateUnitSelect() {
+        const subId = els.subjectSelect.value;
+        state.currentSubjectId = subId;
+        const sel = els.unitSelect;
+        sel.innerHTML = '<option value="__all__">All Units</option>';
+
+        if (subId !== '__all__') {
+          const s = state.subjects[subId];
+          s.units.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id; opt.textContent = u.name;
+            sel.appendChild(opt);
+          });
         }
-        state.total = state.pool.length;
+      }
+
+      function buildPool() {
+        const subId = els.subjectSelect.value;
+        const unitId = els.unitSelect.value;
+        state.currentSubjectId = subId;
+        state.currentUnitId = unitId;
+
+        let pool = [];
+        if (subId === '__all__') {
+          Object.values(state.subjects).forEach(s => {
+            s.units.forEach(u => pool.push(...(u.questions || [])));
+          });
+        } else {
+          const s = state.subjects[subId];
+          if (!s) { state.pool = []; return; }
+          if (unitId === '__all__') {
+            s.units.forEach(u => pool.push(...(u.questions || [])));
+          } else {
+            const u = s.units.find(x => x.id === unitId);
+            pool = [...(u?.questions || [])];
+          }
+        }
+        state.pool = pool;
+        state.total = pool.length;
         state.index = 0;
         state.answered.clear();
         state.score = 0;
@@ -230,6 +517,7 @@
       function renderQuestion() {
         const q = state.pool[state.index];
         if (!q) return;
+
         els.qText.textContent = `${state.index+1}. ${q.text}`;
         els.qOpts.innerHTML = '';
         q.options.forEach((opt, j) => {
@@ -243,27 +531,33 @@
         const chosen = state.answered.get(state.index);
         if (typeof chosen === 'number') applyMarking(chosen, q.correctIndex);
 
-        // Meta
         els.qCounter.textContent = `Q ${state.index+1}/${state.total}`;
-        els.unitBadge.textContent = state.currentUnitName === '__all__' ? 'All Units' : state.currentUnitName;
+        const sName = state.currentSubjectId==='__all__' ? 'All Subjects' : (state.subjects[state.currentSubjectId]?.name || '');
+        const unitLabel = state.currentUnitId==='__all__' ? 'All Units' : (findCurrentUnit()?.name || '');
+        els.subjectBadge.textContent = sName || 'Subject';
+        els.unitBadge.textContent = unitLabel || 'Unit';
+
         const pct = state.total ? Math.round(((state.index+1)/state.total)*100) : 0;
         els.progressBar.style.width = pct + '%';
 
-        // Hide trick until answered (practice) or always show in practice?
         if (state.mode === 'practice') {
           els.qTrick.style.display = 'block';
           els.qTrick.textContent = 'Trick: ' + (q.trick || '—');
         } else {
-          // test mode → only reveal after answering
           const reveal = typeof chosen === 'number';
           els.qTrick.style.display = reveal ? 'block' : 'none';
           els.qTrick.textContent = reveal ? ('Trick: ' + (q.trick || '—')) : '';
         }
 
-        // Nav buttons
         els.prevBtn.disabled = state.index === 0;
         els.nextBtn.disabled = state.index >= state.total - 1;
         els.endBtn.style.display = (state.mode === 'test') ? 'inline-block' : 'none';
+      }
+
+      function findCurrentUnit() {
+        const sub = state.subjects[state.currentSubjectId];
+        if (!sub) return null;
+        return sub.units.find(u => u.id === state.currentUnitId);
       }
 
       function applyMarking(chosenIdx, correctIdx) {
@@ -279,7 +573,6 @@
         const q = state.pool[state.index];
         if (!q) return;
         const already = state.answered.get(state.index);
-        // In test mode, lock once chosen
         if (state.mode === 'test' && typeof already === 'number') return;
 
         state.answered.set(state.index, j);
@@ -303,67 +596,69 @@
           renderQuestion();
         }
       }
-
       function endTest() {
         showPanel('result');
-        els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${Math.round((state.score/state.total)*100)}%)`;
-        els.resultNote.textContent = 'Review your performance or restart with different settings.';
+        const pct = state.total ? Math.round((state.score/state.total)*100) : 0;
+        els.scoreLine.textContent = `Score: ${state.score} / ${state.total} (${pct}%)`;
       }
-
       function start() {
-        state.currentUnitName = els.unitSelect.value;
         state.mode = els.modeSelect.value;
         buildPool();
         if (state.mode === 'test') {
-          // pick 20 or less random
           const N = Math.min(20, state.pool.length);
-          // simple shuffle copy
-          const shuffled = state.pool.map((x,i)=>({x, r:Math.random()})).sort((a,b)=>a.r-b.r).map(o=>o.x);
-          state.pool = shuffled.slice(0,N);
+          const shuffled = state.pool.map(x => ({x, r: Math.random()})).sort((a,b)=>a.r-b.r).map(o=>o.x);
+          state.pool = shuffled.slice(0, N);
           state.total = state.pool.length;
         }
         showPanel('quiz');
         renderQuestion();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+      function restart() { start(); }
 
-      function restart() {
-        showPanel('quiz');
-        start();
-      }
-
-      function onDataReady() {
-        state.units = getUnitsFromData();
-        if (!state.units.length) {
-          els.summaryBadge.textContent = 'No data found';
-          return;
-        }
-        state.ready = true;
-        populateUnitSelect();
-        updateSummary();
-      }
-
-      // Wire handlers
+      // Wire UI handlers
       els.startBtn.addEventListener('click', start);
       els.prevBtn.addEventListener('click', prevQ);
       els.nextBtn.addEventListener('click', nextQ);
       els.endBtn.addEventListener('click', endTest);
       els.restartBtn.addEventListener('click', restart);
-
-      // Handle dataset readiness
-      document.addEventListener('quiz-data-ready', onDataReady, { once: true });
-      // Also attempt after DOM ready (in case event fired earlier)
-      document.addEventListener('DOMContentLoaded', () => {
-        const qd = window.quizData;
-        if (qd?.UHV && !state.ready) onDataReady();
+      els.subjectSelect.addEventListener('change', () => {
+        populateUnitSelect();
+        renderSidebarUnits();
       });
 
-      // Safety timeout to handle cases where defer order differs
-      setTimeout(() => {
-        const qd = window.quizData;
-        if (qd?.UHV && !state.ready) onDataReady();
-      }, 400);
+      // Subject registrations
+      document.addEventListener('subject-registered', () => {
+        state.subjects = window.quizSubjects || {};
+        state.subjectOrder = Object.values(state.subjects)
+          .sort((a,b)=>a.name.localeCompare(b.name))
+          .map(s=>s.id);
+        populateSubjectSelect();
+        updateSummary();
+      });
 
+      document.addEventListener('DOMContentLoaded', () => {
+        // Auto-register from quizData (your files)
+        autoRegisterFromQuizData();
+        // In case subjects were registered before DOM ready
+        state.subjects = window.quizSubjects || {};
+        state.subjectOrder = Object.values(state.subjects)
+          .sort((a,b)=>a.name.localeCompare(b.name))
+          .map(s=>s.id);
+        populateSubjectSelect();
+        updateSummary();
+      });
+
+      // Safety timeout (if defer order varies)
+      setTimeout(() => {
+        if (!Object.keys(window.quizSubjects||{}).length) autoRegisterFromQuizData();
+        state.subjects = window.quizSubjects || {};
+        state.subjectOrder = Object.values(state.subjects)
+          .sort((a,b)=>a.name.localeCompare(b.name))
+          .map(s=>s.id);
+        populateSubjectSelect();
+        updateSummary();
+      }, 400);
     })();
   </script>
 </body>
