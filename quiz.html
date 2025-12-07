@@ -18,10 +18,15 @@
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
     .controls{display:grid;grid-template-columns:1fr 1fr 1fr auto; gap:10px; align-items:end;}
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;}
-    select,button{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;}
+    select,button,input{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;background:#fff;}
     button{background:var(--accent);color:white;border-color:var(--accent-2);cursor:pointer;}
     button.secondary{background:#f1f5f9;color:#0f172a;border-color:var(--border);}
+    button.ghost{background:#fff;color:var(--accent);border-color:var(--accent-2);}
     button:disabled{opacity:.6;cursor:not-allowed}
+    .setup{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px;}
+    .setup .chip{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:6px 10px;background:#fff;font-size:13px;color:#0f172a;}
+    .setup .chip input[type="checkbox"]{transform:scale(1.1);}
+    .setup .field{display:flex;align-items:center;gap:6px;}
     .panel{margin-top:14px; display:none;}
     .panel.active{display:block;}
     .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -36,7 +41,7 @@
     .trick{font-size:13px;color:#0f172a;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:10px;white-space:pre-wrap;}
     .nav{display:flex;gap:8px;justify-content:space-between;margin-top:12px;}
     .progress{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin:8px 0 0;}
-    .bar{height:100%;background:var(--accent);width:0%;}
+    .bar{height:100%;background:#2563eb;width:0%;}
     .grid{display:grid;grid-template-columns:300px 1fr; gap:12px;align-items:start;}
     .sidebar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:70vh;overflow:auto;}
     .side-section{margin-bottom:12px;}
@@ -47,6 +52,11 @@
     .small{font-size:12px;color:var(--muted);}
     .result{display:grid;gap:8px;}
     .score{font-size:20px;font-weight:700;}
+
+    /* Answer Key panel */
+    #keyPanel .qitem{border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;background:#fff;}
+    #keyPanel .qitem h4{margin:0 0 8px 0;font-size:14px;}
+    #keyPanel .actions{display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px;}
   </style>
 </head>
 <body>
@@ -56,7 +66,7 @@
         <h2 style="margin:0;">Multi-Subject Quiz</h2>
         <span class="badge" id="summaryBadge">Loading…</span>
       </div>
-      <div class="muted">Choose Subject and Unit. Practice or run a 20-question Test. Tricks show explanations.</div>
+      <div class="muted">Pick a subject & unit. Start quiz, or view the Answer Key (correct options highlighted in green). Customize count and shuffling.</div>
     </header>
 
     <div class="card">
@@ -77,7 +87,7 @@
           <label for="modeSelect">Mode</label>
           <select id="modeSelect">
             <option value="practice">Practice (instant feedback)</option>
-            <option value="test">Test (20 Qs)</option>
+            <option value="test">Test (scored)</option>
           </select>
         </div>
         <div>
@@ -85,6 +95,18 @@
         </div>
       </div>
 
+      <!-- Setup row -->
+      <div class="setup">
+        <div class="field">
+          <label for="countInput" class="muted">Question count</label>
+          <input id="countInput" type="number" min="1" placeholder="All" style="width:120px;">
+        </div>
+        <label class="chip"><input type="checkbox" id="shuffleQuestions" checked> Shuffle questions</label>
+        <label class="chip"><input type="checkbox" id="shuffleOptions" checked> Shuffle options</label>
+        <button id="keyBtn" class="ghost">Show Answer Key</button>
+      </div>
+
+      <!-- Quiz Panel -->
       <div class="panel" id="quizPanel">
         <div class="meta">
           <div>
@@ -114,6 +136,7 @@
         </div>
       </div>
 
+      <!-- Result Panel -->
       <div class="panel" id="resultPanel">
         <div class="result">
           <div class="score" id="scoreLine">Score: 0/0</div>
@@ -122,6 +145,15 @@
             <button id="restartBtn">Restart</button>
           </div>
         </div>
+      </div>
+
+      <!-- Answer Key Panel -->
+      <div class="panel" id="keyPanel">
+        <div class="actions">
+          <button id="printKeyBtn" class="secondary">Print</button>
+          <button id="hideKeyBtn" class="secondary">Hide Answer Key</button>
+        </div>
+        <div id="keyList"></div>
       </div>
     </div>
 
@@ -137,7 +169,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="muted">Tip: Subject files populate automatically. Make sure psp.js, physics.js, calculas.js, basicelectronics.js are in the same folder.</div>
+        <div class="muted">Tip: Subject files populate automatically. Ensure psp.js, physics.js, calculas.js, basicelectronics.js are in the same folder.</div>
       </div>
     </div>
   </div>
@@ -147,15 +179,15 @@
     window.quizData = window.quizData || {};
   </script>
 
-  <!-- Include your subject JS files (already provided by you) -->
+  <!-- Include your subject JS files -->
   <script src="psp.js" defer></script>
   <script src="physics.js" defer></script>
   <script src="calculas.js" defer></script>
   <script src="basicelectronics.js" defer></script>
 
-  <!-- Core: registration + trick generator + app -->
+  <!-- Core: registration API + trick generator (same as before) + app with new Answer Key and setup -->
   <script defer>
-    // --- Registry API (optional for future files) ---
+    // --- Registry API ---
     window.quizSubjects = window.quizSubjects || {};
     function registerSubject(id, raw) {
       const subjectId = String(id).trim();
@@ -188,7 +220,7 @@
       }));
     }
 
-    // --- Auto-register from quizData (your files use quizData.PSP / Physics / Calculus / Basic Electronics) ---
+    // --- Auto-register from quizData (your files use quizData.SUBJECT) ---
     function autoRegisterFromQuizData() {
       const qd = window.quizData || {};
       const skip = new Set(['UHVUnits','units','categories','subjects','allQuestions','totalQuestions']);
@@ -201,18 +233,13 @@
       });
     }
 
-    // --- Trick Generator (subject-aware heuristics) ---
+    // --- Trick Generator (same heuristics as before) ---
     function addTricksToUnits(units, subjectId) {
       const norm = (s) => String(s||"").toLowerCase().replace(/[’'"]/g,"").replace(/‑|–|—/g,"-").replace(/\s+/g," ").trim();
+      const generalAnswerTips = [{ key:/all of these|both .* (a|b)/, tip:"If each option is independently true/compatible, 'All of these' fits." }];
 
-      // General patterns across subjects
-      const generalAnswerTips = [
-        { key:/all of these|both .* (a|b)/, tip:"If each option is independently true/compatible, 'All of these' fits." },
-      ];
-
-      // PSP (C Programming) patterns
       const pspQ = [
-        { key:/assembler|assembly.*machine/, tip:"Assembly → Machine code is done by the Assembler (Compiler is for high-level → machine)." },
+        { key:/assembler|assembly.*machine/, tip:"Assembly → Machine code is done by the Assembler (Compiler is high-level → machine)." },
         { key:/formatted output|printf/, tip:"Formatted output → printf; formatted input → scanf." },
         { key:/scanf.*%s|string.*scanf/, tip:"scanf(\"%s\", str) reads until whitespace; gets() reads until newline." },
         { key:/escape.*new line|\\n/, tip:"New line in C is '\\n'." },
@@ -238,15 +265,13 @@
         { key:/do-?while/, tip:"do-while executes the loop body at least once." },
         { key:/comma|,/, tip:"Comma operator has the lowest precedence." }
       ];
-
-      // Physics patterns
       const phyQ = [
         { key:/de broglie|matter wave|λ\s*=\s*h\/p/, tip:"de Broglie: λ = h/p. Larger momentum → shorter wavelength." },
         { key:/same kinetic energy.*electron.*proton|λe.*λp/, tip:"At same KE, λ ∝ 1/√m → electron has larger λ than proton." },
         { key:/uncertainty|heisenberg|Δx.*Δp/, tip:"Heisenberg: Δx·Δp ≥ ħ/2 (≈ h/4π). Exact position → infinite momentum uncertainty." },
         { key:/wave ?function|ψ/, tip:"Acceptable ψ: single-valued, finite, continuous, normalizable. |ψ|² is probability density." },
         { key:/infinite potential well|particle in a box|n²/, tip:"In box: En ∝ n²; ground state max probability at center (x=L/2)." },
-        { key:/group velocity.*phase/, tip:"Matter waves: group velocity equals particle velocity; phase may exceed c; often vg·vp = c² (rel.)." }
+        { key:/group velocity.*phase/, tip:"Matter waves: group velocity equals particle velocity; phase may exceed c." }
       ];
       const phyA = [
         { key:/electron diffraction/, tip:"Electron diffraction is the classic evidence for matter waves." },
@@ -255,13 +280,11 @@
         { key:/unity/, tip:"Total probability over all space must be 1 (normalized)." },
         { key:/n²/, tip:"Energy in infinite well scales as n²." }
       ];
-
-      // Calculus patterns
       const calQ = [
         { key:/maclaurin.*e\^x/, tip:"e^x = 1 + x + x²/2! + x³/6 + …" },
         { key:/radius of curvature|curvature/, tip:"For y=f(x): ρ = (1 + (y')²)^{3/2} / |y''|. Bigger curvature → smaller radius." },
-        { key:/polar.*r\s*=\s*f\(θ\)|tan θ|cot θ/, tip:"Polar slope identities: tan(ψ) = r/(dr/dθ); cot(ψ) = (1/r)(dθ/dr)." },
-        { key:/jacobian|∂\(x,y\)\/∂\(r,θ\)/, tip:"Jacobian (x,y) wrt (r,θ) is r (since x= r cosθ, y= r sinθ)." },
+        { key:/polar.*r\s*=\s*f\(θ\)|tan θ|cot θ/, tip:"Polar identities: tanψ = r/(dr/dθ); cotψ = (1/r)(dθ/dr)." },
+        { key:/jacobian|∂\(x,y\)\/∂\(r,θ\)/, tip:"Jacobian (x,y) wrt (r,θ) is r (x= r cosθ, y= r sinθ)." },
         { key:/pde.*parabolic|hyperbolic|elliptic|wave|laplace/, tip:"Wave: u_tt = c² u_xx (hyperbolic). Laplace: u_xx + u_yy = 0 (elliptic). Heat: u_t = k u_xx (parabolic)." },
         { key:/double integral.*symmetric.*xy/, tip:"Over symmetric domain, integrals of odd functions (like x or xy) vanish." },
         { key:/gamma|beta.*function/, tip:"Γ(1/2)=√π; B(m,n)= Γ(m)Γ(n)/Γ(m+n); Γ(n+1)=nΓ(n)." }
@@ -271,8 +294,6 @@
         { key:/π/, tip:"B(1/2,1/2) = π." },
         { key:/0/, tip:"Symmetric region + odd integrand → integral is 0." }
       ];
-
-      // Basic Electronics patterns
       const beQ = [
         { key:/zener.*regulat|breakdown|constant voltage/, tip:"Zener in breakdown → nearly constant voltage (regulator)." },
         { key:/full wave.*frequency|rectifier.*100\s*hz|50\s*hz/, tip:"Full-wave rectifier doubles mains frequency: 50Hz → 100Hz." },
@@ -286,7 +307,7 @@
         { key:/differentiator/, tip:"Op-amp differentiator has a resistor in feedback; V0 = −Rf C dVi/dt." },
         { key:/non-inverting gain/, tip:"Gain = 1 + Rf/R1 (non-inverting). Inverting gain = −Rf/R1." },
         { key:/cmrr/, tip:"CMRR = Ad/Ac (differential/common-mode gains)." },
-        { key:/oscillator|barkhausen/, tip:"Barkhausen: |Aβ| = 1 and total phase shift 0°/360° for sustained oscillations." },
+        { key:/oscillator|barkhausen/, tip:"Barkhausen: |Aβ| = 1 and total phase shift 0°/360°." },
         { key:/colpitts|hartley|phase shift/, tip:"Colpitts: split capacitors; Hartley: split inductors; RC phase shift: 3 RC sections → 180° total." }
       ];
       const beA = [
@@ -295,56 +316,24 @@
         { key:/0\.707.*i|r\.m\.s.*im/, tip:"For full-wave: Irms = Im/√2 = 0.707 Im." },
         { key:/constant voltage/, tip:"Zener in breakdown = constant voltage source (within ratings)." },
         { key:/100 hz/, tip:"Full-wave rectifiers output at 2× mains frequency." },
-        { key:/voltage controlled/, tip:"MOSFET is voltage-controlled (Gate controls channel via oxide capacitor)." },
+        { key:/voltage controlled/, tip:"MOSFET is voltage-controlled (oxide capacitor at gate)." },
         { key:/current controlled/, tip:"BJT is current-controlled (IC ≈ β·IB in active region)." },
         { key:/a\/\(1 \+ aβ\)/, tip:"Negative feedback: Af = A/(1 + Aβ); Positive: Af = A/(1 − Aβ)." }
       ];
 
-      function tipFor(qText, answerText, subject) {
-        const q = norm(qText), a = norm(answerText);
-        // Subject-specific first
-        const scan = (list) => { for (const r of list) if (r.key.test(q)) return r.tip; return null; };
-        const scanA = (list) => { for (const r of list) if (r.key.test(a)) return r.tip; return null; };
-
-        // General
-        for (const r of generalAnswerTips) if (r.key.test(a)) return r.tip;
-
-        if (/psp|c programming|decision.*loop|array|pointer|function|storage|recursion|structure|file/i.test(subject||"")) {
-          const t = scan(pspQ) || scanA(pspA);
-          if (t) return t;
-        }
-        if (/physics|quantum|semiconductor|laser|fiber|conductor|superconductor/i.test(subject||"")) {
-          const t = scan(phyQ) || scanA(phyA);
-          if (t) return t;
-        }
-        if (/calculus|differential|partial|equation|integral|ode|pde|beta|gamma/i.test(subject||"")) {
-          const t = scan(calQ) || scanA(calA);
-          if (t) return t;
-        }
-        if (/basic electronics|bjt|mosfet|op.?amp|oscillator|feedback|communication|embedded/i.test(subject||"")) {
-          const t = scan(beQ) || scanA(beA);
-          if (t) return t;
-        }
-
-        // Cross-topic helpful defaults
-        if (/even if not matched/.test('')) {}
-        if (/symmetric.*region.*odd|xy\b/.test(q)) return "Odd function over symmetric region integrates to zero.";
-        if (/non-?inverting/.test(q) && /gain/.test(q)) return "Non-inverting gain = 1 + Rf/R1.";
-        if (/inverting/.test(q) && /gain/.test(q)) return "Inverting gain = −Rf/R1.";
-        if (/cmrr/.test(q)) return "CMRR = Ad/Ac (higher is better).";
-        if (/laplace|wave|heat/.test(q)) return "Laplace: elliptic; Wave: hyperbolic; Heat: parabolic.";
-        if (/heisenberg|uncertainty/.test(q)) return "Δx·Δp ≥ ħ/2; tighter position → looser momentum.";
-        if (/switch.*case.*float/.test(q)) return "switch case labels must be integral constants.";
-        if (/printf.*%5d/.test(q)) return "Width 5 → right-aligned spaces before number.";
-
-        return "Use core anchors: pick definitions, standard formulas, and ‘always-true’ properties.";
-      }
-
+      function scan(list, s) { return list.find(r => r.key.test(s))?.tip || null; }
       units.forEach(u => {
         (u.questions || []).forEach(q => {
           if (!q) return;
-          const ans = q.options?.[q.correctIndex];
-          if (!q.trick && ans) q.trick = tipFor(q.text, ans, subjectId);
+          const qn = norm(q.text);
+          const an = norm(q.options?.[q.correctIndex] || '');
+          let tip = scan(generalAnswerTips, an);
+          if (!tip && /psp|c programming|decision|loop|array|pointer|function|storage|recursion|structure|file/i.test(subjectId||"")) tip = scan(pspQ, qn) || scan(pspA, an);
+          if (!tip && /physics|quantum|semiconductor|laser|fiber|conductor|superconductor/i.test(subjectId||"")) tip = scan(phyQ, qn) || scan(phyA, an);
+          if (!tip && /calculus|differential|partial|equation|integral|ode|pde|beta|gamma/i.test(subjectId||"")) tip = scan(calQ, qn) || scan(calA, an);
+          if (!tip && /basic electronics|bjt|mosfet|op.?amp|oscillator|feedback|communication|embedded/i.test(subjectId||"")) tip = scan(beQ, qn) || scan(beA, an);
+          if (!tip) tip = "Use definitions, standard formulas, and ‘always-true’ properties to eliminate.";
+          q.trick = q.trick || tip;
         });
       });
     }
@@ -355,9 +344,17 @@
         subjectSelect: document.getElementById('subjectSelect'),
         unitSelect: document.getElementById('unitSelect'),
         modeSelect: document.getElementById('modeSelect'),
+        countInput: document.getElementById('countInput'),
+        shuffleQuestions: document.getElementById('shuffleQuestions'),
+        shuffleOptions: document.getElementById('shuffleOptions'),
+        keyBtn: document.getElementById('keyBtn'),
         startBtn: document.getElementById('startBtn'),
         quizPanel: document.getElementById('quizPanel'),
         resultPanel: document.getElementById('resultPanel'),
+        keyPanel: document.getElementById('keyPanel'),
+        keyList: document.getElementById('keyList'),
+        printKeyBtn: document.getElementById('printKeyBtn'),
+        hideKeyBtn: document.getElementById('hideKeyBtn'),
         qText: document.getElementById('qText'),
         qOpts: document.getElementById('qOpts'),
         qTrick: document.getElementById('qTrick'),
@@ -377,17 +374,44 @@
       };
 
       const state = {
-        subjects: {},   // id -> {id, name, units[]}
+        subjects: {},
         subjectOrder: [],
         currentSubjectId: '__all__',
         currentUnitId: '__all__',
-        pool: [],
+        basePool: [],
+        pool: [],            // prepared pool (maybe shuffled options)
         index: 0,
         answered: new Map(),
         mode: 'practice',
         score: 0,
-        total: 0
+        total: 0,
+        settings: {
+          count: null,
+          shuffleQuestions: true,
+          shuffleOptions: true
+        }
       };
+
+      // Utilities
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+        return a;
+      }
+      function cloneQuestion(q) {
+        return { text:q.text, options:q.options.slice(), correctIndex:q.correctIndex, trick:q.trick };
+      }
+      function prepareQuestion(q, shuffleOpts) {
+        const copy = cloneQuestion(q);
+        if (!shuffleOpts) return copy;
+        const indices = copy.options.map((_,i)=>i);
+        const order = shuffle(indices);
+        const newOptions = order.map(i => copy.options[i]);
+        const newCorrect = order.indexOf(copy.correctIndex);
+        copy.options = newOptions;
+        copy.correctIndex = newCorrect;
+        return copy;
+      }
 
       function updateSummary() {
         const subs = Object.values(state.subjects);
@@ -464,7 +488,6 @@
           sel.appendChild(opt);
         });
       }
-
       function populateUnitSelect() {
         const subId = els.subjectSelect.value;
         state.currentSubjectId = subId;
@@ -481,7 +504,7 @@
         }
       }
 
-      function buildPool() {
+      function buildBasePool() {
         const subId = els.subjectSelect.value;
         const unitId = els.unitSelect.value;
         state.currentSubjectId = subId;
@@ -494,7 +517,7 @@
           });
         } else {
           const s = state.subjects[subId];
-          if (!s) { state.pool = []; return; }
+          if (!s) { state.basePool = []; return; }
           if (unitId === '__all__') {
             s.units.forEach(u => pool.push(...(u.questions || [])));
           } else {
@@ -502,8 +525,27 @@
             pool = [...(u?.questions || [])];
           }
         }
-        state.pool = pool;
-        state.total = pool.length;
+        state.basePool = pool;
+      }
+
+      function applySettingsAndPreparePool() {
+        let list = state.basePool.slice();
+
+        // shuffle questions setting
+        if (state.settings.shuffleQuestions) list = shuffle(list);
+
+        // apply count
+        let count = state.settings.count;
+        if (state.mode === 'test' && (count == null || count === '')) {
+          count = Math.min(20, list.length);
+        }
+        if (count && Number(count) > 0) {
+          list = list.slice(0, Math.min(Number(count), list.length));
+        }
+
+        // prepare (shuffle options if selected)
+        state.pool = list.map(q => prepareQuestion(q, state.settings.shuffleOptions));
+        state.total = state.pool.length;
         state.index = 0;
         state.answered.clear();
         state.score = 0;
@@ -512,6 +554,7 @@
       function showPanel(which) {
         els.quizPanel.classList.toggle('active', which === 'quiz');
         els.resultPanel.classList.toggle('active', which === 'result');
+        els.keyPanel.classList.toggle('active', which === 'key');
       }
 
       function renderQuestion() {
@@ -584,18 +627,8 @@
         }
       }
 
-      function nextQ() {
-        if (state.index < state.total - 1) {
-          state.index++;
-          renderQuestion();
-        }
-      }
-      function prevQ() {
-        if (state.index > 0) {
-          state.index--;
-          renderQuestion();
-        }
-      }
+      function nextQ() { if (state.index < state.total - 1) { state.index++; renderQuestion(); } }
+      function prevQ() { if (state.index > 0) { state.index--; renderQuestion(); } }
       function endTest() {
         showPanel('result');
         const pct = state.total ? Math.round((state.score/state.total)*100) : 0;
@@ -603,29 +636,95 @@
       }
       function start() {
         state.mode = els.modeSelect.value;
-        buildPool();
-        if (state.mode === 'test') {
-          const N = Math.min(20, state.pool.length);
-          const shuffled = state.pool.map(x => ({x, r: Math.random()})).sort((a,b)=>a.r-b.r).map(o=>o.x);
-          state.pool = shuffled.slice(0, N);
-          state.total = state.pool.length;
-        }
+        state.settings.count = els.countInput.value || null;
+        state.settings.shuffleQuestions = els.shuffleQuestions.checked;
+        state.settings.shuffleOptions = els.shuffleOptions.checked;
+
+        buildBasePool();
+        applySettingsAndPreparePool();
         showPanel('quiz');
         renderQuestion();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-      function restart() { start(); }
 
-      // Wire UI handlers
+      function buildAnswerKey() {
+        // Build from current selection & settings
+        buildBasePool();
+        applySettingsAndPreparePool();
+
+        const sName = state.currentSubjectId==='__all__' ? 'All Subjects' : (state.subjects[state.currentSubjectId]?.name || '');
+        const unitLabel = state.currentUnitId==='__all__' ? 'All Units' : (findCurrentUnit()?.name || '');
+        els.subjectBadge.textContent = sName || 'Subject';
+        els.unitBadge.textContent = unitLabel || 'Unit';
+
+        els.keyList.innerHTML = '';
+        state.pool.forEach((q, idx) => {
+          const wrap = document.createElement('div');
+          wrap.className = 'qitem';
+          const h = document.createElement('h4');
+          h.textContent = `${idx+1}. ${q.text}`;
+          wrap.appendChild(h);
+
+          const ol = document.createElement('ol');
+          ol.className = 'opts';
+          q.options.forEach((opt, j) => {
+            const li = document.createElement('li');
+            li.textContent = opt;
+            if (j === q.correctIndex) li.classList.add('correct'); // highlight in green
+            ol.appendChild(li);
+          });
+          wrap.appendChild(ol);
+
+          const trick = document.createElement('div');
+          trick.className = 'trick';
+          trick.textContent = 'Trick: ' + (q.trick || '—');
+          wrap.appendChild(trick);
+
+          els.keyList.appendChild(wrap);
+        });
+      }
+
+      function showAnswerKey() {
+        buildAnswerKey();
+        showPanel('key');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function hideAnswerKey() {
+        showPanel('quiz');
+      }
+
+      function printKey() {
+        const win = window.open('', '_blank');
+        if (!win) return;
+        win.document.write('<!doctype html><title>Answer Key</title>');
+        win.document.write('<style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:16px;} ol{padding-left:22px;} li{margin:6px 0;padding:6px;border:1px solid #ddd;border-radius:6px;} li.correct{background:#ecfdf5;border-color:#86efac;} .q{margin:0 0 8px 0;font-weight:600;}</style>');
+        state.pool.forEach((q, idx) => {
+          win.document.write(`<div><div class="q">${idx+1}. ${q.text}</div><ol>`);
+          q.options.forEach((opt, j) => {
+            const cls = (j===q.correctIndex) ? 'class="correct"' : '';
+            win.document.write(`<li ${cls}>${opt}</li>`);
+          });
+          win.document.write(`</ol></div>`);
+        });
+        win.document.close();
+        win.focus();
+        win.print();
+      }
+
+      // Wire UI
       els.startBtn.addEventListener('click', start);
       els.prevBtn.addEventListener('click', prevQ);
       els.nextBtn.addEventListener('click', nextQ);
       els.endBtn.addEventListener('click', endTest);
-      els.restartBtn.addEventListener('click', restart);
+      els.restartBtn.addEventListener('click', start);
       els.subjectSelect.addEventListener('change', () => {
         populateUnitSelect();
         renderSidebarUnits();
       });
+      els.keyBtn.addEventListener('click', showAnswerKey);
+      els.hideKeyBtn.addEventListener('click', hideAnswerKey);
+      els.printKeyBtn.addEventListener('click', printKey);
 
       // Subject registrations
       document.addEventListener('subject-registered', () => {
