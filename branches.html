@@ -1,132 +1,243 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Physics Cycle - Semester 1 Subjects</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Essential utility classes */
+    .hidden { display: none !important; }
+
+    /* Grid for big buttons */
+    .btn-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    /* Blue Button Style */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 14px;
+      border: 1px solid #1d4ed8;
+      border-radius: 10px;
+      background: #2563eb;
+      color: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      min-height: 46px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #1d4ed8; }
+    .btn.active { background: #1e3a8a; border-color: #1e3a8a; font-weight: 700; }
+    
+    @media (max-width: 560px) { .btn { min-height: 44px; } }
+
+    /* Messages */
+    .message { padding: 15px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: #475569; margin-bottom: 12px; }
+    .message-warning { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .message-error { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+
+    /* Breadcrumbs & Pills */
+    .crumb { display: inline-flex; gap: 6px; align-items: center; background: #f1f5f9; border: 1px solid #e5e7eb; border-radius: 999px; padding: 6px 10px; color: #334155; font-size: 13px; }
+    
+    .subject-pill {
+      display: inline-block; border: 1px solid #2563eb; border-radius: 8px; padding: 8px 12px;
+      color: #2563eb; text-decoration: none; background: #ffffff; font-weight: 500; transition: background 0.2s;
+    }
+    .subject-pill:hover { background: #eef2ff; }
+
+    /* Layout Headers */
+    .card-header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .card-title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+    .branch-code { background: #eef2ff; color: #1e293b; border: 1px solid #c7d2fe; border-radius: 999px; padding: 3px 8px; font-size: 12px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    
+    /* List Reset */
+    .subjects-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">Physics Cycle</div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="branches.html" class="nav-link active">Notes</a>
+        <a href="quiz.html" class="nav-link">Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <div class="page-title-block">
+        <h1 class="page-title">Semester 1 Subjects</h1>
+        <p class="page-subtitle">Select a subject to view notes.</p>
+      </div>
+    </section>
+
+    <!-- SUBJECT BUTTONS -->
+    <section class="card">
+      <h2 class="card-title">Choose Subject</h2>
+      <div id="subjectButtons" class="btn-grid" style="margin-top:10px;">
+        <button class="btn subject-btn" data-subject="PSP">PSP</button>
+        <button class="btn subject-btn" data-subject="Physics">Physics</button>
+        <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
+        <button class="btn subject-btn" data-subject="Basic Electronics">Basic Electronics</button>
+        <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
+        <button class="btn subject-btn" data-subject="UHV">UHV</button>
+        <button class="btn subject-btn" data-subject="COI">COI</button>
+      </div>
+    </section>
+
+    <!-- STATUS MESSAGE AREA -->
+    <div id="statusArea" class="hidden"></div>
+
+    <!-- UNIT BUTTONS -->
+    <section id="unitSection" class="card hidden">
+      <div class="toolbar">
+        <h3 class="card-title">Choose Unit</h3>
+        <span id="crumb" class="crumb">Subject</span>
+      </div>
+      <div id="unitButtons" class="btn-grid"></div>
+    </section>
+
+    <!-- NOTES FILES LIST -->
+    <section id="notesSection" class="card hidden">
+      <div class="toolbar">
+        <span id="locationCrumb" class="crumb">Resources</span>
+        <a id="openFolderLink" href="#" target="_blank" class="subject-pill hidden" rel="noopener">Open Folder</a>
+      </div>
+      <div id="notesContent"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
     const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_ANON_KEY =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // UI Refs
+    // UI References
     const unitSection = document.getElementById('unitSection');
     const unitButtonsEl = document.getElementById('unitButtons');
     const notesSection = document.getElementById('notesSection');
     const notesContent = document.getElementById('notesContent');
-    const statusMessage = document.getElementById('statusMessage');
+    const statusArea = document.getElementById('statusArea');
     const crumb = document.getElementById('crumb');
     const locationCrumb = document.getElementById('locationCrumb');
     const openFolderLink = document.getElementById('openFolderLink');
 
     let state = { subject: null, unit: null };
 
-    // --- HELPER FUNCTIONS ---
-
-    function showLoading(msg) {
-      statusMessage.className = 'message';
-      statusMessage.textContent = msg;
-      statusMessage.classList.remove('hidden');
+    // --- HELPERS ---
+    function showStatus(msg, type="normal") {
+      statusArea.className = `message ${type === 'error' ? 'message-error' : type === 'warn' ? 'message-warning' : ''}`;
+      statusArea.innerHTML = msg; // Allow HTML for bolding
+      statusArea.classList.remove('hidden');
     }
-    
-    function showError(msg) {
-      statusMessage.className = 'message message-error';
-      statusMessage.textContent = msg;
-      statusMessage.classList.remove('hidden');
-    }
-    
     function hideStatus() {
-      statusMessage.classList.add('hidden');
+      statusArea.classList.add('hidden');
     }
-
     function setActive(container, selector) {
       container.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
       if(selector) container.querySelector(selector)?.classList.add('active');
     }
 
-    // ROBUST CHECKS: In Supabase storage .list(), files have an 'id', folders usually don't.
+    // Supabase items don't always have consistent types.
+    // Files usually have 'id', Folders usually don't.
+    // We also filter out .emptyFolderPlaceholder files if you use them.
     const isFolder = (item) => !item.id; 
-    const isFile = (item) => !!item.id;
+    const isFile = (item) => !!item.id && item.name !== '.emptyFolderPlaceholder';
 
-    // --- CORE LOGIC ---
-
+    // --- CLICK SUBJECT ---
     async function onSubjectClick(subject) {
       state.subject = subject;
-      state.unit = null;
-
-      // 1. Construct path: semester1/SubjectName
-      // Note: Basic Electronics needs the space if that's how it is in bucket
-      const folderPath = `semester1/${subject}`; 
-
-      setActive(document.getElementById('subjectButtons'), `.btn[data-subject="${subject}"]`);
       
+      // Path construction: 'semester1/SubjectName'
+      // Ensure 'Basic Electronics' keeps the space if your bucket has it.
+      const folderPath = `semester1/${subject}`;
+
       // Reset UI
+      setActive(document.getElementById('subjectButtons'), `.btn[data-subject="${subject}"]`);
       unitSection.classList.add('hidden');
       notesSection.classList.add('hidden');
-      showLoading(`Scanning ${folderPath}...`);
+      showStatus(`Loading <strong>${subject}</strong>...`);
 
-      console.log(`[DEBUG] Listing folder: "${folderPath}"`);
+      console.log(`[DEBUG] Listing: ${folderPath}`);
 
-      // 2. Fetch List
       const { data, error } = await supabase.storage.from('notes').list(folderPath, {
         limit: 100,
         sortBy: { column: 'name', order: 'asc' }
       });
 
       if (error) {
-        console.error('[DEBUG] API Error:', error);
-        showError('Error connecting to database.');
+        console.error(error);
+        showStatus(`Error loading subject: ${error.message}`, 'error');
         return;
       }
 
-      console.log('[DEBUG] Response Data:', data);
-
       if (!data || data.length === 0) {
-        showError(`Folder "${folderPath}" appears empty.`);
+        showStatus(`No folders or files found for <strong>${subject}</strong>.`, 'warn');
         return;
       }
 
       hideStatus();
 
-      // 3. Separate Folders (Units) and Files
-      // Some users might use .placeholder files to create folders, we filter those out if needed
-      const folders = data.filter(item => isFolder(item) && item.name !== '.emptyFolderPlaceholder');
+      const folders = data.filter(isFolder);
       const files = data.filter(isFile);
 
-      console.log(`[DEBUG] Found ${folders.length} folders (Units) and ${files.length} files.`);
+      console.log(`[DEBUG] Found ${folders.length} folders, ${files.length} files.`);
 
-      // 4. Show Unit Buttons (if folders exist)
+      // 1. If folders exist, show UNIT BUTTONS
       if (folders.length > 0) {
         crumb.textContent = subject;
         unitButtonsEl.innerHTML = '';
-        
         folders.forEach(f => {
-          const b = document.createElement('button');
-          b.className = 'btn';
-          // Display Name: Remove sorting numbers like "01_"
-          b.textContent = f.name.replace(/^\d+[_-]/, ''); 
-          // Data Unit: Keep exact folder name
-          b.dataset.unit = f.name; 
-          b.addEventListener('click', () => onUnitClick(f.name, folderPath));
-          unitButtonsEl.appendChild(b);
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          // Clean name: "01_Unit 1" -> "Unit 1"
+          btn.textContent = f.name.replace(/^\d+[_-]/, '');
+          btn.onclick = () => onUnitClick(f.name, folderPath);
+          // Mark button to allow setActive later
+          btn.setAttribute('data-unit', f.name); 
+          unitButtonsEl.appendChild(btn);
         });
         unitSection.classList.remove('hidden');
       }
 
-      // 5. Show Files (if they exist at root)
+      // 2. If files exist at root, show them immediately
       if (files.length > 0) {
-        renderFileList(files, folderPath, `${subject} (General Files)`);
+        renderFileList(files, folderPath, `${subject} (Files)`);
       } else if (folders.length === 0) {
-        showError('No units or files found in this subject folder.');
+        // No folders AND no files
+        showStatus(`Folder found but appears empty.`, 'warn');
       }
     }
 
+    // --- CLICK UNIT ---
     async function onUnitClick(unitName, parentPath) {
-      // Path: semester1/Subject/UnitName
       const unitPath = `${parentPath}/${unitName}`;
       
-      setActive(unitButtonsEl, `.btn[data-unit="${unitName}"]`);
-      showLoading(`Loading ${unitName}...`);
+      // Highlight active unit button
+      setActive(unitButtonsEl, `button[data-unit="${unitName}"]`);
       
-      console.log(`[DEBUG] Listing unit: "${unitPath}"`);
+      showStatus(`Loading ${unitName}...`);
+      console.log(`[DEBUG] Listing unit: ${unitPath}`);
 
       const { data, error } = await supabase.storage.from('notes').list(unitPath, {
         limit: 100,
@@ -134,50 +245,49 @@
       });
 
       if (error) {
-        console.error('[DEBUG] Unit Error:', error);
-        showError('Failed to load unit.');
+        showStatus(`Error: ${error.message}`, 'error');
         return;
       }
 
       hideStatus();
 
       const files = data.filter(isFile);
-      
+
       if (files.length === 0) {
-        showError(`No files found inside ${unitName}.`);
+        showStatus(`No files found in <strong>${unitName}</strong>.`, 'warn');
         notesSection.classList.add('hidden');
       } else {
         renderFileList(files, unitPath, `${state.subject} • ${unitName.replace(/^\d+[_-]/, '')}`);
       }
     }
 
+    // --- RENDER FILES ---
     function renderFileList(files, folderPath, title) {
       notesSection.classList.remove('hidden');
       locationCrumb.textContent = title;
 
       const listHtml = files.map(f => {
         const { data } = supabase.storage.from('notes').getPublicUrl(`${folderPath}/${f.name}`);
-        // Clean up name: remove "01_" prefix and ".pdf" extension
-        const displayName = f.name.replace(/^\d+[_-]/, '').replace(/\.[^/.]+$/, ""); 
-        
+        // Clean filename: "01_Notes.pdf" -> "Notes"
+        const displayName = f.name.replace(/^\d+[_-]/, '').replace(/\.[^/.]+$/, "");
         return `<li><a class="subject-pill" href="${data.publicUrl}" target="_blank">${displayName}</a></li>`;
       }).join('');
 
       notesContent.innerHTML = `<ul class="subjects-list">${listHtml}</ul>`;
 
-      // Folder Link
-      const { data: folderData } = supabase.storage.from('notes').getPublicUrl(folderPath);
-      openFolderLink.href = folderData.publicUrl;
+      // Open Folder Link
+      const { data } = supabase.storage.from('notes').getPublicUrl(folderPath);
+      openFolderLink.href = data.publicUrl;
       openFolderLink.classList.remove('hidden');
     }
 
-    // Attach listeners to static Subject buttons
+    // Init
     document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.subject-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          // Pass exact text from data-subject attribute
-          onSubjectClick(btn.dataset.subject);
-        });
+      const subjectButtons = document.querySelectorAll('.subject-btn');
+      subjectButtons.forEach(btn => {
+        btn.addEventListener('click', () => onSubjectClick(btn.dataset.subject));
       });
     });
-</script>
+  </script>
+</body>
+</html>
