@@ -74,23 +74,21 @@
       font-size: 13px;
     }
     .subject-pill {
-      display: inline-block;
-      border: 1px solid #2563eb;
+      display:inline-block;
+      border:1px solid #2563eb;
       border-radius: 8px;
-      padding: 6px 10px;
-      color: #2563eb;
-      text-decoration: none;
-      background: #ffffff;
+      padding:6px 10px;
+      color:#2563eb;
+      text-decoration:none;
+      background:#ffffff;
     }
-    .subject-pill:hover {
-      background: #eef2ff;
-    }
+    .subject-pill:hover { background:#eef2ff; }
 
     .card-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
     }
     .card-title { margin: 0; }
     .branch-code {
@@ -138,7 +136,14 @@
     <section class="card">
       <h2 class="card-title" style="margin-bottom:8px;">Choose Subject</h2>
       <div id="subjectButtons" class="btn-grid">
-        <!-- Buttons injected by JS -->
+        <!-- Static subject buttons so they always show -->
+        <button class="btn subject-btn" data-subject="PSP">PSP</button>
+        <button class="btn subject-btn" data-subject="Physics">Physics</button>
+        <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
+        <button class="btn subject-btn" data-subject="Basic Electronics">Basic Electronics</button>
+        <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
+        <button class="btn subject-btn" data-subject="UHV">UHV</button>
+        <button class="btn subject-btn" data-subject="COI">COI</button>
       </div>
     </section>
 
@@ -184,23 +189,13 @@
         'PSP': 'PSP',
         'Physics': 'Physics',
         'Calculus': 'Calculus',
-        'Basic Electronics': 'Basic Electronics', // use this if your folder actually has a space
+        'Basic Electronics': 'Basic Electronics', // use this if folder has a space
         'ADLD': 'ADLD',
         'UHV': 'UHV',
         'COI': 'COI'
       };
       return map[subject] || subject.replace(/\s+/g, '');
     };
-
-    const SUBJECTS = [
-      'PSP',
-      'Physics',
-      'Calculus',
-      'Basic Electronics',
-      'ADLD',
-      'UHV',
-      'COI'
-    ];
 
     const subjectButtonsEl = document.getElementById('subjectButtons');
     const unitSection = document.getElementById('unitSection');
@@ -266,18 +261,6 @@
       `;
     }
 
-    function renderSubjectButtons() {
-      subjectButtonsEl.innerHTML = '';
-      SUBJECTS.forEach(sub => {
-        const btn = document.createElement('button');
-        btn.className = 'btn subject-btn';
-        btn.textContent = sub;
-        btn.dataset.subject = sub;
-        btn.addEventListener('click', () => onSubjectClick(sub, btn));
-        subjectButtonsEl.appendChild(btn);
-      });
-    }
-
     function setActive(container, selector) {
       container.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
       if (selector) {
@@ -291,7 +274,7 @@
       state.unit = null;
       state.folder = `semester1/${subjectSlug(subject)}`;
 
-      setActive(subjectButtonsEl, `[data-subject="${CSS.escape(subject)}"]`);
+      setActive(subjectButtonsEl, `.subject-btn[data-subject="${subject}"]`);
       unitButtonsEl.innerHTML = '';
       unitSection.classList.add('hidden');
       noDataMessage.classList.add('hidden');
@@ -331,7 +314,7 @@
         folders.forEach(f => {
           const unitBtn = document.createElement('button');
           unitBtn.className = 'btn unit-btn';
-          unitBtn.textContent = f.name.replace(/^\d+[_-]*/, ''); // This is the "unit name"
+          unitBtn.textContent = f.name.replace(/^\d+[_-]*/, '');  // Unit name from folder
           unitBtn.dataset.unit = f.name;
           unitBtn.addEventListener('click', () => onUnitClick(f.name, unitBtn));
           unitButtonsEl.appendChild(unitBtn);
@@ -349,7 +332,7 @@
       const unitFolder = `${state.folder}/${unitName}`;
 
       locationCrumb.textContent = `${state.subject} • ${unitName.replace(/^\d+[_-]*/, '')}`;
-      setActive(unitButtonsEl, `[data-unit="${CSS.escape(unitName)}"]`);
+      setActive(unitButtonsEl, `.unit-btn[data-unit="${unitName}"]`);
       setLoading('Loading unit…');
 
       const { data, error } = await supabase.storage.from('notes').list(unitFolder, {
@@ -383,8 +366,15 @@
       noDataMessage.classList.add('hidden');
     }
 
+    // Attach events to static subject buttons
     document.addEventListener('DOMContentLoaded', () => {
-      renderSubjectButtons();
+      const subjectButtons = document.querySelectorAll('.subject-btn');
+      subjectButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const subj = btn.dataset.subject;
+          onSubjectClick(subj, btn);
+        });
+      });
     });
   </script>
 </body>
