@@ -136,7 +136,6 @@
     <section class="card">
       <h2 class="card-title" style="margin-bottom:8px;">Choose Subject</h2>
       <div id="subjectButtons" class="btn-grid">
-        <!-- Static subject buttons so they always show -->
         <button class="btn subject-btn" data-subject="PSP">PSP</button>
         <button class="btn subject-btn" data-subject="Physics">Physics</button>
         <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
@@ -189,7 +188,7 @@
         'PSP': 'PSP',
         'Physics': 'Physics',
         'Calculus': 'Calculus',
-        'Basic Electronics': 'Basic Electronics', // use this if folder has a space
+        'Basic Electronics': 'Basic Electronics', // adjust if your folder differs
         'ADLD': 'ADLD',
         'UHV': 'UHV',
         'COI': 'COI'
@@ -269,7 +268,7 @@
       }
     }
 
-    async function onSubjectClick(subject, btnEl) {
+    async function onSubjectClick(subject) {
       state.subject = subject;
       state.unit = null;
       state.folder = `semester1/${subjectSlug(subject)}`;
@@ -304,29 +303,32 @@
       const files = data.filter(isFileObj);
       const folders = data.filter(isFolderObj);
 
-      if (files.length > 0) {
-        displayFileList(subject, files, state.folder);
-        const { data: { publicUrl } } = supabase.storage.from('notes').getPublicUrl(state.folder);
-        openFolderLink.href = publicUrl;
-        openFolderLink.classList.remove('hidden');
-      } else if (folders.length > 0) {
+      // NEW BEHAVIOR:
+      // If folders exist, always show unit buttons (even if there are files)
+      if (folders.length > 0) {
         unitButtonsEl.innerHTML = '';
         folders.forEach(f => {
           const unitBtn = document.createElement('button');
           unitBtn.className = 'btn unit-btn';
           unitBtn.textContent = f.name.replace(/^\d+[_-]*/, '');  // Unit name from folder
           unitBtn.dataset.unit = f.name;
-          unitBtn.addEventListener('click', () => onUnitClick(f.name, unitBtn));
+          unitBtn.addEventListener('click', () => onUnitClick(f.name));
           unitButtonsEl.appendChild(unitBtn);
         });
         unitSection.classList.remove('hidden');
         notesSection.classList.add('hidden');
+      } else if (files.length > 0) {
+        // No folders, but has files → show files directly
+        displayFileList(subject, files, state.folder);
+        const { data: { publicUrl } } = supabase.storage.from('notes').getPublicUrl(state.folder);
+        openFolderLink.href = publicUrl;
+        openFolderLink.classList.remove('hidden');
       } else {
         setEmpty(`No notes uploaded yet for ${subject}.`);
       }
     }
 
-    async function onUnitClick(unitName, btnEl) {
+    async function onUnitClick(unitName) {
       if (!state.subject) return;
       state.unit = unitName;
       const unitFolder = `${state.folder}/${unitName}`;
@@ -372,7 +374,7 @@
       subjectButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           const subj = btn.dataset.subject;
-          onSubjectClick(subj, btn);
+          onSubjectClick(subj);
         });
       });
     });
