@@ -6,17 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Essential utility classes */
+    /* Utility */
     .hidden { display: none !important; }
 
-    /* Grid for big buttons */
+    /* Responsive Grid */
     .btn-grid {
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 
-    /* Blue Button Style */
+    /* Blue Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -147,7 +147,7 @@
     // --- HELPERS ---
     function showStatus(msg, type="normal") {
       statusArea.className = `message ${type === 'error' ? 'message-error' : type === 'warn' ? 'message-warning' : ''}`;
-      statusArea.innerHTML = msg; // Allow HTML for bolding
+      statusArea.innerHTML = msg;
       statusArea.classList.remove('hidden');
     }
     function hideStatus() {
@@ -158,9 +158,6 @@
       if(selector) container.querySelector(selector)?.classList.add('active');
     }
 
-    // Supabase items don't always have consistent types.
-    // Files usually have 'id', Folders usually don't.
-    // We also filter out .emptyFolderPlaceholder files if you use them.
     const isFolder = (item) => !item.id; 
     const isFile = (item) => !!item.id && item.name !== '.emptyFolderPlaceholder';
 
@@ -169,7 +166,6 @@
       state.subject = subject;
       
       // Path construction: 'semester1/SubjectName'
-      // Ensure 'Basic Electronics' keeps the space if your bucket has it.
       const folderPath = `semester1/${subject}`;
 
       // Reset UI
@@ -177,8 +173,6 @@
       unitSection.classList.add('hidden');
       notesSection.classList.add('hidden');
       showStatus(`Loading <strong>${subject}</strong>...`);
-
-      console.log(`[DEBUG] Listing: ${folderPath}`);
 
       const { data, error } = await supabase.storage.from('notes').list(folderPath, {
         limit: 100,
@@ -201,8 +195,6 @@
       const folders = data.filter(isFolder);
       const files = data.filter(isFile);
 
-      console.log(`[DEBUG] Found ${folders.length} folders, ${files.length} files.`);
-
       // 1. If folders exist, show UNIT BUTTONS
       if (folders.length > 0) {
         crumb.textContent = subject;
@@ -213,18 +205,16 @@
           // Clean name: "01_Unit 1" -> "Unit 1"
           btn.textContent = f.name.replace(/^\d+[_-]/, '');
           btn.onclick = () => onUnitClick(f.name, folderPath);
-          // Mark button to allow setActive later
           btn.setAttribute('data-unit', f.name); 
           unitButtonsEl.appendChild(btn);
         });
         unitSection.classList.remove('hidden');
       }
 
-      // 2. If files exist at root, show them immediately
+      // 2. If files exist at root, show them immediately below
       if (files.length > 0) {
         renderFileList(files, folderPath, `${subject} (Files)`);
       } else if (folders.length === 0) {
-        // No folders AND no files
         showStatus(`Folder found but appears empty.`, 'warn');
       }
     }
@@ -233,11 +223,9 @@
     async function onUnitClick(unitName, parentPath) {
       const unitPath = `${parentPath}/${unitName}`;
       
-      // Highlight active unit button
       setActive(unitButtonsEl, `button[data-unit="${unitName}"]`);
       
       showStatus(`Loading ${unitName}...`);
-      console.log(`[DEBUG] Listing unit: ${unitPath}`);
 
       const { data, error } = await supabase.storage.from('notes').list(unitPath, {
         limit: 100,
@@ -268,14 +256,12 @@
 
       const listHtml = files.map(f => {
         const { data } = supabase.storage.from('notes').getPublicUrl(`${folderPath}/${f.name}`);
-        // Clean filename: "01_Notes.pdf" -> "Notes"
         const displayName = f.name.replace(/^\d+[_-]/, '').replace(/\.[^/.]+$/, "");
         return `<li><a class="subject-pill" href="${data.publicUrl}" target="_blank">${displayName}</a></li>`;
       }).join('');
 
       notesContent.innerHTML = `<ul class="subjects-list">${listHtml}</ul>`;
 
-      // Open Folder Link
       const { data } = supabase.storage.from('notes').getPublicUrl(folderPath);
       openFolderLink.href = data.publicUrl;
       openFolderLink.classList.remove('hidden');
