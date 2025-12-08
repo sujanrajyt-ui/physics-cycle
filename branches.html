@@ -8,13 +8,14 @@
   <style>
     .hidden { display: none !important; }
 
+    /* Responsive Grid */
     .btn-grid {
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 
-    /* Blue subject/unit buttons */
+    /* Blue Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -30,84 +31,33 @@
       min-height: 46px;
       text-align: center;
       font-weight: 500;
+      font-size: 14px;
     }
-    .btn:hover {
-      border-color: #1d4ed8;
-      background: #1d4ed8;
-    }
-    .btn.active {
-      background: #1d4ed8;
-      border-color: #1e3a8a;
-      font-weight: 700;
-    }
-    @media (max-width: 560px) {
-      .btn { min-height: 44px; }
-    }
+    .btn:hover { background: #1d4ed8; }
+    .btn.active { background: #1e3a8a; border-color: #1e3a8a; font-weight: 700; }
+    
+    @media (max-width: 560px) { .btn { min-height: 44px; } }
 
-    .message {
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      color: #475569;
-    }
-    .message-warning {
-      border-color: #f59e0b;
-      background: #fffbeb;
-      color: #92400e;
-    }
-    .message-error {
-      border-color: #ef4444;
-      background: #fef2f2;
-      color: #991b1b;
-    }
+    /* Cards & Layout */
+    .message { padding: 12px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; color: #475569; margin-bottom: 10px; }
+    .message-warning { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .message-error { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
 
-    .crumb {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      background: #f1f5f9;
-      border: 1px solid #e5e7eb;
-      border-radius: 999px;
-      padding: 6px 10px;
-      color: #334155;
-      font-size: 13px;
-    }
+    .crumb { display: inline-flex; gap: 6px; align-items: center; background: #f1f5f9; border: 1px solid #e5e7eb; border-radius: 999px; padding: 6px 10px; color: #334155; font-size: 13px; }
+    
     .subject-pill {
-      display:inline-block;
-      border:1px solid #2563eb;
-      border-radius: 8px;
-      padding:6px 10px;
-      color:#2563eb;
-      text-decoration:none;
-      background:#ffffff;
+      display: inline-block; border: 1px solid #2563eb; border-radius: 8px; padding: 8px 12px;
+      color: #2563eb; text-decoration: none; background: #ffffff; font-weight: 500;
     }
-    .subject-pill:hover { background:#eef2ff; }
+    .subject-pill:hover { background: #eef2ff; }
 
-    .card-header-row {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
+    .card-header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .card-title { margin: 0; }
-    .branch-code {
-      background:#eef2ff;
-      color:#1e293b;
-      border:1px solid #c7d2fe;
-      border-radius:999px;
-      padding:3px 8px;
-      font-size:12px;
-    }
-
-    .toolbar {
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:8px;
-    }
+    .branch-code { background: #eef2ff; color: #1e293b; border: 1px solid #c7d2fe; border-radius: 999px; padding: 3px 8px; font-size: 12px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    
+    /* List styles */
+    .subjects-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
   </style>
 </head>
 <body>
@@ -126,15 +76,13 @@
     <section class="page-header">
       <div class="page-title-block">
         <h1 class="page-title">Semester 1 Subjects</h1>
-        <p class="page-subtitle">
-          Tap a subject to see its notes from Supabase Storage.
-        </p>
+        <p class="page-subtitle">Tap a subject to load resources.</p>
       </div>
     </section>
 
-    <!-- SUBJECT BUTTONS -->
+    <!-- SUBJECT BUTTONS (Static so they always appear) -->
     <section class="card">
-      <h2 class="card-title" style="margin-bottom:8px;">Choose Subject</h2>
+      <h2 class="card-title" style="margin-bottom:10px;">Choose Subject</h2>
       <div id="subjectButtons" class="btn-grid">
         <button class="btn subject-btn" data-subject="PSP">PSP</button>
         <button class="btn subject-btn" data-subject="Physics">Physics</button>
@@ -146,7 +94,10 @@
       </div>
     </section>
 
-    <!-- UNIT BUTTONS (if subject has subfolders) -->
+    <!-- FEEDBACK AREA -->
+    <div id="statusMessage" class="hidden"></div>
+
+    <!-- UNIT BUTTONS SECTION -->
     <section id="unitSection" class="card hidden">
       <div class="toolbar">
         <h3 class="card-title" style="margin:0;">Choose Unit</h3>
@@ -155,18 +106,14 @@
       <div id="unitButtons" class="btn-grid"></div>
     </section>
 
-    <!-- NOTES CARD -->
+    <!-- FILE LIST SECTION -->
     <section id="notesSection" class="card hidden">
       <div class="toolbar">
-        <span id="locationCrumb" class="crumb">Subject • Unit</span>
+        <span id="locationCrumb" class="crumb">Resources</span>
         <a id="openFolderLink" href="#" target="_blank" class="subject-pill hidden" rel="noopener">Open Folder</a>
       </div>
-      <div id="notesContent" class="message">Select a subject to see its notes.</div>
+      <div id="notesContent"></div>
     </section>
-
-    <p id="noDataMessage" class="message message-warning">
-      Select a subject above to see its notes.
-    </p>
   </main>
 
   <footer class="site-footer">
@@ -182,202 +129,176 @@
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Map subject label to folder name under semester1/
-    const subjectSlug = (subject) => {
-      const map = {
-        'PSP': 'PSP',
-        'Physics': 'Physics',
-        'Calculus': 'Calculus',
-        'Basic Electronics': 'Basic Electronics', // adjust if your folder differs
-        'ADLD': 'ADLD',
-        'UHV': 'UHV',
-        'COI': 'COI'
-      };
-      return map[subject] || subject.replace(/\s+/g, '');
-    };
-
-    const subjectButtonsEl = document.getElementById('subjectButtons');
+    // Refs
     const unitSection = document.getElementById('unitSection');
     const unitButtonsEl = document.getElementById('unitButtons');
     const notesSection = document.getElementById('notesSection');
     const notesContent = document.getElementById('notesContent');
-    const noDataMessage = document.getElementById('noDataMessage');
+    const statusMessage = document.getElementById('statusMessage');
     const crumb = document.getElementById('crumb');
     const locationCrumb = document.getElementById('locationCrumb');
     const openFolderLink = document.getElementById('openFolderLink');
 
-    let state = {
-      subject: null,
-      unit: null,
-      folder: null
-    };
+    let state = { subject: null, unit: null, folder: null };
 
-    const setLoading = (msg = 'Loading notes...') => {
-      notesContent.innerHTML = `<div class="message">${msg}</div>`;
-      notesSection.classList.remove('hidden');
-      noDataMessage.classList.add('hidden');
-    };
-    const setError = (msg) => {
-      notesContent.innerHTML = `<div class="message message-error">${msg}</div>`;
-      notesSection.classList.remove('hidden');
-    };
-    const setEmpty = (msg) => {
-      notesContent.innerHTML = `<div class="message message-warning">${msg}</div>`;
-      notesSection.classList.remove('hidden');
-    };
-
-    const isFileObj = (obj) => !!(obj?.metadata && (obj.metadata.size >= 0));
-    const isFolderObj = (obj) => !obj?.metadata;
-
-    function displayFileList(subject, items, folder) {
-      const linksHtml = items.map(file => {
-        const fullPath = `${folder}/${file.name}`;
-        const { data: { publicUrl } } = supabase.storage.from('notes').getPublicUrl(fullPath);
-
-        const displayName = file.name
-          .replace(/^\d+[_-]*/, '')
-          .replace(/\.[a-z0-9]+$/i, '');
-
-        return `
-          <li>
-            <a class="subject-pill" href="${publicUrl}" target="_blank" rel="noopener">
-              ${displayName}
-            </a>
-          </li>
-        `;
-      }).join('');
-
-      notesContent.innerHTML = `
-        <div class="card-header-row" style="margin-bottom:8px;">
-          <h3 class="card-title" style="margin:0;">${subject}</h3>
-          <span class="branch-code">Sem 1</span>
-        </div>
-        <p class="card-desc">Resources in ${folder.split('/').slice(-1)[0] || subject}.</p>
-        <div>
-          <div class="subjects-label">Resources</div>
-          <ul class="subjects-list">${linksHtml}</ul>
-        </div>
-      `;
+    // Status helpers
+    function showLoading(msg) {
+      statusMessage.className = 'message';
+      statusMessage.textContent = msg;
     }
+    function showError(msg) {
+      statusMessage.className = 'message message-error';
+      statusMessage.textContent = msg;
+    }
+    function hideStatus() {
+      statusMessage.className = 'hidden';
+    }
+
+    // Determine folder path for subject
+    const getSubjectFolder = (subject) => {
+      // IMPORTANT: Folders in Supabase are case-sensitive.
+      // If your folder is 'semester1', use that. If 'Semester 1', change it below.
+      const base = 'semester1'; 
+      
+      // Handle exact folder names
+      const folderName = subject === 'Basic Electronics' ? 'Basic Electronics' : subject;
+      return `${base}/${folderName}`;
+    };
+
+    // Logic: Is it a file or folder?
+    // Files have metadata (size). Folders don't.
+    const isFile = (item) => !!item.metadata; 
+    const isFolder = (item) => !item.metadata;
 
     function setActive(container, selector) {
       container.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-      if (selector) {
-        const el = container.querySelector(selector);
-        if (el) el.classList.add('active');
-      }
+      if(selector) container.querySelector(selector)?.classList.add('active');
     }
 
-    async function onSubjectClick(subject) {
+    // --- CLICK SUBJECT ---
+    async function onSubjectClick(subject, btn) {
       state.subject = subject;
       state.unit = null;
-      state.folder = `semester1/${subjectSlug(subject)}`;
+      state.folder = getSubjectFolder(subject);
 
-      setActive(subjectButtonsEl, `.subject-btn[data-subject="${subject}"]`);
-      unitButtonsEl.innerHTML = '';
+      setActive(document.getElementById('subjectButtons'), `.btn[data-subject="${subject}"]`);
+      
+      // Reset UI
       unitSection.classList.add('hidden');
-      noDataMessage.classList.add('hidden');
-      openFolderLink.classList.add('hidden');
-      openFolderLink.href = '#';
+      notesSection.classList.add('hidden');
+      showLoading(`Scanning ${state.folder}...`);
 
-      setLoading('Loading subject…');
-      crumb.textContent = subject;
-      locationCrumb.textContent = subject;
+      console.log(`[DEBUG] Listing folder: ${state.folder}`);
 
       const { data, error } = await supabase.storage.from('notes').list(state.folder, {
-        limit: 200,
+        limit: 100,
         sortBy: { column: 'name', order: 'asc' }
       });
 
       if (error) {
-        console.error('List error:', error);
-        setError('Failed to load notes. Please try again.');
+        console.error('[DEBUG] Error:', error);
+        showError('Error loading subject. Check console.');
         return;
       }
+
+      console.log('[DEBUG] Items found:', data);
 
       if (!data || data.length === 0) {
-        setEmpty(`No notes uploaded yet for ${subject}.`);
+        showError(`Folder "${state.folder}" is empty or not found.`);
         return;
       }
 
-      const files = data.filter(isFileObj);
-      const folders = data.filter(isFolderObj);
+      hideStatus();
 
-      // NEW BEHAVIOR:
-      // If folders exist, always show unit buttons (even if there are files)
+      const files = data.filter(isFile);
+      const folders = data.filter(isFolder);
+
+      // 1. If folders exist, show UNIT BUTTONS
       if (folders.length > 0) {
+        crumb.textContent = subject;
         unitButtonsEl.innerHTML = '';
         folders.forEach(f => {
-          const unitBtn = document.createElement('button');
-          unitBtn.className = 'btn unit-btn';
-          unitBtn.textContent = f.name.replace(/^\d+[_-]*/, '');  // Unit name from folder
-          unitBtn.dataset.unit = f.name;
-          unitBtn.addEventListener('click', () => onUnitClick(f.name));
-          unitButtonsEl.appendChild(unitBtn);
+          const b = document.createElement('button');
+          b.className = 'btn';
+          // Strip sorting numbers if any (e.g. "01_Unit 1" -> "Unit 1")
+          b.textContent = f.name.replace(/^\d+[_-]/, ''); 
+          b.dataset.unit = f.name;
+          b.addEventListener('click', () => onUnitClick(f.name, b));
+          unitButtonsEl.appendChild(b);
         });
         unitSection.classList.remove('hidden');
-        notesSection.classList.add('hidden');
-      } else if (files.length > 0) {
-        // No folders, but has files → show files directly
-        displayFileList(subject, files, state.folder);
-        const { data: { publicUrl } } = supabase.storage.from('notes').getPublicUrl(state.folder);
-        openFolderLink.href = publicUrl;
-        openFolderLink.classList.remove('hidden');
-      } else {
-        setEmpty(`No notes uploaded yet for ${subject}.`);
+      }
+
+      // 2. If files exist directly in subject folder, show them too
+      if (files.length > 0) {
+        renderFileList(files, state.folder, subject + " (General)");
       }
     }
 
-    async function onUnitClick(unitName) {
+    // --- CLICK UNIT ---
+    async function onUnitClick(unitName, btn) {
       if (!state.subject) return;
+      
       state.unit = unitName;
       const unitFolder = `${state.folder}/${unitName}`;
+      
+      setActive(unitButtonsEl, null);
+      btn.classList.add('active');
 
-      locationCrumb.textContent = `${state.subject} • ${unitName.replace(/^\d+[_-]*/, '')}`;
-      setActive(unitButtonsEl, `.unit-btn[data-unit="${unitName}"]`);
-      setLoading('Loading unit…');
+      showLoading(`Loading ${unitName}...`);
+      console.log(`[DEBUG] Listing unit: ${unitFolder}`);
 
       const { data, error } = await supabase.storage.from('notes').list(unitFolder, {
-        limit: 200,
+        limit: 100,
         sortBy: { column: 'name', order: 'asc' }
       });
 
       if (error) {
-        console.error('Unit list error:', error);
-        setError('Failed to load unit notes.');
+        console.error('[DEBUG] Unit Error:', error);
+        showError('Error loading unit.');
         return;
       }
 
-      if (!data || data.length === 0) {
-        setEmpty(`No files in ${unitName}.`);
-        return;
-      }
+      console.log('[DEBUG] Unit items:', data);
 
-      const files = data.filter(isFileObj);
+      hideStatus();
+      
+      const files = data.filter(isFile);
       if (files.length === 0) {
-        setEmpty(`No files in ${unitName}.`);
-        return;
+        showError(`No files found in ${unitName}.`);
+        notesSection.classList.add('hidden');
+      } else {
+        renderFileList(files, unitFolder, `${state.subject} • ${unitName}`);
       }
-
-      displayFileList(state.subject, files, unitFolder);
-      const { data: { publicUrl } } = supabase.storage.from('notes').getPublicUrl(unitFolder);
-      openFolderLink.href = publicUrl;
-      openFolderLink.classList.remove('hidden');
-
-      notesSection.classList.remove('hidden');
-      noDataMessage.classList.add('hidden');
     }
 
-    // Attach events to static subject buttons
-    document.addEventListener('DOMContentLoaded', () => {
-      const subjectButtons = document.querySelectorAll('.subject-btn');
-      subjectButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const subj = btn.dataset.subject;
-          onSubjectClick(subj);
-        });
-      });
+    // --- RENDER FILES ---
+    function renderFileList(files, folderPath, title) {
+      notesSection.classList.remove('hidden');
+      locationCrumb.textContent = title;
+      
+      const listHtml = files.map(f => {
+        const fullPath = `${folderPath}/${f.name}`;
+        const { data } = supabase.storage.from('notes').getPublicUrl(fullPath);
+        const displayName = f.name.replace(/^\d+[_-]/, '').replace(/\.[^/.]+$/, ""); // hide extension
+        return `<li><a class="subject-pill" href="${data.publicUrl}" target="_blank">${displayName}</a></li>`;
+      }).join('');
+
+      notesContent.innerHTML = `
+        <ul class="subjects-list">${listHtml}</ul>
+      `;
+      
+      // Open Folder Link
+      const { data: folderData } = supabase.storage.from('notes').getPublicUrl(folderPath);
+      openFolderLink.href = folderData.publicUrl;
+      openFolderLink.classList.remove('hidden');
+    }
+
+    // Attach listeners to static buttons
+    document.querySelectorAll('.subject-btn').forEach(btn => {
+      btn.addEventListener('click', () => onSubjectClick(btn.dataset.subject, btn));
     });
+
   </script>
 </body>
 </html>
