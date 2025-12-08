@@ -1,151 +1,271 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Physics Cycle - Semester 1 Subjects</title>
+  <meta charset="utf-8" />
+  <title>Notes Browser (Subjects → Units)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root{
+      --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b;
+      --accent:#2563eb; --accent-2:#1d4ed8; --border:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
+    .container{max-width:1100px; margin:24px auto; padding:0 16px;}
+    header.card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
+    .muted{color:var(--muted); font-size:13px;}
+    .title{font-weight:700;margin:0;}
+    .badge{background:#eef2ff;color:#1e293b;border:1px solid #c7d2fe;border-radius:999px;padding:4px 10px;font-size:12px;}
+    .section-title{font-weight:700;margin:6px 0 10px 0;}
+    .btn-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+      padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:#fff;color:#0f172a;
+      text-align:center;cursor:pointer;user-select:none;min-height:46px;}
+    .btn:hover{border-color:#cbd5e1;background:#f8fafc;}
+    .btn.active{background:#eef2ff;border-color:#c7d2fe;color:#0f172a;font-weight:700;}
+    .note-title{font-weight:700;margin:0 0 6px 0;}
+    #notesContent{min-height:160px; line-height:1.6;}
+    .empty{padding:16px;border:1px dashed var(--border);border-radius:10px;background:#fff; color:#475569;}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-bottom:8px;}
+    .link{color:#2563eb;text-decoration:none;border:1px solid #2563eb;border-radius:8px;padding:6px 10px;}
+    .link:hover{background:#eef2ff;}
+    .pill{display:inline-flex;gap:6px;align-items:center;background:#f1f5f9;border:1px solid var(--border);border-radius:999px;padding:6px 10px;}
+    .spinner{width:20px;height:20px;border:2px solid #cbd5e1;border-top-color:#2563eb;border-radius:50%;animation:spin .9s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (max-width: 560px){ .btn{min-height:44px;} }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo">Physics Cycle</div>
-      <nav class="nav-links">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="branches.html" class="nav-link active">Notes</a>
-        <a href="quiz.html" class="nav-link">Quiz</a>
-      </nav>
+  <div class="container">
+    <header class="card">
+      <h2 class="title">Notes Browser</h2>
+      <span class="badge" id="summary">Loading…</span>
+    </header>
+
+    <!-- Subjects -->
+    <div class="card">
+      <div class="section-title">Choose Subject</div>
+      <div id="subjectButtons" class="btn-grid"></div>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="page-header">
-      <div class="page-title-block">
-        <h1 class="page-title">Semester 1 Subjects</h1>
-        <p class="page-subtitle">
-          Click a subject to view its notes. Notes are stored in Supabase Storage.
-        </p>
+    <!-- Units -->
+    <div class="card" id="unitCard" style="display:none;">
+      <div class="section-title">Choose Unit</div>
+      <div id="unitButtons" class="btn-grid"></div>
+    </div>
+
+    <!-- Notes -->
+    <div class="card" id="notesCard" style="display:none;">
+      <div class="toolbar">
+        <span class="pill" id="crumb">Subject • Unit</span>
+        <a id="openFileLink" href="#" target="_blank" class="link" style="display:none;">Open File</a>
       </div>
-    </section>
+      <div id="notesContent" class="empty">Please pick a Subject and a Unit to view notes.</div>
+    </div>
+  </div>
 
-    <!-- SUBJECT BUTTONS -->
-    <section class="subjects-buttons semester-buttons">
-      <button class="btn subject-btn" data-subject="PSP">PSP</button>
-      <button class="btn subject-btn" data-subject="Physics">Physics</button>
-      <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
-      <button class="btn subject-btn" data-subject="Basic Electronics">Basic Electronics</button>
-      <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
-      <button class="btn subject-btn" data-subject="UHV">UHV</button>
-      <button class="btn subject-btn" data-subject="COI">COI</button>
-    </section>
+  <script>
+  // 1) Configure your subjects/units here
+  // - name: button label
+  // - file: optional path to an external HTML/MD file to load via fetch
+  // - If no file, we try inline notesData[subjectId][unitId]
 
-    <!-- NOTES FOR SELECTED SUBJECT -->
-    <section id="subject-notes" class="cards-grid">
-      <!-- JS will insert one card here for the selected subject -->
-    </section>
+  const subjects = {
+    "PSP": {
+      name: "PSP",
+      units: [
+        { id: "Unit 1: Basics of C Programming", name: "Unit 1", file: "notes/PSP/Unit 1.html" },
+        { id: "Unit 2: Decision Making & Loops", name: "Unit 2", file: "notes/PSP/Unit 2.html" },
+        { id: "Unit 3: Arrays and Strings", name: "Unit 3", file: "notes/PSP/Unit 3.html" },
+        { id: "Unit 4: Pointers, Functions, Storage Classes & Recursion", name: "Unit 4", file: "notes/PSP/Unit 4.html" },
+        { id: "Unit 5: Structures & Files", name: "Unit 5", file: "notes/PSP/Unit 5.html" }
+      ]
+    },
+    "Physics": {
+      name: "Physics",
+      units: [
+        { id: "Unit 1: Quantum Mechanics", name: "Unit 1", file: "notes/Physics/Unit 1.html" },
+        { id: "Unit 2: Quantum Computing", name: "Unit 2", file: "notes/Physics/Unit 2.html" },
+        { id: "Unit 3: Conductors and Superconductors", name: "Unit 3", file: "notes/Physics/Unit 3.html" },
+        { id: "Unit 4: Semiconductors", name: "Unit 4", file: "notes/Physics/Unit 4.html" },
+        { id: "Unit 5: Lasers and Optical Fibers", name: "Unit 5", file: "notes/Physics/Unit 5.html" }
+      ]
+    },
+    "Calculus": {
+      name: "Calculus",
+      units: [
+        { id: "Unit 1: Differential Calculus", name: "Unit 1", file: "notes/Calculus/Unit 1.html" },
+        { id: "Unit 2: Partial Differentiation", name: "Unit 2", file: "notes/Calculus/Unit 2.html" },
+        { id: "Unit 3: Ordinary Differential Equations", name: "Unit 3", file: "notes/Calculus/Unit 3.html" },
+        { id: "Unit 4: Partial Differential Equations", name: "Unit 4", file: "notes/Calculus/Unit 4.html" },
+        { id: "Unit 5: Multiple Integrals", name: "Unit 5", file: "notes/Calculus/Unit 5.html" }
+      ]
+    },
+    "Basic Electronics": {
+      name: "Basic Electronics",
+      units: [
+        { id: "Unit 1: Diodes and Rectifiers", name: "Unit 1", file: "notes/BE/Unit 1.html" },
+        { id: "Unit 2: BJT and MOSFET", name: "Unit 2", file: "notes/BE/Unit 2.html" },
+        { id: "Unit 3: Operational Amplifiers", name: "Unit 3", file: "notes/BE/Unit 3.html" },
+        { id: "Unit 4: Oscillators and Feedback", name: "Unit 4", file: "notes/BE/Unit 4.html" },
+        { id: "Unit 5: Communication & Embedded Systems", name: "Unit 5", file: "notes/BE/Unit 5.html" }
+      ]
+    },
+    "UHV": {
+      name: "UHV",
+      units: [
+        { id: "Unit 1: Human Values (MCQs)", name: "Unit 1", file: "notes/UHV/Unit 1.html" },
+        { id: "Unit 2: Harmony in the Self and Body", name: "Unit 2", file: "notes/UHV/Unit 2.html" },
+        { id: "Unit 3: Harmony in Nature and Existence", name: "Unit 3", file: "notes/UHV/Unit 3.html" }
+      ]
+    }
+  };
 
-    <p id="no-data-message" class="message message-warning">
-      Select a subject above to see its notes.
-    </p>
-  </main>
+  // 2) Inline notes fallback (shown when file path is empty or fetch fails)
+  const notesData = {
+    "PSP": {
+      "Unit 2: Decision Making & Loops": `
+        <h3>PSP • Unit 2 — Decision Making & Loops</h3>
+        <p>This unit covers: if/else, switch-case, while, do-while, for, break & continue.</p>
+        <ul>
+          <li>Use == for comparison (avoid = in conditions)</li>
+          <li>switch labels must be integral constants (no float)</li>
+          <li>do-while executes at least once</li>
+        </ul>
+      `
+    },
+    "UHV": {
+      "Unit 1: Human Values (MCQs)": `
+        <h3>UHV • Unit 1 — Human Values</h3>
+        <p>Keywords: Natural Acceptance, Right Understanding, Relationship, Physical Facility.</p>
+        <ul>
+          <li>URP: Understanding → Relationship → Physical facility</li>
+          <li>IFSN: Individual → Family → Society → Nature</li>
+          <li>UNaRV: Universal, Natural, Rational, Verifiable</li>
+        </ul>
+      `
+    }
+  };
 
-  <footer class="site-footer">
-    <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
-  </footer>
+  // UI elements
+  const els = {
+    summary: document.getElementById('summary'),
+    subjectButtons: document.getElementById('subjectButtons'),
+    unitCard: document.getElementById('unitCard'),
+    unitButtons: document.getElementById('unitButtons'),
+    notesCard: document.getElementById('notesCard'),
+    notesContent: document.getElementById('notesContent'),
+    crumb: document.getElementById('crumb'),
+    openFileLink: document.getElementById('openFileLink')
+  };
 
-  <!-- Supabase listing logic for one subject at a time -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const state = { subjectId: null, unitId: null };
 
-    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_ANON_KEY =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+  // Build subject buttons
+  function renderSubjects() {
+    const ids = Object.keys(subjects).sort((a,b)=>subjects[a].name.localeCompare(subjects[b].name));
+    els.subjectButtons.innerHTML = '';
+    ids.forEach(id => {
+      const s = subjects[id];
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-subject';
+      btn.textContent = s.name;
+      btn.dataset.subject = id;
+      els.subjectButtons.appendChild(btn);
+    });
+    els.summary.textContent = `${ids.length} subjects`;
+  }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Build unit buttons
+  function renderUnits(subjectId) {
+    const s = subjects[subjectId];
+    if (!s) return;
+    els.unitButtons.innerHTML = '';
+    s.units.forEach(u => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-unit';
+      btn.textContent = u.name;
+      btn.dataset.subject = subjectId;
+      btn.dataset.unit = u.id;
+      if (u.file) btn.dataset.file = u.file;
+      els.unitButtons.appendChild(btn);
+    });
+    els.unitCard.style.display = 'block';
+    els.notesCard.style.display = 'none';
+    setActiveButton(els.subjectButtons, `[data-subject="${subjectId}"]`);
+  }
 
-    const subjectButtons = document.querySelectorAll('.subject-btn');
-    const notesContainer = document.getElementById('subject-notes');
-    const noDataMessage = document.getElementById('no-data-message');
+  // Utility: highlight active button
+  function setActiveButton(container, selector) {
+    container.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+    const active = container.querySelector(selector);
+    if (active) active.classList.add('active');
+  }
 
-    async function loadSubjectResources(subject) {
-      notesContainer.innerHTML = 'Loading notes...';
-      noDataMessage.classList.add('hidden');
+  // Load and display notes
+  async function loadNotes(subjectId, unitId, filePath) {
+    els.notesCard.style.display = 'block';
+    els.crumb.textContent = `${subjectId} • ${unitId}`;
+    els.openFileLink.style.display = 'none';
+    els.openFileLink.href = '#';
 
-      const folder = `semester1/${subject}`;
-      console.log('Listing folder:', folder);
+    // Show spinner
+    els.notesContent.innerHTML = `<span class="spinner"></span> Loading notes...`;
 
-      const { data, error } = await supabase
-        .storage
-        .from('notes')
-        .list(folder, {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: 'name', order: 'asc' }
-        });
-
-      if (error) {
-        console.error('Error listing for', subject, error);
-        notesContainer.innerHTML = 'Failed to load notes.';
+    // Prefer external file if provided
+    if (filePath) {
+      try {
+        // NOTE: fetch requires http(s) context; file:// may block fetch in browsers
+        const res = await fetch(filePath, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await res.text();
+        els.notesContent.innerHTML = html;
+        els.openFileLink.style.display = 'inline-flex';
+        els.openFileLink.href = filePath;
         return;
+      } catch (e) {
+        // Fall back to inline notes
       }
-
-      if (!data || data.length === 0) {
-        notesContainer.innerHTML = '';
-        noDataMessage.textContent = `No notes uploaded yet for ${subject}.`;
-        noDataMessage.classList.remove('hidden');
-        return;
-      }
-
-      const linksHtml = data.map(file => {
-        const fullPath = `${folder}/${file.name}`;
-        const { data: publicData } = supabase
-          .storage
-          .from('notes')
-          .getPublicUrl(fullPath);
-
-        const url = publicData.publicUrl;
-        // Hide leading digits + _ or - (e.g. "01_", "02-")
-        const displayName = file.name.replace(/^\d+[_-]*/, '');
-
-        return `
-          <li>
-            <a class="subject-pill" href="${url}" target="_blank">
-              ${displayName}
-            </a>
-          </li>
-        `;
-      }).join('');
-
-      const card = document.createElement('article');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-header-row">
-          <h2 class="card-title">${subject}</h2>
-          <span class="branch-code">Sem 1</span>
-        </div>
-        <p class="card-desc">Uploaded notes for ${subject}.</p>
-        <div>
-          <div class="subjects-label">Resources</div>
-          <ul class="subjects-list">
-            ${linksHtml}
-          </ul>
-        </div>
-      `;
-
-      notesContainer.innerHTML = '';
-      notesContainer.appendChild(card);
     }
 
-    subjectButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const subject = btn.dataset.subject;
+    // Inline fallback
+    const inline = notesData[subjectId]?.[unitId];
+    if (inline) {
+      els.notesContent.innerHTML = inline;
+    } else {
+      els.notesContent.innerHTML = `
+        <div class="empty">
+          No notes file or inline notes found for <b>${unitId}</b>.<br>
+          Add a file path in subjects[...] or put inline content into notesData["${subjectId}"]["${unitId}"].
+        </div>
+      `;
+    }
+  }
 
-        subjectButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+  // Event delegation for subject buttons
+  els.subjectButtons.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-subject');
+    if (!btn) return;
+    state.subjectId = btn.dataset.subject;
+    state.unitId = null;
+    renderUnits(state.subjectId);
+    setActiveButton(els.unitButtons, null);
+  });
 
-        loadSubjectResources(subject);
-      });
-    });
+  // Event delegation for unit buttons
+  els.unitButtons.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-unit');
+    if (!btn) return;
+    state.unitId = btn.dataset.unit;
+    setActiveButton(els.unitButtons, `[data-unit="${CSS.escape(state.unitId)}"]`);
+    loadNotes(state.subjectId, state.unitId, btn.dataset.file || null);
+  });
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    renderSubjects();
+  });
   </script>
 </body>
 </html>
