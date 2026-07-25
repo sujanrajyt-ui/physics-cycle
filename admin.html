@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Admin Upload - Physics Cycle</title>
@@ -17,22 +18,27 @@
       flex-direction: column;
       gap: 1.5rem;
     }
+
     .admin-container h1 {
       margin-bottom: 0.75rem;
     }
+
     .admin-section h2 {
       font-size: 1.1rem;
       margin-bottom: 0.5rem;
     }
+
     .admin-field {
       margin-bottom: 1rem;
     }
+
     .admin-field label {
       display: block;
       font-size: 0.9rem;
       margin-bottom: 0.3rem;
       color: #4b5563;
     }
+
     .admin-input,
     .admin-select {
       width: 100%;
@@ -41,17 +47,21 @@
       border: 1px solid #d1d5db;
       font-size: 0.9rem;
     }
+
     #status {
       margin-top: 0.75rem;
       font-size: 0.9rem;
     }
+
     .btn-secondary {
       background: #6b7280;
       box-shadow: none;
     }
+
     .btn-secondary:hover {
       background: #4b5563;
     }
+
     .files-list {
       margin-top: 0.5rem;
       border: 1px solid #e5e7eb;
@@ -61,6 +71,7 @@
       overflow-y: auto;
       background: #f9fafb;
     }
+
     .file-row {
       display: flex;
       align-items: center;
@@ -70,12 +81,15 @@
       border-bottom: 1px solid #e5e7eb;
       font-size: 0.85rem;
     }
+
     .file-row:last-child {
       border-bottom: none;
     }
+
     .file-name {
       word-break: break-all;
     }
+
     .delete-btn {
       padding: 0.25rem 0.6rem;
       border-radius: 999px;
@@ -85,11 +99,13 @@
       background: #ef4444;
       color: #ffffff;
     }
+
     .delete-btn:hover {
       background: #b91c1c;
     }
   </style>
 </head>
+
 <body>
   <header class="site-header">
     <div class="header-inner">
@@ -97,7 +113,6 @@
       <nav class="nav-links">
         <a href="index.html" class="nav-link">Home</a>
         <a href="branches.html" class="nav-link">Notes</a>
-        <a href="quiz.html" class="nav-link">Quiz</a>
       </nav>
     </div>
   </header>
@@ -108,7 +123,8 @@
       <section class="admin-section">
         <h1>Upload Subject PDF</h1>
         <p style="font-size:0.9rem;color:#6b7280;margin-bottom:1rem;">
-          Choose a subject and upload a PDF. The file name will control the order (e.g. 01_, 02_) but prefixes are hidden from students.
+          Choose a subject and upload a PDF. The file name will control the order (e.g. 01_, 02_) but prefixes are
+          hidden from students.
         </p>
 
         <form id="uploadForm">
@@ -319,4 +335,5 @@
     });
   </script>
 </body>
+
 </html>
