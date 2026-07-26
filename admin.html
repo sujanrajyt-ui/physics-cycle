@@ -138,6 +138,8 @@
               <option value="ADLD">ADLD</option>
               <option value="UHV">UHV</option>
               <option value="COI">COI</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="EME">EME</option>
             </select>
           </div>
 
@@ -174,6 +176,8 @@
             <option value="ADLD">ADLD</option>
             <option value="UHV">UHV</option>
             <option value="COI">COI</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="EME">EME</option>
           </select>
         </div>
 
@@ -231,7 +235,7 @@
 
       try {
         // Store exactly as file.name so order = name
-        const path = `semester1/${subject}/${file.name}`;
+        const path = `physics-cycle/${subject}/${file.name}`;
 
         const { error } = await supabase
           .storage
@@ -261,7 +265,7 @@
     async function loadFilesForSubject(subj) {
       filesList.innerHTML = '<span style="font-size:0.85rem;color:#6b7280;">Loading files...</span>';
 
-      const folder = `semester1/${subj}`;
+      const folder = `physics-cycle/${subj}`;
 
       const { data, error } = await supabase
         .storage
