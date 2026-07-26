@@ -106,7 +106,7 @@
       document.getElementById('fileCard').classList.add('hidden');
       showStatus(`Scanning notes for ${subjectName}...`, 'loading');
 
-      const folderPath = `physics-cycle/${subjectName}`;
+      const folderPath = `semester1/${subjectName}`;
 
       // LIST FOLDER
       const { data, error } = await sb.storage.from('notes').list(folderPath, {
