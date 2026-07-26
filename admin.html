@@ -3,67 +3,24 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Physics Cycle – Admin</title>
+  <title>Admin Upload - Physics Cycle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <style>
-    .manage-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      border-bottom: 1px solid var(--glass-border, #e2e8f0);
-      background: white;
-    }
-
-    .manage-row:last-child {
-      border-bottom: none;
-    }
-
-    .manage-name {
-      font-weight: 600;
-      color: var(--text-primary, #1e293b);
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .manage-name:hover {
-      text-decoration: underline;
-      color: var(--primary, #6366f1);
-    }
-
-    .action-btn {
-      background: #f87171;
-      color: white;
-      border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .action-btn:hover {
-      background: #ef4444;
-    }
-
-    .btn-small {
-      padding: 0.5rem 1rem;
-      margin-top: 0;
-      width: auto;
-    }
-
     .admin-card {
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
       padding: 1.5rem;
       margin-bottom: 1.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .admin-card h2 {
       font-size: 1.2rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.25rem;
       color: #1e293b;
     }
 
@@ -72,8 +29,8 @@
       font-size: 0.85rem;
       font-weight: 600;
       color: #475569;
+      margin-top: 0.85rem;
       margin-bottom: 0.3rem;
-      margin-top: 0.75rem;
     }
 
     .admin-card select,
@@ -83,7 +40,6 @@
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-size: 0.9rem;
-      margin-bottom: 0.25rem;
       box-sizing: border-box;
     }
 
@@ -101,30 +57,86 @@
     }
 
     .admin-btn:hover {
-      opacity: 0.9;
+      opacity: 0.88;
+    }
+
+    .admin-btn.secondary {
+      background: #64748b;
     }
 
     .status-msg {
       margin-top: 0.75rem;
-      padding: 0.6rem 0.9rem;
+      padding: 0.55rem 0.9rem;
       border-radius: 8px;
       font-size: 0.85rem;
+      display: none;
     }
 
     .status-msg.success {
       background: #dcfce7;
       color: #15803d;
+      display: block;
     }
 
     .status-msg.error {
       background: #fee2e2;
       color: #b91c1c;
+      display: block;
+    }
+
+    .status-msg.loading {
+      background: #eff6ff;
+      color: #1d4ed8;
+      display: block;
+    }
+
+    .manage-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+    }
+
+    .manage-row:last-child {
+      border-bottom: none;
+    }
+
+    .manage-name {
+      word-break: break-all;
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    .delete-btn {
+      flex-shrink: 0;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: none;
+      cursor: pointer;
+      background: #ef4444;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .delete-btn:hover {
+      background: #b91c1c;
+    }
+
+    .files-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      max-height: 280px;
+      overflow-y: auto;
+      background: #f9fafb;
     }
   </style>
 </head>
 
 <body>
-
   <header class="site-header">
     <div class="header-inner">
       <div class="logo">Physics Cycle – Admin</div>
@@ -139,13 +151,13 @@
 
     <!-- UPLOAD -->
     <div class="admin-card">
-      <h2>Upload New File to GitHub</h2>
-      <p style="font-size:0.85rem; color:#64748b; margin-top:-10px; margin-bottom:1.5rem;">Max file size: 4.5MB (GitHub
-        API limit for base64 payloads)</p>
+      <h2>Upload New File</h2>
+      <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.5rem;">Choose subject, document type, and PDF to upload
+        to Supabase.</p>
 
       <form id="uploadForm">
         <label>Subject</label>
-        <select id="subject">
+        <select id="subjectSelect">
           <option value="PSP">PSP</option>
           <option value="Physics">Physics</option>
           <option value="Calculus">Calculus</option>
@@ -158,7 +170,7 @@
         </select>
 
         <label>Document Type</label>
-        <select id="option">
+        <select id="docType">
           <option value="Chapter_1">Chapter 1</option>
           <option value="Chapter_2">Chapter 2</option>
           <option value="Chapter_3">Chapter 3</option>
@@ -169,23 +181,25 @@
           <option value="Notes">Notes</option>
         </select>
 
-        <label>File</label>
-        <input id="file" type="file" accept="application/pdf" required>
+        <label>PDF File</label>
+        <input id="fileInput" type="file" accept="application/pdf" required>
 
-        <button type="submit" class="admin-btn">Commit to GitHub</button>
+        <button type="submit" class="admin-btn">Upload to Supabase</button>
       </form>
 
-      <div id="uploadStatus" class="status-msg" style="display:none;"></div>
+      <div id="uploadStatus" class="status-msg"></div>
     </div>
 
-    <!-- MANAGE FILES -->
+    <!-- MANAGE -->
     <div class="admin-card">
       <h2>Manage Files</h2>
+      <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.75rem;">Select a subject to view and delete its files.
+      </p>
 
-      <div style="display:flex; gap:1rem; align-items:flex-end; margin-bottom:1.5rem;">
+      <div style="display:flex; gap:1rem; align-items:flex-end; margin-bottom:1rem;">
         <div style="flex:1;">
-          <label>Select Subject</label>
-          <select id="manageSubject" style="margin-bottom:0;">
+          <label style="margin-top:0;">Subject</label>
+          <select id="manageSubjectSelect" style="margin-bottom:0;">
             <option value="PSP">PSP</option>
             <option value="Physics">Physics</option>
             <option value="Calculus">Calculus</option>
@@ -197,12 +211,11 @@
             <option value="EME">EME</option>
           </select>
         </div>
-        <button id="loadBtn" class="admin-btn btn-small" style="background:#475569;">Load Notes</button>
+        <button id="loadFilesBtn" class="admin-btn secondary" style="margin-top:0;">Load Files</button>
       </div>
 
-      <div id="manageFilesBox" style="border:1px solid #cbd5e1; border-radius:8px; overflow:hidden;">
-        <div style="padding:1rem; color:#64748b; font-size:0.9rem; text-align:center;">Click "Load Notes" to manage
-          files.</div>
+      <div id="filesList" class="files-box">
+        <div style="padding:1rem;color:#9ca3af;font-size:0.85rem;text-align:center;">No subject selected.</div>
       </div>
     </div>
 
@@ -212,38 +225,20 @@
     <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
   </footer>
 
-  <script type="module">
-    /* ===== GITHUB AUTH SETUP ===== */
-    let ghToken = null;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Silently grab the token from Vercel backend when page opens
-    async function fetchTokenSilently() {
-      try {
-        const res = await fetch('/api/token?pass=sujanraj');
-        if (res.ok) {
-          const data = await res.json();
-          ghToken = data.token;
-        }
-      } catch (e) {
-        console.warn("Failed to securely pull token from backend");
-      }
-    }
-    fetchTokenSilently();
-
-    /* ===== FILE TO BASE64 HELPER ===== */
-    const toBase64 = file => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = error => reject(error);
-    });
-
-    /* ===== UPLOAD ===== */
+    // ===== UPLOAD =====
     const uploadForm = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const subjectSelect = document.getElementById('subjectSelect');
+    const docType = document.getElementById('docType');
     const uploadStatus = document.getElementById('uploadStatus');
 
     function setStatus(msg, type) {
-      uploadStatus.style.display = 'block';
       uploadStatus.textContent = msg;
       uploadStatus.className = 'status-msg ' + type;
     }
@@ -251,155 +246,103 @@
     uploadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!ghToken) { alert("GitHub Token not loaded yet. Check your Vercel /api/token endpoint."); return; }
+      const file = fileInput.files[0];
+      const subject = subjectSelect.value;
+      const dtype = docType.value;
 
-      const subject = document.getElementById('subject').value;
-      const option = document.getElementById('option').value;
-      const file = document.getElementById('file').files[0];
+      if (!file) { setStatus("Please choose a PDF file.", "error"); return; }
 
-      if (!subject || !file) {
-        setStatus("Subject and File are required.", "error"); return;
-      }
-
-      if (file.size > 99 * 1024 * 1024) {
-        setStatus("GitHub limit is 100MB per file.", "error"); return;
-      }
-
-      const finalFilename = `${subject}_${option}.pdf`;
-
-      setStatus("Uploading file direct to GitHub (bypassing Vercel limits)...", "");
+      setStatus("Uploading...", "loading");
 
       try {
-        const base64Content = await toBase64(file);
+        const path = `physics-cycle/${subject}/${dtype}_${file.name}`;
 
-        const payload = {
-          message: `CMS Upload: ${finalFilename} to ${subject}`,
-          content: base64Content,
-          branch: 'main'
-        };
+        const { error } = await sb.storage.from('notes').upload(path, file, { upsert: true });
 
-        const uploadRes = await fetch(`https://api.github.com/repos/sujanrajyt-ui/physics-cycle/contents/notes/${subject}/${finalFilename}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${ghToken}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!uploadRes.ok) {
-          const errData = await uploadRes.json();
-          if (errData.message === "Bad credentials") {
-            throw new Error("Invalid GitHub Token! The token does not have 'repo' permissions or is typed wrong.");
-          }
-          throw new Error(errData.message || "Upload Failed");
+        if (error) {
+          setStatus("Upload failed: " + error.message, "error");
+          return;
         }
 
-        setStatus(`Committed successfully to GitHub in notes/${subject}!`, "success");
-        uploadForm.reset();
+        setStatus("Upload successful!", "success");
+        fileInput.value = "";
 
-        if (document.getElementById('manageSubject').value === subject) {
-          document.getElementById('loadBtn').click();
+        // Refresh manage list if same subject is open
+        if (document.getElementById('manageSubjectSelect').value === subject) {
+          loadFilesForSubject(subject);
         }
-
       } catch (err) {
-        setStatus(err.message, "error");
-        console.error(err);
+        setStatus("Upload failed: " + err.message, "error");
       }
     });
 
+    // ===== MANAGE =====
+    async function loadFilesForSubject(subj) {
+      const filesList = document.getElementById('filesList');
+      filesList.innerHTML = '<div style="padding:1rem;color:#6b7280;text-align:center;font-size:0.85rem;">Loading files...</div>';
 
-    /* ===== MANAGE FILES ===== */
-    const loadBtn = document.getElementById('loadBtn');
-    const manageFilesBox = document.getElementById('manageFilesBox');
+      const folder = `physics-cycle/${subj}`;
 
-    loadBtn.addEventListener('click', async () => {
-      const subject = document.getElementById('manageSubject').value;
-      manageFilesBox.innerHTML = `<div style="padding:1rem;text-align:center;color:#64748b;">Loading...</div>`;
+      const { data, error } = await sb.storage.from('notes').list(folder, {
+        limit: 100, offset: 0,
+        sortBy: { column: 'name', order: 'asc' }
+      });
 
-      try {
-        const res = await fetch(`https://api.github.com/repos/sujanrajyt-ui/physics-cycle/contents/notes/${subject}`, {
-          headers: ghToken ? { 'Authorization': `Bearer ${ghToken}` } : {}
-        });
-
-        if (res.status === 404) {
-          manageFilesBox.innerHTML = `<div style="padding:1rem;color:#64748b;text-align:center;">No files uploaded for ${subject} yet.</div>`;
-          return;
-        }
-        if (!res.ok) throw new Error(`GitHub fetch failed (Status ${res.status})`);
-
-        const files = await res.json();
-
-        if (!files || files.length === 0) {
-          manageFilesBox.innerHTML = `<div style="padding:1rem;color:#64748b;text-align:center;">No files uploaded for ${subject} yet.</div>`;
-          return;
-        }
-
-        manageFilesBox.innerHTML = '';
-        files.forEach(file => {
-          const row = document.createElement('div');
-          row.className = 'manage-row';
-
-          const a = document.createElement('a');
-          a.href = file.download_url;
-          a.target = "_blank";
-          a.className = "manage-name";
-          a.textContent = file.name.replace(/_/g, ' ');
-
-          const delBtn = document.createElement('button');
-          delBtn.className = "action-btn";
-          delBtn.textContent = "Delete";
-          delBtn.onclick = async () => {
-            if (!confirm(`Are you sure you want to permanently delete "${file.name}" from GitHub?`)) return;
-
-            delBtn.textContent = "Deleting...";
-            delBtn.disabled = true;
-
-            try {
-              const payload = {
-                message: `CMS Delete: Remove ${file.path}`,
-                sha: file.sha,
-                branch: 'main'
-              };
-
-              const delRes = await fetch(`https://api.github.com/repos/sujanrajyt-ui/physics-cycle/contents/${file.path}`, {
-                method: 'DELETE',
-                headers: {
-                  'Authorization': `Bearer ${ghToken}`,
-                  'Accept': 'application/vnd.github.v3+json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-              });
-
-              if (!delRes.ok) {
-                const err = await delRes.json();
-                throw new Error(err.message || "Delete failed");
-              }
-
-              row.remove();
-              if (manageFilesBox.children.length === 0) {
-                manageFilesBox.innerHTML = `<div style="padding:1rem;color:#64748b;text-align:center;">No files in ${subject}.</div>`;
-              }
-            } catch (e) {
-              alert(e.message);
-              delBtn.textContent = "Delete";
-              delBtn.disabled = false;
-            }
-          };
-
-          row.appendChild(a);
-          row.appendChild(delBtn);
-          manageFilesBox.appendChild(row);
-        });
-
-      } catch (e) {
-        manageFilesBox.innerHTML = `<div style="padding:1rem;color:#ef4444;font-weight:600;text-align:center;">Error loading files: ${e.message}</div>`;
+      if (error) {
+        filesList.innerHTML = '<div style="padding:1rem;color:#b91c1c;text-align:center;">Failed to load files.</div>';
+        return;
       }
+
+      if (!data || data.length === 0) {
+        filesList.innerHTML = `<div style="padding:1rem;color:#9ca3af;text-align:center;font-size:0.85rem;">No files found for ${subj}.</div>`;
+        return;
+      }
+
+      filesList.innerHTML = '';
+      data.forEach(file => {
+        const row = document.createElement('div');
+        row.className = 'manage-row';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'manage-name';
+        nameSpan.textContent = file.name;
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = 'Delete';
+        const filePath = `${folder}/${file.name}`;
+
+        delBtn.addEventListener('click', async () => {
+          if (!confirm(`Delete "${file.name}" for ${subj}?`)) return;
+
+          delBtn.disabled = true;
+          delBtn.textContent = 'Deleting...';
+
+          const { error: delError } = await sb.storage.from('notes').remove([filePath]);
+
+          if (delError) {
+            alert('Failed to delete: ' + delError.message);
+            delBtn.disabled = false;
+            delBtn.textContent = 'Delete';
+            return;
+          }
+
+          row.remove();
+          if (!filesList.querySelector('.manage-row')) {
+            filesList.innerHTML = `<div style="padding:1rem;color:#9ca3af;text-align:center;font-size:0.85rem;">No files left for ${subj}.</div>`;
+          }
+        });
+
+        row.appendChild(nameSpan);
+        row.appendChild(delBtn);
+        filesList.appendChild(row);
+      });
+    }
+
+    document.getElementById('loadFilesBtn').addEventListener('click', () => {
+      loadFilesForSubject(document.getElementById('manageSubjectSelect').value);
     });
   </script>
-
 </body>
 
 </html>
