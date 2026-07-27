@@ -167,6 +167,7 @@
           <option value="COI">COI</option>
           <option value="Chemistry">Chemistry</option>
           <option value="EME">EME</option>
+          <option value="Electric Circuit Analysis">Electric Circuit Analysis</option>
         </select>
 
         <label>Document Type</label>
@@ -209,6 +210,7 @@
             <option value="COI">COI</option>
             <option value="Chemistry">Chemistry</option>
             <option value="EME">EME</option>
+            <option value="Electric Circuit Analysis">Electric Circuit Analysis</option>
           </select>
         </div>
         <button id="loadFilesBtn" class="admin-btn secondary" style="margin-top:0;">Load Files</button>
@@ -355,7 +357,7 @@
     });
 
     // ===== DIAGNOSTICS =====
-    const SUBJECTS = ['PSP', 'Physics', 'Calculus', 'Basic Electronics', 'ADLD', 'UHV', 'COI', 'Chemistry', 'EME'];
+    const SUBJECTS = ['PSP', 'Physics', 'Calculus', 'Basic Electronics', 'ADLD', 'UHV', 'COI', 'Chemistry', 'EME', 'Electric Circuit Analysis'];
 
     document.getElementById('runDiagBtn').addEventListener('click', async () => {
       const out = document.getElementById('diagOutput');
