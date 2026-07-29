@@ -265,6 +265,17 @@
         document.getElementById('patInput').value = saved;
         document.getElementById('patSavedNote').textContent = '✅ Token loaded from browser storage.';
       }
+
+      document.getElementById('patInput').addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+          localStorage.setItem(PAT_KEY, val);
+          document.getElementById('patSavedNote').textContent = '✅ Token saved to browser storage!';
+        } else {
+          localStorage.removeItem(PAT_KEY);
+          document.getElementById('patSavedNote').textContent = '';
+        }
+      });
     });
 
     function savePAT() {
