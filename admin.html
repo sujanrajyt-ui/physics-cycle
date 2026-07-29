@@ -161,12 +161,15 @@
     <div class="admin-card">
       <h2>🔑 GitHub Token</h2>
       <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.5rem;">
-        Enter your GitHub Personal Access Token (classic, with <code>repo</code> scope). Required for upload &amp;
-        delete.
+        Enter your GitHub Personal Access Token (classic, with <code>repo</code> scope). Saved in your browser.
       </p>
       <label>PAT Token</label>
       <input type="password" id="patInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <p class="pat-note">Token is only stored in memory – never sent anywhere except api.github.com.</p>
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+        <button class="admin-btn" onclick="savePAT()">💾 Save Token</button>
+        <button class="admin-btn secondary" onclick="clearPAT()">🗑 Clear</button>
+      </div>
+      <p class="pat-note" id="patSavedNote"></p>
     </div>
 
     <!-- UPLOAD -->
@@ -254,6 +257,28 @@
     const GITHUB_REPO = 'physics-cycle';
     const NOTES_ROOT = 'notes';
     const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`;
+    const PAT_KEY = 'gh_pat_physics_cycle';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem(PAT_KEY);
+      if (saved) {
+        document.getElementById('patInput').value = saved;
+        document.getElementById('patSavedNote').textContent = '✅ Token loaded from browser storage.';
+      }
+    });
+
+    function savePAT() {
+      const val = document.getElementById('patInput').value.trim();
+      if (!val) { alert('Enter a token first.'); return; }
+      localStorage.setItem(PAT_KEY, val);
+      document.getElementById('patSavedNote').textContent = '✅ Token saved!';
+    }
+
+    function clearPAT() {
+      localStorage.removeItem(PAT_KEY);
+      document.getElementById('patInput').value = '';
+      document.getElementById('patSavedNote').textContent = '🗑 Token cleared.';
+    }
 
     function getPAT() {
       return document.getElementById('patInput').value.trim();
