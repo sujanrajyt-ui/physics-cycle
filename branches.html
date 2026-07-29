@@ -6,9 +6,6 @@
   <title>Physics Cycle Notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
-  <!-- 1. Load Supabase Global Script (No Module needed) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 </head>
 
 <body>
@@ -27,7 +24,6 @@
     <div class="card">
       <h2>Select Subject</h2>
       <div class="btn-grid" id="subjectButtons">
-        <!-- Folders must match exactly what is in Supabase -->
         <button class="btn" onclick="selectSubject('PSP')">PSP</button>
         <button class="btn" onclick="selectSubject('Physics')">Physics</button>
         <button class="btn" onclick="selectSubject('Calculus')">Calculus</button>
@@ -44,17 +40,10 @@
     <!-- Status Message Area -->
     <div id="statusArea" class="hidden"></div>
 
-    <!-- 2. Unit Selection (Hidden by default) -->
-    <div id="unitCard" class="card hidden">
-      <h2>Select Unit</h2>
-      <div class="btn-grid" id="unitButtons"></div>
-    </div>
-
-    <!-- 3. File List (Hidden by default) -->
+    <!-- 2. File List (Hidden by default) -->
     <div id="fileCard" class="card hidden">
       <h2>Notes</h2>
       <ul id="fileList" class="file-list"></ul>
-      <a id="openFolderBtn" href="#" target="_blank">Open Full Folder</a>
     </div>
   </main>
 
@@ -63,19 +52,11 @@
   </footer>
 
   <script>
-    // --- 1. INITIALIZE SUPABASE (Standard JS way) ---
-    // This check ensures the script loaded
-    if (typeof supabase === 'undefined') {
-      alert("Error: Supabase script failed to load. Check your internet connection.");
-    }
-
-    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
-
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // --- STATE ---
-    let currentSubject = "";
+    const GITHUB_OWNER = 'sujanrajyt-ui';
+    const GITHUB_REPO = 'physics-cycle';
+    const NOTES_ROOT = 'notes';
+    const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main`;
+    const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`;
 
     // --- UI HELPERS ---
     function showStatus(msg, type) {
@@ -94,125 +75,61 @@
       });
     }
 
-    // --- MAIN FUNCTIONS ---
-
-    // 1. Called when Subject Button is clicked
+    // --- MAIN FUNCTION ---
     async function selectSubject(subjectName) {
-      console.log("Clicked:", subjectName); // Debug log
-      currentSubject = subjectName;
-
-      // Reset UI
       highlightSubject(subjectName);
-      document.getElementById('unitCard').classList.add('hidden');
       document.getElementById('fileCard').classList.add('hidden');
-      showStatus(`Scanning notes for ${subjectName}...`, 'loading');
+      showStatus(`Loading notes for ${subjectName}...`, 'loading');
 
-      const folderPath = `semester1/${subjectName}`;
+      const encodedSubject = encodeURIComponent(subjectName);
+      const url = `${API_BASE}/${NOTES_ROOT}/${encodedSubject}`;
 
-      // LIST FOLDER
-      const { data, error } = await sb.storage.from('notes').list(folderPath, {
-        limit: 100,
-        sortBy: { column: 'name', order: 'asc' }
-      });
-
-      if (error) {
-        console.error(error);
-        showStatus(`Error: ${error.message}`, 'error');
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        showStatus(`No notes found for ${subjectName} (Folder empty or name mismatch).`, 'empty');
-        return;
-      }
-
-      hideStatus();
-
-      // Separate files vs folders
-      // In Supabase, folders usually have NO 'id'. Files HAVE 'id'.
-      const units = data.filter(item => !item.id);
-      const files = data.filter(item => item.id);
-
-      // A. If subfolders (Units) exist, show Unit buttons
-      if (units.length > 0) {
-        const unitContainer = document.getElementById('unitButtons');
-        unitContainer.innerHTML = '';
-
-        units.forEach(unit => {
-          const btn = document.createElement('button');
-          btn.className = 'btn';
-          // Clean Name: "01_Unit 1" -> "Unit 1"
-          btn.innerText = unit.name.replace(/^\d+[_-]/, '');
-          btn.onclick = () => selectUnit(folderPath, unit.name);
-          unitContainer.appendChild(btn);
+      try {
+        const res = await fetch(url, {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
-        document.getElementById('unitCard').classList.remove('hidden');
-      }
 
-      // B. If files exist at root, show them directly
-      if (files.length > 0) {
-        renderFiles(files, folderPath);
-      } else if (units.length === 0) {
-        showStatus("Folder exists but appears empty.", 'empty');
-      }
-    }
+        if (res.status === 404) {
+          showStatus(`No notes found for ${subjectName}. The folder doesn't exist yet.`, 'empty');
+          return;
+        }
+        if (!res.ok) {
+          showStatus(`Error loading files: ${res.statusText}`, 'error');
+          return;
+        }
 
-    // 2. Called when Unit Button is clicked
-    async function selectUnit(parentPath, unitName) {
-      const fullPath = `${parentPath}/${unitName}`;
+        const data = await res.json();
+        const files = data.filter(item => item.type === 'file' && item.name !== '.gitkeep');
 
-      // Highlight unit button
-      document.querySelectorAll('#unitButtons .btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+        if (files.length === 0) {
+          showStatus(`No notes uploaded yet for ${subjectName}.`, 'empty');
+          return;
+        }
 
-      showStatus(`Loading ${unitName}...`, 'loading');
-      document.getElementById('fileCard').classList.add('hidden');
+        hideStatus();
+        renderFiles(files);
 
-      const { data, error } = await sb.storage.from('notes').list(fullPath, {
-        limit: 100,
-        sortBy: { column: 'name', order: 'asc' }
-      });
-
-      if (error) {
-        showStatus(`Error: ${error.message}`, 'error');
-        return;
-      }
-
-      hideStatus();
-      const files = data.filter(item => item.id); // Only files
-
-      if (files.length === 0) {
-        showStatus(`No files found in ${unitName}.`, 'empty');
-      } else {
-        renderFiles(files, fullPath);
+      } catch (err) {
+        showStatus(`Network error: ${err.message}`, 'error');
       }
     }
 
-    // 3. Render File List
-    function renderFiles(files, folderPath) {
+    // --- RENDER FILES ---
+    function renderFiles(files) {
       const list = document.getElementById('fileList');
       list.innerHTML = '';
 
       files.forEach(file => {
-        // Get Public URL
-        const { data } = sb.storage.from('notes').getPublicUrl(`${folderPath}/${file.name}`);
-
-        // Create Link
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.className = 'file-link';
-        a.href = data.publicUrl;
+        a.href = file.download_url;
         a.target = '_blank';
-        // Clean name: "01_Notes.pdf" -> "Notes"
-        a.innerText = file.name.replace(/^\d+[_-]/, '').replace(/\.[^/.]+$/, "");
-
+        // Clean name: remove extension
+        a.innerText = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
         li.appendChild(a);
         list.appendChild(li);
       });
-
-      // Set "Open Folder" link
-      const folderUrl = sb.storage.from('notes').getPublicUrl(folderPath);
-      document.getElementById('openFolderBtn').href = folderUrl.data.publicUrl;
 
       document.getElementById('fileCard').classList.remove('hidden');
     }
