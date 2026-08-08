@@ -51,110 +51,76 @@
     <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
   </footer>
 
-  <!-- Supabase JS Client Module -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+  <script>
     const GITHUB_OWNER = 'sujanrajyt-ui';
     const GITHUB_REPO = 'physics-cycle';
+    const GITHUB_BRANCH = 'main';
+    const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}`;
 
-    window.selectSubject = async function (subjectName) {
+    let notesIndexCache = null;
+
+    async function loadNotesIndex() {
+      if (notesIndexCache) return notesIndexCache;
+
+      // Try local notes.json first
+      try {
+        const res = await fetch('notes.json');
+        if (res.ok) {
+          notesIndexCache = await res.json();
+          return notesIndexCache;
+        }
+      } catch (_) { }
+
+      // Try raw GitHub notes.json
+      try {
+        const res = await fetch(`${RAW_BASE}/notes.json`);
+        if (res.ok) {
+          notesIndexCache = await res.json();
+          return notesIndexCache;
+        }
+      } catch (_) { }
+
+      return null;
+    }
+
+    async function selectSubject(subjectName) {
       highlightSubject(subjectName);
       document.getElementById('fileCard').classList.add('hidden');
       showStatus(`Loading notes for ${subjectName}...`, 'loading');
 
-      let files = [];
+      let fileNames = [];
 
-      // 1. Try Supabase Storage (semester1/${subjectName})
-      try {
-        const { data, error } = await supabase
-          .storage
-          .from('notes')
-          .list(`semester1/${subjectName}`, {
-            limit: 100,
-            sortBy: { column: 'name', order: 'asc' }
-          });
-
-        if (!error && data && data.length > 0) {
-          files = data
-            .filter(f => f.name !== '.emptyFolderPlaceholder' && f.name !== '.gitkeep')
-            .map(f => {
-              const { data: pubData } = supabase
-                .storage
-                .from('notes')
-                .getPublicUrl(`semester1/${subjectName}/${f.name}`);
-              return {
-                name: f.name,
-                url: pubData.publicUrl
-              };
-            });
-        }
-      } catch (err) {
-        console.warn('Supabase fetch failed:', err);
+      // 1. Try static notes.json index (GitHub raw / local - 0 API limits, instant)
+      const indexData = await loadNotesIndex();
+      if (indexData && indexData[subjectName]) {
+        fileNames = indexData[subjectName];
       }
 
-      // 2. Fallback to Supabase Storage (notes/${subjectName}) if empty
-      if (files.length === 0) {
+      // 2. Fallback to GitHub Contents API if index is unavailable
+      if (!indexData) {
         try {
-          const { data, error } = await supabase
-            .storage
-            .from('notes')
-            .list(`notes/${subjectName}`, {
-              limit: 100,
-              sortBy: { column: 'name', order: 'asc' }
-            });
-
-          if (!error && data && data.length > 0) {
-            files = data
-              .filter(f => f.name !== '.emptyFolderPlaceholder' && f.name !== '.gitkeep')
-              .map(f => {
-                const { data: pubData } = supabase
-                  .storage
-                  .from('notes')
-                  .getPublicUrl(`notes/${subjectName}/${f.name}`);
-                return {
-                  name: f.name,
-                  url: pubData.publicUrl
-                };
-              });
-          }
-        } catch (_) { }
-      }
-
-      // 3. Fallback to GitHub API if Supabase returns 0 files
-      if (files.length === 0) {
-        try {
-          const ghUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/notes/${encodeURIComponent(subjectName)}`;
-          const ghRes = await fetch(ghUrl, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-          if (ghRes.ok) {
-            const ghData = await ghRes.json();
-            if (Array.isArray(ghData)) {
-              files = ghData
+          const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/notes/${encodeURIComponent(subjectName)}`;
+          const apiRes = await fetch(apiUrl, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+          if (apiRes.ok) {
+            const apiData = await apiRes.json();
+            if (Array.isArray(apiData)) {
+              fileNames = apiData
                 .filter(item => item.type === 'file' && item.name !== '.gitkeep')
-                .map(item => ({
-                  name: item.name,
-                  url: item.download_url
-                }));
+                .map(item => item.name);
             }
           }
         } catch (_) { }
       }
 
-      // 4. Render results or display friendly empty message
-      if (files.length === 0) {
+      if (!fileNames || fileNames.length === 0) {
         showStatus(`No notes uploaded yet for ${subjectName}.`, 'empty');
         return;
       }
 
       hideStatus();
       document.getElementById('fileCardTitle').textContent = `${subjectName} Notes`;
-      renderFiles(files);
-    };
+      renderFiles(subjectName, fileNames);
+    }
 
     function showStatus(msg, type) {
       const el = document.getElementById('statusArea');
@@ -174,18 +140,19 @@
       });
     }
 
-    function renderFiles(files) {
+    function renderFiles(subjectName, fileNames) {
       const list = document.getElementById('fileList');
       list.innerHTML = '';
 
-      files.forEach(file => {
+      fileNames.forEach(name => {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.className = 'file-link';
-        a.href = file.url;
+        // Direct GitHub raw CDN link
+        a.href = `${RAW_BASE}/notes/${encodeURIComponent(subjectName)}/${encodeURIComponent(name)}`;
         a.target = '_blank';
         // Clean display name
-        a.innerText = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
+        a.innerText = name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
         li.appendChild(a);
         list.appendChild(li);
       });

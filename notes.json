@@ -1,0 +1,39 @@
+{
+  "PSP": [
+    "Chapter_1_PSP_UNIT1.pdf",
+    "Chapter_2_Unit-2.pdf",
+    "Chapter_3_PSP_UNIT 3.pdf",
+    "Chapter_4_Unit4.pdf",
+    "Chapter_5_UNIT 5.pdf"
+  ],
+  "Physics": [
+    "Chapter_1_Unit-1.pdf",
+    "Chapter_2_Unit-2.pdf",
+    "Chapter_3_Unit-3.pdf",
+    "Chapter_4_Unit-4.pdf",
+    "Chapter_5_Unit-5.pdf"
+  ],
+  "Calculus": [],
+  "Basic Electronics": [
+    "Notes_BasicElectronics_Notes(ECE111).pdf"
+  ],
+  "BEEE": [],
+  "ADLD": [
+    "Chapter_1_ADLD_Unit1.pdf",
+    "Chapter_2_ADLD_Unit2.pdf",
+    "Chapter_3_ADLD_Unit3.pdf",
+    "Chapter_4_ADLD_Unit4.pdf",
+    "Chapter_5_ADLDUnit 5_.pdf",
+    "MCQ_ADLD_Mcqs.pdf"
+  ],
+  "UHV": [],
+  "COI": [],
+  "EME": [],
+  "Electric Circuit Analysis": [
+    "Chapter_1_Unit-1.pdf",
+    "Chapter_2_Unit-2.pdf",
+    "Chapter_3_Unit-3.pdf",
+    "Chapter_4_Unit-4.pdf",
+    "Chapter_5_Unit-5.pdf"
+  ]
+}
