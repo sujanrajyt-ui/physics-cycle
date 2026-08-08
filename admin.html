@@ -148,12 +148,6 @@
       overflow-y: auto;
       background: #f9fafb;
     }
-
-    .pat-note {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      margin-top: 0.35rem;
-    }
   </style>
 </head>
 
@@ -170,23 +164,11 @@
 
   <main class="container">
 
-    <!-- PAT TOKEN -->
+    <!-- UPLOAD SECTION -->
     <div class="admin-card">
-      <h2>🔑 GitHub Token</h2>
+      <h2>Upload PDF Note</h2>
       <p style="font-size:0.88rem;color:#64748b;margin-bottom:0.5rem;">
-        Enter your GitHub Personal Access Token (classic, with <code>repo</code> scope). Required for upload &amp;
-        delete.
-      </p>
-      <label>PAT Token</label>
-      <input type="password" id="patInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <p class="pat-note">Token is saved securely in your browser's local storage for convenience.</p>
-    </div>
-
-    <!-- UPLOAD -->
-    <div class="admin-card">
-      <h2>Upload New File</h2>
-      <p style="font-size:0.88rem;color:#64748b;margin-bottom:0.5rem;">
-        Choose subject, document type, and PDF to upload directly to GitHub repository.
+        Choose a subject and PDF file to upload to the notes storage.
       </p>
 
       <form id="uploadForm">
@@ -204,7 +186,7 @@
           <option value="Electric Circuit Analysis">Electric Circuit Analysis</option>
         </select>
 
-        <label>Document Type</label>
+        <label>Document Type / Prefix</label>
         <select id="docType">
           <option value="Chapter_1">Chapter 1</option>
           <option value="Chapter_2">Chapter 2</option>
@@ -219,17 +201,17 @@
         <label>PDF File</label>
         <input id="fileInput" type="file" accept="application/pdf" required>
 
-        <button type="submit" class="admin-btn">Upload to GitHub</button>
+        <button type="submit" class="admin-btn">Upload Note</button>
       </form>
 
       <div id="uploadStatus" class="status-msg"></div>
     </div>
 
-    <!-- MANAGE -->
+    <!-- MANAGE SECTION -->
     <div class="admin-card">
       <h2>Manage Files</h2>
       <p style="font-size:0.88rem;color:#64748b;margin-bottom:0.75rem;">
-        Select a subject to view and delete its uploaded files.
+        Select a subject to view and delete its notes.
       </p>
 
       <div style="display:flex; gap:1rem; align-items:flex-end; margin-bottom:1rem;">
@@ -262,35 +244,14 @@
     <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
   </footer>
 
-  <script>
-    const GITHUB_OWNER = 'sujanrajyt-ui';
-    const GITHUB_REPO = 'physics-cycle';
-    const NOTES_ROOT = 'notes';
-    const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`;
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const patInput = document.getElementById('patInput');
+    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
 
-    // Auto-load PAT token from localStorage
-    patInput.value = localStorage.getItem('github_pat') || '';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Auto-save PAT token on input
-    patInput.addEventListener('input', () => {
-      localStorage.setItem('github_pat', patInput.value.trim());
-    });
-
-    function getPAT() {
-      return patInput.value.trim();
-    }
-
-    function authHeaders() {
-      return {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': `token ${getPAT()}`,
-        'Content-Type': 'application/json'
-      };
-    }
-
-    // ===== UPLOAD =====
     const uploadForm = document.getElementById('uploadForm');
     const fileInput = document.getElementById('fileInput');
     const subjectSelect = document.getElementById('subjectSelect');
@@ -305,59 +266,30 @@
     uploadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const pat = getPAT();
-      if (!pat) { setStatus('Please enter your GitHub PAT token first.', 'error'); return; }
-
       const file = fileInput.files[0];
       if (!file) { setStatus('Please choose a PDF file.', 'error'); return; }
 
       const subject = subjectSelect.value;
       const dtype = docType.value;
       const fileName = `${dtype}_${file.name}`;
-      const filePath = `${NOTES_ROOT}/${subject}/${fileName}`;
+      const path = `semester1/${subject}/${fileName}`;
 
-      setStatus('Reading file…', 'loading');
-
-      // Read file as base64
-      const base64Content = await toBase64(file);
-
-      setStatus('Uploading to GitHub…', 'loading');
-
-      // Check if file already exists (need SHA for update)
-      let sha = null;
-      try {
-        const checkRes = await fetch(`${API_BASE}/${encodeURIComponent(filePath)}`, {
-          headers: authHeaders()
-        });
-        if (checkRes.ok) {
-          const existing = await checkRes.json();
-          sha = existing.sha;
-        }
-      } catch (_) { }
-
-      const body = {
-        message: `Upload ${fileName} for ${subject}`,
-        content: base64Content,
-        ...(sha ? { sha } : {})
-      };
+      setStatus('Uploading note to storage…', 'loading');
 
       try {
-        const res = await fetch(`${API_BASE}/${encodeURIComponent(filePath)}`, {
-          method: 'PUT',
-          headers: authHeaders(),
-          body: JSON.stringify(body)
-        });
+        const { error } = await supabase
+          .storage
+          .from('notes')
+          .upload(path, file, { upsert: true });
 
-        if (!res.ok) {
-          const err = await res.json();
-          setStatus('Upload failed: ' + (err.message || res.statusText), 'error');
+        if (error) {
+          setStatus('Upload failed: ' + error.message, 'error');
           return;
         }
 
         setStatus('✅ Uploaded successfully!', 'success');
         fileInput.value = '';
 
-        // Refresh manage list if same subject is selected
         if (document.getElementById('manageSubjectSelect').value === subject) {
           loadFilesForSubject(subject);
         }
@@ -366,46 +298,35 @@
       }
     });
 
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          resolve(reader.result.split(',')[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // ===== MANAGE =====
     async function loadFilesForSubject(subj) {
       const filesList = document.getElementById('filesList');
       filesList.innerHTML = '<div style="padding:1.25rem;color:#6b7280;text-align:center;font-size:0.88rem;">Loading files…</div>';
 
-      const url = `${API_BASE}/${NOTES_ROOT}/${encodeURIComponent(subj)}`;
+      const folder = `semester1/${subj}`;
 
       try {
-        const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+        const { data, error } = await supabase
+          .storage
+          .from('notes')
+          .list(folder, {
+            limit: 100,
+            sortBy: { column: 'name', order: 'asc' }
+          });
 
-        if (res.status === 404) {
-          filesList.innerHTML = `<div style="padding:1.25rem;color:#9ca3af;text-align:center;font-size:0.88rem;">No folder found for ${subj}.</div>`;
+        if (error) {
+          filesList.innerHTML = `<div style="padding:1.25rem;color:#b91c1c;text-align:center;">Failed to load files: ${error.message}</div>`;
           return;
         }
-        if (!res.ok) {
-          filesList.innerHTML = `<div style="padding:1.25rem;color:#b91c1c;text-align:center;">Failed to load files.</div>`;
-          return;
-        }
 
-        const data = await res.json();
-        const files = data.filter(item => item.type === 'file' && item.name !== '.gitkeep');
+        const validFiles = (data || []).filter(f => f.name !== '.emptyFolderPlaceholder' && f.name !== '.gitkeep');
 
-        if (files.length === 0) {
+        if (validFiles.length === 0) {
           filesList.innerHTML = `<div style="padding:1.25rem;color:#9ca3af;text-align:center;font-size:0.88rem;">No files found for ${subj}.</div>`;
           return;
         }
 
         filesList.innerHTML = '';
-        files.forEach(file => {
+        validFiles.forEach(file => {
           const row = document.createElement('div');
           row.className = 'manage-row';
 
@@ -418,39 +339,26 @@
           delBtn.textContent = 'Delete';
 
           delBtn.addEventListener('click', async () => {
-            const pat = getPAT();
-            if (!pat) { alert('Enter your GitHub PAT token first.'); return; }
-            if (!confirm(`Delete "${file.name}" from ${subj}?`)) return;
+            if (!confirm(`Delete "${file.name}" for ${subj}?`)) return;
 
             delBtn.disabled = true;
             delBtn.textContent = 'Deleting…';
 
-            try {
-              const res = await fetch(`${API_BASE}/${encodeURIComponent(file.path)}`, {
-                method: 'DELETE',
-                headers: authHeaders(),
-                body: JSON.stringify({
-                  message: `Delete ${file.name} from ${subj}`,
-                  sha: file.sha
-                })
-              });
+            const { error: delErr } = await supabase
+              .storage
+              .from('notes')
+              .remove([`${folder}/${file.name}`]);
 
-              if (!res.ok) {
-                const err = await res.json();
-                alert('Failed to delete: ' + (err.message || res.statusText));
-                delBtn.disabled = false;
-                delBtn.textContent = 'Delete';
-                return;
-              }
-
-              row.remove();
-              if (!filesList.querySelector('.manage-row')) {
-                filesList.innerHTML = `<div style="padding:1.25rem;color:#9ca3af;text-align:center;font-size:0.88rem;">No files left for ${subj}.</div>`;
-              }
-            } catch (err) {
-              alert('Delete error: ' + err.message);
+            if (delErr) {
+              alert('Failed to delete: ' + delErr.message);
               delBtn.disabled = false;
               delBtn.textContent = 'Delete';
+              return;
+            }
+
+            row.remove();
+            if (!filesList.querySelector('.manage-row')) {
+              filesList.innerHTML = `<div style="padding:1.25rem;color:#9ca3af;text-align:center;font-size:0.88rem;">No files left for ${subj}.</div>`;
             }
           });
 

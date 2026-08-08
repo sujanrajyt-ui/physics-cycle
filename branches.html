@@ -51,22 +51,122 @@
     <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
   </footer>
 
-  <script>
+  <!-- Supabase JS Client Module -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const GITHUB_OWNER = 'sujanrajyt-ui';
     const GITHUB_REPO = 'physics-cycle';
-    const NOTES_ROOT = 'notes';
-    const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`;
 
-    // --- UI HELPERS ---
+    window.selectSubject = async function (subjectName) {
+      highlightSubject(subjectName);
+      document.getElementById('fileCard').classList.add('hidden');
+      showStatus(`Loading notes for ${subjectName}...`, 'loading');
+
+      let files = [];
+
+      // 1. Try Supabase Storage (semester1/${subjectName})
+      try {
+        const { data, error } = await supabase
+          .storage
+          .from('notes')
+          .list(`semester1/${subjectName}`, {
+            limit: 100,
+            sortBy: { column: 'name', order: 'asc' }
+          });
+
+        if (!error && data && data.length > 0) {
+          files = data
+            .filter(f => f.name !== '.emptyFolderPlaceholder' && f.name !== '.gitkeep')
+            .map(f => {
+              const { data: pubData } = supabase
+                .storage
+                .from('notes')
+                .getPublicUrl(`semester1/${subjectName}/${f.name}`);
+              return {
+                name: f.name,
+                url: pubData.publicUrl
+              };
+            });
+        }
+      } catch (err) {
+        console.warn('Supabase fetch failed:', err);
+      }
+
+      // 2. Fallback to Supabase Storage (notes/${subjectName}) if empty
+      if (files.length === 0) {
+        try {
+          const { data, error } = await supabase
+            .storage
+            .from('notes')
+            .list(`notes/${subjectName}`, {
+              limit: 100,
+              sortBy: { column: 'name', order: 'asc' }
+            });
+
+          if (!error && data && data.length > 0) {
+            files = data
+              .filter(f => f.name !== '.emptyFolderPlaceholder' && f.name !== '.gitkeep')
+              .map(f => {
+                const { data: pubData } = supabase
+                  .storage
+                  .from('notes')
+                  .getPublicUrl(`notes/${subjectName}/${f.name}`);
+                return {
+                  name: f.name,
+                  url: pubData.publicUrl
+                };
+              });
+          }
+        } catch (_) { }
+      }
+
+      // 3. Fallback to GitHub API if Supabase returns 0 files
+      if (files.length === 0) {
+        try {
+          const ghUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/notes/${encodeURIComponent(subjectName)}`;
+          const ghRes = await fetch(ghUrl, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+          if (ghRes.ok) {
+            const ghData = await ghRes.json();
+            if (Array.isArray(ghData)) {
+              files = ghData
+                .filter(item => item.type === 'file' && item.name !== '.gitkeep')
+                .map(item => ({
+                  name: item.name,
+                  url: item.download_url
+                }));
+            }
+          }
+        } catch (_) { }
+      }
+
+      // 4. Render results or display friendly empty message
+      if (files.length === 0) {
+        showStatus(`No notes uploaded yet for ${subjectName}.`, 'empty');
+        return;
+      }
+
+      hideStatus();
+      document.getElementById('fileCardTitle').textContent = `${subjectName} Notes`;
+      renderFiles(files);
+    };
+
     function showStatus(msg, type) {
       const el = document.getElementById('statusArea');
       el.className = `status-box status-${type}`;
       el.textContent = msg;
       el.classList.remove('hidden');
     }
+
     function hideStatus() {
       document.getElementById('statusArea').classList.add('hidden');
     }
+
     function highlightSubject(name) {
       document.querySelectorAll('#subjectButtons .btn').forEach(btn => {
         btn.classList.remove('active');
@@ -74,47 +174,6 @@
       });
     }
 
-    // --- MAIN FUNCTION ---
-    async function selectSubject(subjectName) {
-      highlightSubject(subjectName);
-      document.getElementById('fileCard').classList.add('hidden');
-      showStatus(`Loading notes for ${subjectName}...`, 'loading');
-
-      const encodedSubject = encodeURIComponent(subjectName);
-      const url = `${API_BASE}/${NOTES_ROOT}/${encodedSubject}`;
-
-      try {
-        const res = await fetch(url, {
-          headers: { 'Accept': 'application/vnd.github.v3+json' }
-        });
-
-        if (res.status === 404) {
-          showStatus(`No notes found for ${subjectName}. The folder doesn't exist yet.`, 'empty');
-          return;
-        }
-        if (!res.ok) {
-          showStatus(`Error loading files: ${res.statusText}`, 'error');
-          return;
-        }
-
-        const data = await res.json();
-        const files = data.filter(item => item.type === 'file' && item.name !== '.gitkeep');
-
-        if (files.length === 0) {
-          showStatus(`No notes uploaded yet for ${subjectName}.`, 'empty');
-          return;
-        }
-
-        hideStatus();
-        document.getElementById('fileCardTitle').textContent = `${subjectName} Notes`;
-        renderFiles(files);
-
-      } catch (err) {
-        showStatus(`Network error: ${err.message}`, 'error');
-      }
-    }
-
-    // --- RENDER FILES ---
     function renderFiles(files) {
       const list = document.getElementById('fileList');
       list.innerHTML = '';
@@ -123,9 +182,9 @@
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.className = 'file-link';
-        a.href = file.download_url;
+        a.href = file.url;
         a.target = '_blank';
-        // Clean name: remove extension and formatting
+        // Clean display name
         a.innerText = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
         li.appendChild(a);
         list.appendChild(li);
