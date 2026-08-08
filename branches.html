@@ -1,150 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <title>Physics Cycle - Semester 1 Subjects</title>
+  <title>Physics Cycle Notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <header class="site-header">
     <div class="header-inner">
       <div class="logo">Physics Cycle</div>
       <nav class="nav-links">
         <a href="index.html" class="nav-link">Home</a>
-        <a href="branches.html" class="nav-link active">Subjects</a>
+        <a href="branches.html" class="nav-link active">Notes</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <section class="page-header">
-      <div class="page-title-block">
-        <h1 class="page-title">Semester 1 Subjects</h1>
-        <p class="page-subtitle">
-          Click a subject to view its notes. Notes are stored in Supabase Storage.
-        </p>
+    <!-- 1. Subject Selection -->
+    <div class="card">
+      <h2>Select Subject</h2>
+      <div class="btn-grid" id="subjectButtons">
+        <button class="btn" onclick="selectSubject('PSP')">PSP</button>
+        <button class="btn" onclick="selectSubject('Physics')">Physics</button>
+        <button class="btn" onclick="selectSubject('Calculus')">Calculus</button>
+        <button class="btn" onclick="selectSubject('Basic Electronics')">Basic Electronics</button>
+        <button class="btn" onclick="selectSubject('BEEE')">BEEE</button>
+        <button class="btn" onclick="selectSubject('ADLD')">ADLD</button>
+        <button class="btn" onclick="selectSubject('UHV')">UHV</button>
+        <button class="btn" onclick="selectSubject('COI')">COI</button>
+        <button class="btn" onclick="selectSubject('EME')">EME</button>
+        <button class="btn" onclick="selectSubject('Electric Circuit Analysis')">Electric Circuit Analysis</button>
       </div>
-    </section>
+    </div>
 
-    <!-- SUBJECT BUTTONS -->
-    <section class="subjects-buttons semester-buttons">
-      <button class="btn subject-btn" data-subject="PSP">PSP</button>
-      <button class="btn subject-btn" data-subject="Physics">Physics</button>
-      <button class="btn subject-btn" data-subject="Calculus">Calculus</button>
-      <button class="btn subject-btn" data-subject="Basic Electronics">Basic Electronics</button>
-      <button class="btn subject-btn" data-subject="BEEE">BEEE</button>
-      <button class="btn subject-btn" data-subject="ADLD">ADLD</button>
-      <button class="btn subject-btn" data-subject="UHV">UHV</button>
-      <button class="btn subject-btn" data-subject="COI">COI</button>
-    </section>
+    <!-- Status Message Area -->
+    <div id="statusArea" class="hidden"></div>
 
-    <!-- NOTES FOR SELECTED SUBJECT -->
-    <section id="subject-notes" class="cards-grid">
-      <!-- JS will insert one card here for the selected subject -->
-    </section>
-
-    <p id="no-data-message" class="message message-warning">
-      Select a subject above to see its notes.
-    </p>
+    <!-- 2. File List (Hidden by default) -->
+    <div id="fileCard" class="card hidden">
+      <h2 id="fileCardTitle">Notes</h2>
+      <ul id="fileList" class="file-list"></ul>
+    </div>
   </main>
 
   <footer class="site-footer">
     <p>&copy; 2025 Physics Cycle • By Sujanraj. All rights reserved.</p>
   </footer>
 
-  <!-- Supabase listing logic for one subject at a time -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  <script>
+    const GITHUB_OWNER = 'sujanrajyt-ui';
+    const GITHUB_REPO = 'physics-cycle';
+    const NOTES_ROOT = 'notes';
+    const API_BASE = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents`;
 
-    const SUPABASE_URL = 'https://brvbbxbfcrcpgkxxfuhv.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJydmJieGJmY3JjcGdreHhmdWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1NzM1MzIsImV4cCI6MjA4MDE0OTUzMn0.Z8FYzhVSn0eMgQAWcXg9ul70AeSyWMid4dFtrhAZalQ';
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const subjectButtons = document.querySelectorAll('.subject-btn');
-    const notesContainer = document.getElementById('subject-notes');
-    const noDataMessage = document.getElementById('no-data-message');
-
-    async function loadSubjectResources(subject) {
-      notesContainer.innerHTML = 'Loading notes...';
-      noDataMessage.classList.add('hidden');
-
-      const folder = `semester1/${subject}`;
-
-      const { data, error } = await supabase
-        .storage
-        .from('notes')
-        .list(folder, {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: 'name', order: 'asc' }
-        });
-
-      if (error) {
-        console.error('Error listing for', subject, error);
-        notesContainer.innerHTML = 'Failed to load notes.';
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        notesContainer.innerHTML = '';
-        noDataMessage.textContent = `No notes uploaded yet for ${subject}.`;
-        noDataMessage.classList.remove('hidden');
-        return;
-      }
-
-      const linksHtml = data.map(file => {
-        const fullPath = `${folder}/${file.name}`;
-        const { data: publicData } = supabase
-          .storage
-          .from('notes')
-          .getPublicUrl(fullPath);
-
-        const url = publicData.publicUrl;
-        const displayName = file.name; // EXACT file name appears
-
-        return `
-          <li>
-            <a class="subject-pill" href="${url}" target="_blank">
-              ${displayName}
-            </a>
-          </li>
-        `;
-      }).join('');
-
-      const card = document.createElement('article');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-header-row">
-          <h2 class="card-title">${subject}</h2>
-          <span class="branch-code">Sem 1</span>
-        </div>
-        <p class="card-desc">Uploaded notes for ${subject}.</p>
-        <div>
-          <div class="subjects-label">Resources</div>
-          <ul class="subjects-list">
-            ${linksHtml}
-          </ul>
-        </div>
-      `;
-
-      notesContainer.innerHTML = '';
-      notesContainer.appendChild(card);
+    // --- UI HELPERS ---
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusArea');
+      el.className = `status-box status-${type}`;
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+    function hideStatus() {
+      document.getElementById('statusArea').classList.add('hidden');
+    }
+    function highlightSubject(name) {
+      document.querySelectorAll('#subjectButtons .btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText === name) btn.classList.add('active');
+      });
     }
 
-    subjectButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const subject = btn.dataset.subject;
+    // --- MAIN FUNCTION ---
+    async function selectSubject(subjectName) {
+      highlightSubject(subjectName);
+      document.getElementById('fileCard').classList.add('hidden');
+      showStatus(`Loading notes for ${subjectName}...`, 'loading');
 
-        subjectButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+      const encodedSubject = encodeURIComponent(subjectName);
+      const url = `${API_BASE}/${NOTES_ROOT}/${encodedSubject}`;
 
-        loadSubjectResources(subject);
+      try {
+        const res = await fetch(url, {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+
+        if (res.status === 404) {
+          showStatus(`No notes found for ${subjectName}. The folder doesn't exist yet.`, 'empty');
+          return;
+        }
+        if (!res.ok) {
+          showStatus(`Error loading files: ${res.statusText}`, 'error');
+          return;
+        }
+
+        const data = await res.json();
+        const files = data.filter(item => item.type === 'file' && item.name !== '.gitkeep');
+
+        if (files.length === 0) {
+          showStatus(`No notes uploaded yet for ${subjectName}.`, 'empty');
+          return;
+        }
+
+        hideStatus();
+        document.getElementById('fileCardTitle').textContent = `${subjectName} Notes`;
+        renderFiles(files);
+
+      } catch (err) {
+        showStatus(`Network error: ${err.message}`, 'error');
+      }
+    }
+
+    // --- RENDER FILES ---
+    function renderFiles(files) {
+      const list = document.getElementById('fileList');
+      list.innerHTML = '';
+
+      files.forEach(file => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.className = 'file-link';
+        a.href = file.download_url;
+        a.target = '_blank';
+        // Clean name: remove extension and formatting
+        a.innerText = file.name.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
+        li.appendChild(a);
+        list.appendChild(li);
       });
-    });
 
-    // On load: no subject selected; message prompts user to click one
+      document.getElementById('fileCard').classList.remove('hidden');
+    }
   </script>
 </body>
+
 </html>
