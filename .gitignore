@@ -1,0 +1,13 @@
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# CTF challenge scratch files
+Acm.png
+Author Walkthrough — The Ninth Echo.pdf
+CTF Question — The Ninth Echo.pdf
+flag.txt
+solve.py
+vault.c
+vault.txt
